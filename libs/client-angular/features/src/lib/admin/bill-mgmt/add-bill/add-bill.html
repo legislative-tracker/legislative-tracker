@@ -1,0 +1,42 @@
+<div class="bill-form-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Add New Legislation</mat-card-title>
+      <mat-card-subtitle>Enter bill details below</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form (submit)="onSubmit(); $event.preventDefault()">
+        <div class="row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>State Legislature</mat-label>
+            <mat-select [(ngModel)]="state" name="state" [disabled]="isLoading()">
+              @for (state of implementedStates; track state.value) {
+                <mat-option [value]="state.value">{{ state.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Bill ID (e.g., S1234-2025)</mat-label>
+            <input matInput [(ngModel)]="billId" name="billId" required [disabled]="isLoading()" />
+          </mat-form-field>
+        </div>
+
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          class="full-width"
+          [disabled]="isLoading() || !billId"
+        >
+          @if (isLoading()) {
+            Saving to Firestore...
+          } @else {
+            Add Bill
+          }
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

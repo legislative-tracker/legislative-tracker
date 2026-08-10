@@ -1,0 +1,44 @@
+.container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  line-height: 1.6;
+
+  h1 {
+    font: var(--mat-sys-headline-large);
+    margin-bottom: 0.5rem;
+  }
+
+  h2 {
+    font: var(--mat-sys-headline-medium);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .last-updated {
+    color: var(--mat-sys-on-surface-variant);
+    font: var(--mat-sys-label-large);
+    margin-bottom: 2rem;
+  }
+
+  > section {
+    margin-bottom: 2rem;
+  }
+
+  ul:not([class*='mat-']) {
+    margin-left: 1.5rem;
+    list-style-type: disc;
+  }
+
+  a:not([class*='mat-']) {
+    color: var(--mat-sys-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: text-decoration 0.2s ease;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+  }
+}

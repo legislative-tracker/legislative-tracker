@@ -1,0 +1,17 @@
+.full-width-table {
+  width: 100%;
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--mat-sys-surface-container-highest);
+  }
+
+  &:active {
+    // A slightly darker interaction state
+    background-color: var(--mat-sys-secondary-container);
+  }
+}

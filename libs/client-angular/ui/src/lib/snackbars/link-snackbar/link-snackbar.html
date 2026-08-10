@@ -1,0 +1,9 @@
+<span matSnackBarLabel>
+  {{ data.message }}
+  <a [href]="data.linkUrl" target="_blank" class="snackbar-link">
+    {{ data.linkText }}
+  </a>
+</span>
+<span matSnackBarActions>
+  <button mat-button matSnackBarAction (click)="snackBarRef.dismiss()">Dismiss</button>
+</span>

@@ -1,0 +1,22 @@
+<div class="mat-elevation-z8">
+  <table mat-table [dataSource]="dataSource()">
+    @for (col of columnSource(); track col.key) {
+      <ng-container [matColumnDef]="col.key">
+        <th mat-header-cell *matHeaderCellDef>{{ col.label }}</th>
+        <td mat-cell *matCellDef="let element">
+          {{ element[col.key] }}
+        </td>
+      </ng-container>
+    }
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns()"
+      (click)="onRowClick(row)"
+      [routerLink]="['/', stateCd(), routeType(), row.id ? row.id : row.identifier]"
+      class="clickable-row"
+    ></tr>
+  </table>
+</div>

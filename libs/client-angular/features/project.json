@@ -1,0 +1,13 @@
+{
+  "name": "client-angular-features",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "libs/client-angular/features/src",
+  "tags": ["domain:client", "type:feature"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}

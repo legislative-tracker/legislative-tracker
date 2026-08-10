@@ -1,0 +1,9 @@
+.snackbar-link {
+  color: var(--mat-sys-tertiary-container); /* Make it pop */
+  text-decoration: underline;
+  margin-left: 4px;
+  font-weight: bold;
+}
+.snackbar-link:hover {
+  color: #fff;
+}

@@ -1,0 +1,20 @@
+{
+  "functions": [
+    {
+      "source": "dist/apps/server-firebase",
+      "codebase": "default",
+      "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log"]
+    }
+  ],
+  "hosting": {
+    "target": "hosting",
+    "public": "dist/apps/client-angular/browser",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

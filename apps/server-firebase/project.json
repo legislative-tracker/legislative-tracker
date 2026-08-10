@@ -1,0 +1,33 @@
+{
+  "name": "server-firebase",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/server-firebase/src",
+  "projectType": "application",
+  "tags": ["type:app", "domain:server"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/server-firebase",
+        "main": "apps/server-firebase/src/index.ts",
+        "tsConfig": "apps/server-firebase/tsconfig.app.json",
+        "rootDir": ".",
+        "assets": ["apps/server-firebase/package.json"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/vite:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "configFile": "apps/server-firebase/vitest.config.ts",
+        "passWithNoTests": true,
+        "reportsDirectory": "coverage/apps/server-firebase"
+      }
+    }
+  }
+}

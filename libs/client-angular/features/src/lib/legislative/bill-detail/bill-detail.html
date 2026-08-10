@@ -1,0 +1,27 @@
+@if (billResource.isLoading()) {
+  <div class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+} @else if (bill()) {
+  <h1>{{ bill()?.id }}</h1>
+  <p>{{ bill()?.text }}</p>
+
+  <h2>Cosponsors</h2>
+  <mat-tab-group>
+    @for (version of billVersions(); track version.id) {
+      <mat-tab [label]="version.id">
+        <app-table
+          [dataSource]="version.data"
+          [columnSource]="cosponsorCols"
+          [stateCd]="stateCd()"
+          routeType="member"
+        ></app-table>
+      </mat-tab>
+    }
+  </mat-tab-group>
+} @else {
+  <div class="error-container">
+    <h1>Bill Not Found</h1>
+    <p>We couldn't find a bill with that ID in {{ stateCd() }}.</p>
+  </div>
+}
