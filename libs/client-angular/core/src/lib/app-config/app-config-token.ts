@@ -2,6 +2,12 @@ import { InjectionToken } from "@angular/core";
 
 export interface AppConfig {
   production: boolean;
+  useEmulators?: boolean;
+  emulatorHosts?: {
+    firestore?: { host: string; port: number };
+    functions?: { host: string; port: number };
+    auth?: { host: string; port: number };
+  };
   firebase: {
     projectId: string;
     appId: string;

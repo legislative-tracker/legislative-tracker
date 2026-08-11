@@ -10,7 +10,17 @@ import {
   withRouterConfig,
 } from "@angular/router";
 import { initializeApp, provideFirebaseApp } from "@angular/fire/app";
-import { getAuth, provideAuth } from "@angular/fire/auth";
+import { connectAuthEmulator, getAuth, provideAuth } from "@angular/fire/auth";
+import {
+  connectFirestoreEmulator,
+  getFirestore,
+  provideFirestore,
+} from "@angular/fire/firestore";
+import {
+  connectFunctionsEmulator,
+  getFunctions,
+  provideFunctions,
+} from "@angular/fire/functions";
 import {
   getAnalytics,
   provideAnalytics,
@@ -41,7 +51,45 @@ export const getAppConfig = (runtimeConfig: AppConfig): ApplicationConfig => {
       ),
 
       provideFirebaseApp(() => initializeApp(inject(APP_CONFIG).firebase)),
-      provideAuth(() => getAuth()),
+      provideAuth(() => {
+        const auth = getAuth();
+        const config = inject(APP_CONFIG);
+        if (config.useEmulators) {
+          const authHost = config.emulatorHosts?.auth;
+          connectAuthEmulator(
+            auth,
+            `http://${authHost?.host ?? "127.0.0.1"}:${authHost?.port ?? 9099}`,
+            { disableWarnings: true },
+          );
+        }
+        return auth;
+      }),
+      provideFirestore(() => {
+        const firestore = getFirestore();
+        const config = inject(APP_CONFIG);
+        if (config.useEmulators) {
+          const fsHost = config.emulatorHosts?.firestore;
+          connectFirestoreEmulator(
+            firestore,
+            fsHost?.host ?? "127.0.0.1",
+            fsHost?.port ?? 8080,
+          );
+        }
+        return firestore;
+      }),
+      provideFunctions(() => {
+        const functions = getFunctions();
+        const config = inject(APP_CONFIG);
+        if (config.useEmulators) {
+          const fnHost = config.emulatorHosts?.functions;
+          connectFunctionsEmulator(
+            functions,
+            fnHost?.host ?? "127.0.0.1",
+            fnHost?.port ?? 5001,
+          );
+        }
+        return functions;
+      }),
       provideAnalytics(() => getAnalytics()),
       ScreenTrackingService,
       UserTrackingService,
