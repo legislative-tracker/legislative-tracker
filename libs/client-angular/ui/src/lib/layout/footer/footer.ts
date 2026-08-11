@@ -3,6 +3,7 @@ import { RouterLink } from "@angular/router";
 
 // App imports
 import { UiService } from "@legislative-tracker/client-angular/core";
+import { Feedback } from "../../feedback/feedback";
 
 @Component({
   selector: "app-footer",
@@ -18,6 +19,6 @@ export class Footer {
   private ui = inject(UiService);
 
   openFeedback() {
-    this.ui.openFeedbackDialog();
+    this.ui.openFeedbackDialog(Feedback);
   }
 }

@@ -5,10 +5,6 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 // Target Service
 import { UiService } from "./ui.service";
 
-// Dependencies
-// We import the component class to verify it is passed to the dialog
-import { Feedback } from "@legislative-tracker/client-angular/ui";
-
 describe("UiService", () => {
   let service: UiService;
   let dialogSpy: { open: any };
@@ -36,14 +32,15 @@ describe("UiService", () => {
 
   describe("openFeedbackDialog", () => {
     it("should open the Feedback component with correct configuration", () => {
+      class DummyComponent {}
       // Call the method
-      service.openFeedbackDialog();
+      service.openFeedbackDialog(DummyComponent);
 
       // Verify MatDialog.open was called exactly once
       expect(dialogSpy.open).toHaveBeenCalledTimes(1);
 
       // Verify arguments: Component Class + Config Object
-      expect(dialogSpy.open).toHaveBeenCalledWith(Feedback, {
+      expect(dialogSpy.open).toHaveBeenCalledWith(DummyComponent, {
         width: "500px",
         maxWidth: "90vw",
         disableClose: true,

@@ -7,7 +7,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 
 import { Feedback } from "./feedback";
 import { FeedbackService } from "@legislative-tracker/client-angular/core";
-import { LinkSnackBar } from "@legislative-tracker/client-angular/ui";
+import { LinkSnackBar } from "../snackbars/link-snackbar/link-snackbar";
 
 describe("Feedback", () => {
   let component: Feedback;

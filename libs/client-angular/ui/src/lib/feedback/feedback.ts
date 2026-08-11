@@ -16,7 +16,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatSnackBar } from "@angular/material/snack-bar";
 
 // App Imports
-import { LinkSnackBar } from "@legislative-tracker/client-angular/ui";
+import { LinkSnackBar } from "../snackbars/link-snackbar/link-snackbar";
 import { FeedbackService } from "@legislative-tracker/client-angular/core";
 
 @Component({
