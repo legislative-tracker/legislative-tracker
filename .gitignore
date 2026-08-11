@@ -28,6 +28,7 @@ ui-debug.log
 .env.local
 .env.*.local
 *.env
+apps/client-angular/public/config.json
 
 # IDEs and Editors
 .idea/
