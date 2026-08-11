@@ -41,7 +41,7 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
         // gracefully fallback to empty array if no helper exists for this state
         const stateApiPromise = getMemberUpdates(stateCode).catch(() => {
           logger.info(
-            `No specific API implementation for ${stateCode}. Using OpenStates only.`
+            `No specific API implementation for ${stateCode}. Using OpenStates only.`,
           );
           return [] as Legislator[];
         });
@@ -78,7 +78,7 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
           const osMatch = openStatesMembers.find(
             (m: Person) =>
               m.current_role.title === currentData.honorific_prefix &&
-              m.current_role.district === currentData.district
+              m.current_role.district === currentData.district,
           );
 
           const stateMatch = stateMemberMap.get(lookupKey);

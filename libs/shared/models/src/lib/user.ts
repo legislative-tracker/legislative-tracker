@@ -1,4 +1,4 @@
-import { Legislator } from './legislature';
+import { Legislator } from "./legislature";
 
 export interface TimestampLike {
   seconds: number;

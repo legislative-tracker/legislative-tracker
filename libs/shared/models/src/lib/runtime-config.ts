@@ -22,22 +22,22 @@ export type ResourceLink = {
 
 export const DEFAULT_CONFIG: RuntimeConfig = {
   organization: {
-    name: 'OrgName',
-    url: 'http://neverssl.com',
+    name: "OrgName",
+    url: "http://neverssl.com",
   },
   branding: {
-    logoUrl: 'assets/default-logo.png',
-    primaryColor: '#673ab7',
-    faviconUrl: 'favicon.ico',
+    logoUrl: "assets/default-logo.png",
+    primaryColor: "#673ab7",
+    faviconUrl: "favicon.ico",
     darkMode: false,
   },
   resources: [
     {
-      title: 'GitHub Repository',
-      description: 'Access the source code under GNU AGPL v3.0.',
-      url: 'https://github.com/legislative-tracker/reimagined-parakeet/',
-      icon: 'code',
-      actionLabel: 'View Code',
+      title: "GitHub Repository",
+      description: "Access the source code under GNU AGPL v3.0.",
+      url: "https://github.com/legislative-tracker/reimagined-parakeet/",
+      icon: "code",
+      actionLabel: "View Code",
     },
   ],
 };

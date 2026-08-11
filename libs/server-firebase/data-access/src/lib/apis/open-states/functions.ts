@@ -12,7 +12,7 @@ const BASE_URL = "https://v3.openstates.org";
  */
 export const getOpenStatesData = async (
   jurisdiction: string,
-  targetEndpoint: string
+  targetEndpoint: string,
 ): Promise<Person[]> => {
   const url = `${BASE_URL}/${targetEndpoint}`;
   console.log(`Fetching ${targetEndpoint} for ${jurisdiction}...`);

@@ -1,8 +1,8 @@
-import { inject } from '@angular/core';
-import { Router, CanActivateFn } from '@angular/router';
-import { Auth, authState } from '@angular/fire/auth';
-import { map, switchMap, take } from 'rxjs/operators';
-import { from, of } from 'rxjs';
+import { inject } from "@angular/core";
+import { Router, CanActivateFn } from "@angular/router";
+import { Auth, authState } from "@angular/fire/auth";
+import { map, switchMap, take } from "rxjs/operators";
+import { from, of } from "rxjs";
 
 export const adminGuard: CanActivateFn = (route, state) => {
   const auth = inject(Auth);
@@ -16,17 +16,17 @@ export const adminGuard: CanActivateFn = (route, state) => {
     switchMap((user) => {
       if (!user) {
         // Not logged in at all? Send to login
-        return of(router.createUrlTree(['/login']));
+        return of(router.createUrlTree(["/login"]));
       }
 
       // Logged in? Check the custom claim
       return from(user.getIdTokenResult()).pipe(
         map((token) => {
-          if (token.claims['admin'] === true) {
+          if (token.claims["admin"] === true) {
             return true; // Access granted
           } else {
             // Logged in but not an admin? Send to home
-            return router.createUrlTree(['/']);
+            return router.createUrlTree(["/"]);
           }
         }),
       );

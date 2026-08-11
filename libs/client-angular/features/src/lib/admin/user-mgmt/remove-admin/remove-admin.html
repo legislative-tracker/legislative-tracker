@@ -37,11 +37,7 @@
           type="submit"
           [disabled]="isLoading() || !email()"
         >
-          @if (isLoading()) {
-            Processing...
-          } @else {
-            Promote to Admin
-          }
+          @if (isLoading()) { Processing... } @else { Promote to Admin }
         </button>
       </form>
     </mat-card-content>

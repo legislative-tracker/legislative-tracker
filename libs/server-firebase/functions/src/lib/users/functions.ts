@@ -102,5 +102,5 @@ export const fetchUserReps = onCall(
       console.error("Fetch Reps Error: ", error);
       throw new HttpsError("unknown", "Failed to fetch reps.", error.message);
     }
-  }
+  },
 );

@@ -1,4 +1,7 @@
-import { db, getBillUpdates } from "@legislative-tracker/server-firebase/data-access";
+import {
+  db,
+  getBillUpdates,
+} from "@legislative-tracker/server-firebase/data-access";
 
 /**
  * Core business logic for updating legislation from 3rd party APIs
@@ -17,7 +20,7 @@ export const performLegislationUpdate = async () => {
 
   const billListByLegislature = await Promise.all(pendingLookups);
   const updates = await Promise.all(
-    billListByLegislature.map((o) => getBillUpdates(o))
+    billListByLegislature.map((o) => getBillUpdates(o)),
   );
 
   const bulkWriter = db.bulkWriter();

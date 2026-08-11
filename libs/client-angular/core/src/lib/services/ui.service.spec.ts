@@ -1,15 +1,15 @@
-import { TestBed } from '@angular/core/testing';
-import { MatDialog } from '@angular/material/dialog';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { TestBed } from "@angular/core/testing";
+import { MatDialog } from "@angular/material/dialog";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
 // Target Service
-import { UiService } from './ui.service';
+import { UiService } from "./ui.service";
 
 // Dependencies
 // We import the component class to verify it is passed to the dialog
-import { Feedback } from '@legislative-tracker/client-angular/ui';
+import { Feedback } from "@legislative-tracker/client-angular/ui";
 
-describe('UiService', () => {
+describe("UiService", () => {
   let service: UiService;
   let dialogSpy: { open: any };
 
@@ -30,12 +30,12 @@ describe('UiService', () => {
     service = TestBed.inject(UiService);
   });
 
-  it('should be created', () => {
+  it("should be created", () => {
     expect(service).toBeTruthy();
   });
 
-  describe('openFeedbackDialog', () => {
-    it('should open the Feedback component with correct configuration', () => {
+  describe("openFeedbackDialog", () => {
+    it("should open the Feedback component with correct configuration", () => {
       // Call the method
       service.openFeedbackDialog();
 
@@ -44,8 +44,8 @@ describe('UiService', () => {
 
       // Verify arguments: Component Class + Config Object
       expect(dialogSpy.open).toHaveBeenCalledWith(Feedback, {
-        width: '500px',
-        maxWidth: '90vw',
+        width: "500px",
+        maxWidth: "90vw",
         disableClose: true,
         autoFocus: false,
       });

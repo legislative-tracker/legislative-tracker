@@ -1,10 +1,10 @@
-import { 
+import {
   Legislator,
   Legislation,
   LegislatureUpdateFnMap,
- } from "@legislative-tracker/shared/models";
+} from "@legislative-tracker/shared/models";
 import { Person } from "@jpstroud/opencivicdata-types";
-import {  Success, ChamberMapping  } from "@legislative-tracker/shared/models";
+import { Success, ChamberMapping } from "@legislative-tracker/shared/models";
 import * as ny from "../apis/ny/functions";
 
 /**
@@ -56,7 +56,7 @@ const chamberMapper = (jurisdiction: string, chamber: string): string => {
 export const mapPersonToLegislator = (person: Person): Partial<Legislator> => {
   const chamber: string = chamberMapper(
     person.jurisdiction.classification,
-    person.current_role.org_classification
+    person.current_role.org_classification,
   );
 
   return {
@@ -97,7 +97,7 @@ export const getBillUpdates = async (o: { id: string; bills: string[] }) => {
  * @return {Promise<Legislator>} A promise of an array of Legislators
  */
 export const getMemberUpdates = async (
-  legislatureCd: string
+  legislatureCd: string,
 ): Promise<Legislator[]> => {
   const updateFn = updateFnMap[legislatureCd].members;
 

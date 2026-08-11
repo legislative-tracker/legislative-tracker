@@ -1,23 +1,31 @@
-import { Component, inject } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { AsyncPipe } from '@angular/common';
-import { Router, RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
-import { MatIconModule } from '@angular/material/icon';
-import { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { Component, inject } from "@angular/core";
+import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
+import { AsyncPipe } from "@angular/common";
+import {
+  Router,
+  RouterOutlet,
+  RouterLink,
+  RouterLinkActive,
+} from "@angular/router";
+import { MatToolbarModule } from "@angular/material/toolbar";
+import { MatButtonModule } from "@angular/material/button";
+import { MatSidenavModule } from "@angular/material/sidenav";
+import { MatListModule } from "@angular/material/list";
+import { MatIconModule } from "@angular/material/icon";
+import { Observable } from "rxjs";
+import { map, shareReplay } from "rxjs/operators";
 
 // App imports
-import { AuthService, ConfigService } from '@legislative-tracker/client-angular/core';
-import { Footer } from '../footer/footer';
+import {
+  AuthService,
+  ConfigService,
+} from "@legislative-tracker/client-angular/core";
+import { Footer } from "../footer/footer";
 
 @Component({
-  selector: 'app-nav',
-  templateUrl: './nav.component.html',
-  styleUrl: './nav.component.scss',
+  selector: "app-nav",
+  templateUrl: "./nav.component.html",
+  styleUrl: "./nav.component.scss",
   imports: [
     RouterOutlet,
     RouterLink,
@@ -42,11 +50,13 @@ export class NavComponent {
 
   async handleLogout() {
     await this.auth.logout();
-    this.router.navigate(['/login']);
+    this.router.navigate(["/login"]);
   }
 
-  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map((result) => result.matches),
-    shareReplay(),
-  );
+  isHandset$: Observable<boolean> = this.breakpointObserver
+    .observe(Breakpoints.Handset)
+    .pipe(
+      map((result) => result.matches),
+      shareReplay(),
+    );
 }

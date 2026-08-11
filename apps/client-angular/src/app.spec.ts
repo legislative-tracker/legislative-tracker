@@ -1,12 +1,12 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
-import { signal } from '@angular/core';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { provideRouter } from "@angular/router";
+import { signal } from "@angular/core";
+import { describe, it, expect, beforeEach } from "vitest";
 
-import { App } from './app';
-import { ConfigService } from '@legislative-tracker/client-angular/core';
+import { App } from "./app";
+import { ConfigService } from "@legislative-tracker/client-angular/core";
 
-describe('App', () => {
+describe("App", () => {
   let component: App;
   let fixture: ComponentFixture<App>;
 
@@ -15,9 +15,9 @@ describe('App', () => {
   const mockConfigService = {
     config: signal({
       branding: {
-        logoUrl: 'assets/mock-logo.png',
-        primaryColor: '#000000',
-        faviconUrl: 'favicon.ico',
+        logoUrl: "assets/mock-logo.png",
+        primaryColor: "#000000",
+        faviconUrl: "favicon.ico",
       },
     }),
   };
@@ -39,16 +39,16 @@ describe('App', () => {
     fixture.detectChanges();
   });
 
-  it('should create the app', () => {
+  it("should create the app", () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize config property from ConfigService', () => {
+  it("should initialize config property from ConfigService", () => {
     // Access the protected property for testing purposes
     const appConfig = (component as any).config;
 
     // Verify it references the signal from the service
     expect(appConfig).toBeDefined();
-    expect(appConfig().branding.logoUrl).toBe('assets/mock-logo.png');
+    expect(appConfig().branding.logoUrl).toBe("assets/mock-logo.png");
   });
 });

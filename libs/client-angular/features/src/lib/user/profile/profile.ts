@@ -1,20 +1,33 @@
-import { Component, inject } from '@angular/core';
-import { FirebaseApp } from '@angular/fire/app'; // Lightweight import
-import { MatListModule } from '@angular/material/list';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTabsModule } from '@angular/material/tabs';
-import { DatePipe } from '@angular/common';
+import { Component, inject } from "@angular/core";
+import { FirebaseApp } from "@angular/fire/app"; // Lightweight import
+import { MatListModule } from "@angular/material/list";
+import { MatIconModule } from "@angular/material/icon";
+import { MatTabsModule } from "@angular/material/tabs";
+import { DatePipe } from "@angular/common";
 
 // App imports
-import { AuthService } from '@legislative-tracker/client-angular/core';
-import { AddressForm, TableComponent } from '@legislative-tracker/client-angular/ui';
-import { LEGISLATOR_COLS, SearchAddress } from '@legislative-tracker/shared/models';
+import { AuthService } from "@legislative-tracker/client-angular/core";
+import {
+  AddressForm,
+  TableComponent,
+} from "@legislative-tracker/client-angular/ui";
+import {
+  LEGISLATOR_COLS,
+  SearchAddress,
+} from "@legislative-tracker/shared/models";
 
 @Component({
-  selector: 'app-profile',
-  imports: [DatePipe, MatListModule, MatIconModule, AddressForm, MatTabsModule, TableComponent],
-  templateUrl: './profile.html',
-  styleUrl: './profile.scss',
+  selector: "app-profile",
+  imports: [
+    DatePipe,
+    MatListModule,
+    MatIconModule,
+    AddressForm,
+    MatTabsModule,
+    TableComponent,
+  ],
+  templateUrl: "./profile.html",
+  styleUrl: "./profile.scss",
 })
 export class Profile {
   private auth = inject(AuthService);
@@ -29,12 +42,13 @@ export class Profile {
     addressStr += `, ${e.city}, ${e.state} ${e.postalCode}`;
 
     try {
-      const { getFunctions, httpsCallable } = await import('@angular/fire/functions');
+      const { getFunctions, httpsCallable } =
+        await import("@angular/fire/functions");
 
       const functions = getFunctions(this.app);
-      const fetchUserReps = httpsCallable(functions, 'users-fetchUserReps');
+      const fetchUserReps = httpsCallable(functions, "users-fetchUserReps");
       const result = await fetchUserReps({ address: addressStr });
-      alert('Success!');
+      alert("Success!");
     } catch (error) {
       alert(error);
     }

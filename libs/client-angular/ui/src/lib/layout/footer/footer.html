@@ -1,9 +1,12 @@
 <footer class="app-footer">
   <div class="content">
     <div class="section left">
-      <span class="copyright">&copy; {{ currentYear() }} Legislative Tracker</span>
+      <span class="copyright"
+        >&copy; {{ currentYear() }} Legislative Tracker</span
+      >
       <span class="attribution"
-        >Data via <a href="https://openstates.org" target="_blank">OpenStates</a> &
+        >Data via
+        <a href="https://openstates.org" target="_blank">OpenStates</a> &
         <a href="https://legislation.nysenate.gov/public" target="_blank"
           >NY OpenLegislation</a
         ></span
@@ -17,7 +20,9 @@
     </div>
 
     <div class="section right">
-      <span class="version" title="Build: {{ buildTimestamp() }}"> v{{ appVersion() }} </span>
+      <span class="version" title="Build: {{ buildTimestamp() }}">
+        v{{ appVersion() }}
+      </span>
     </div>
   </div>
 </footer>

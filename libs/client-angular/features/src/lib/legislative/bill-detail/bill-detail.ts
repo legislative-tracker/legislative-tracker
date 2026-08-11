@@ -1,19 +1,19 @@
-import { Component, input, inject, computed } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { Component, input, inject, computed } from "@angular/core";
+import { rxResource } from "@angular/core/rxjs-interop";
+import { MatTabsModule } from "@angular/material/tabs";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 // App Imports
-import { LegislatureService } from '@legislative-tracker/client-angular/core';
-import { TableComponent } from '@legislative-tracker/client-angular/ui';
-import { COSPONSOR_COLS } from '@legislative-tracker/shared/models';
-import { Legislation } from '@legislative-tracker/shared/models';
+import { LegislatureService } from "@legislative-tracker/client-angular/core";
+import { TableComponent } from "@legislative-tracker/client-angular/ui";
+import { COSPONSOR_COLS } from "@legislative-tracker/shared/models";
+import { Legislation } from "@legislative-tracker/shared/models";
 
 @Component({
-  selector: 'app-bill-detail',
+  selector: "app-bill-detail",
   imports: [MatTabsModule, TableComponent, MatProgressSpinnerModule],
-  templateUrl: './bill-detail.html',
-  styleUrls: ['./bill-detail.scss'],
+  templateUrl: "./bill-detail.html",
+  styleUrls: ["./bill-detail.scss"],
 })
 export class BillDetail {
   stateCd = input.required<string>(); // two-letter region abbreviation
@@ -25,7 +25,8 @@ export class BillDetail {
   // Single dedicated resource for this bill
   billResource = rxResource({
     params: () => ({ state: this.stateCd(), id: this.id() }),
-    stream: ({ params }) => this.legislatureService.getBillById(params.state, params.id),
+    stream: ({ params }) =>
+      this.legislatureService.getBillById(params.state, params.id),
   });
 
   bill = computed(() => this.billResource.value() as Legislation | undefined);

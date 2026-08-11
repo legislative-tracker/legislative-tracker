@@ -1,4 +1,4 @@
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 
 // Keep your base setup, it acts as a fallback before JS loads
 html {
@@ -16,7 +16,7 @@ html {
 }
 
 body {
-  color-scheme: 'light dark';
+  color-scheme: "light dark";
   // Ensure we use the system variables that our Service updates
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);

@@ -1,9 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { describe, it, expect, beforeEach } from "vitest";
 
-import { NotFound } from './not-found';
+import { NotFound } from "./not-found";
 
-describe('NotFound', () => {
+describe("NotFound", () => {
   let component: NotFound;
   let fixture: ComponentFixture<NotFound>;
 
@@ -17,11 +17,11 @@ describe('NotFound', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render', () => {
+  it("should render", () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled).toBeTruthy();
   });

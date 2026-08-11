@@ -1,15 +1,18 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
-import { FirebaseApp } from '@angular/fire/app';
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { Component, signal } from "@angular/core";
+import { DatePipe } from "@angular/common";
+import { FirebaseApp } from "@angular/fire/app";
+import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 
 // Target Component
-import { Profile } from './profile';
+import { Profile } from "./profile";
 
 // Dependencies
-import { AuthService } from '@legislative-tracker/client-angular/core';
-import { AddressForm, TableComponent } from '@legislative-tracker/client-angular/ui';
+import { AuthService } from "@legislative-tracker/client-angular/core";
+import {
+  AddressForm,
+  TableComponent,
+} from "@legislative-tracker/client-angular/ui";
 
 // -------------------------------------------------------------------------
 // Mock Dynamic Imports & Firebase Functions
@@ -18,7 +21,7 @@ const mockCallableFunction = vi.fn();
 const mockHttpsCallable = vi.fn().mockReturnValue(mockCallableFunction);
 const mockGetFunctions = vi.fn().mockReturnValue({});
 
-vi.mock('@angular/fire/functions', () => ({
+vi.mock("@angular/fire/functions", () => ({
   getFunctions: (...args: any[]) => mockGetFunctions(...args),
   httpsCallable: (...args: any[]) => mockHttpsCallable(...args),
 }));
@@ -26,33 +29,38 @@ vi.mock('@angular/fire/functions', () => ({
 // -------------------------------------------------------------------------
 // Mock Child Components
 // -------------------------------------------------------------------------
-@Component({ selector: 'app-address-form', template: '', standalone: true, inputs: ['formType'] })
+@Component({
+  selector: "app-address-form",
+  template: "",
+  standalone: true,
+  inputs: ["formType"],
+})
 class MockAddressForm {}
 
 @Component({
-  selector: 'app-table',
-  template: '',
+  selector: "app-table",
+  template: "",
   standalone: true,
-  inputs: ['dataSource', 'columnSource', 'routeType', 'stateCd'],
+  inputs: ["dataSource", "columnSource", "routeType", "stateCd"],
 })
 class MockTableComponent {}
 
-describe('Profile', () => {
+describe("Profile", () => {
   let component: Profile;
   let fixture: ComponentFixture<Profile>;
 
   // Helper to simulate a Firestore Timestamp
   const mockTimestamp = {
-    toDate: () => new Date('2024-01-01'),
+    toDate: () => new Date("2024-01-01"),
     toMillis: () => 1704067200000,
   };
 
   // Mock Services
   const mockAuthService = {
     userProfile: signal({
-      displayName: 'Test User',
-      email: 'test@example.com',
-      photoURL: 'https://example.com/photo.jpg',
+      displayName: "Test User",
+      email: "test@example.com",
+      photoURL: "https://example.com/photo.jpg",
 
       // Matches {{ u['lastLogin'].toDate() }} in profile.html
       lastLogin: mockTimestamp,
@@ -62,7 +70,7 @@ describe('Profile', () => {
     }),
   };
 
-  const mockFirebaseApp = { name: '[DEFAULT]' };
+  const mockFirebaseApp = { name: "[DEFAULT]" };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -82,7 +90,7 @@ describe('Profile', () => {
     fixture = TestBed.createComponent(Profile);
     component = fixture.componentInstance;
 
-    vi.spyOn(window, 'alert').mockImplementation(() => {});
+    vi.spyOn(window, "alert").mockImplementation(() => {});
 
     fixture.detectChanges();
   });
@@ -91,65 +99,68 @@ describe('Profile', () => {
     vi.clearAllMocks();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize user data from AuthService', () => {
-    expect(component.user()?.displayName).toBe('Test User');
-    expect(component.user()?.email).toBe('test@example.com');
+  it("should initialize user data from AuthService", () => {
+    expect(component.user()?.displayName).toBe("Test User");
+    expect(component.user()?.email).toBe("test@example.com");
   });
 
-  describe('searchAddress', () => {
-    it('should construct address string and call cloud function successfully', async () => {
+  describe("searchAddress", () => {
+    it("should construct address string and call cloud function successfully", async () => {
       mockCallableFunction.mockResolvedValue({ data: { success: true } });
 
       const searchData = {
-        address: '123 Main St',
-        address2: 'Apt 4B',
-        city: 'Albany',
-        state: 'NY',
+        address: "123 Main St",
+        address2: "Apt 4B",
+        city: "Albany",
+        state: "NY",
         postalCode: 12201,
       };
 
       await component.searchAddress(searchData);
 
       expect(mockGetFunctions).toHaveBeenCalledWith(mockFirebaseApp);
-      expect(mockHttpsCallable).toHaveBeenCalledWith(expect.anything(), 'users-fetchUserReps');
+      expect(mockHttpsCallable).toHaveBeenCalledWith(
+        expect.anything(),
+        "users-fetchUserReps",
+      );
 
       expect(mockCallableFunction).toHaveBeenCalledWith({
-        address: '123 Main St, Apt 4B, Albany, NY 12201',
+        address: "123 Main St, Apt 4B, Albany, NY 12201",
       });
 
-      expect(window.alert).toHaveBeenCalledWith('Success!');
+      expect(window.alert).toHaveBeenCalledWith("Success!");
     });
 
-    it('should format address correctly without address2', async () => {
+    it("should format address correctly without address2", async () => {
       mockCallableFunction.mockResolvedValue({});
 
       const searchData = {
-        address: '123 Main St',
-        city: 'Albany',
-        state: 'NY',
-        postalCode: '12201',
+        address: "123 Main St",
+        city: "Albany",
+        state: "NY",
+        postalCode: "12201",
       } as any;
 
       await component.searchAddress(searchData);
 
       expect(mockCallableFunction).toHaveBeenCalledWith({
-        address: '123 Main St, Albany, NY 12201',
+        address: "123 Main St, Albany, NY 12201",
       });
     });
 
-    it('should handle errors thrown by the cloud function', async () => {
-      const errorObj = new Error('Cloud function failed');
+    it("should handle errors thrown by the cloud function", async () => {
+      const errorObj = new Error("Cloud function failed");
       mockCallableFunction.mockRejectedValue(errorObj);
 
       const searchData = {
-        address: '123 Main St',
-        city: 'A',
-        state: 'NY',
-        postalCode: '12345',
+        address: "123 Main St",
+        city: "A",
+        state: "NY",
+        postalCode: "12345",
       } as any;
 
       await component.searchAddress(searchData);

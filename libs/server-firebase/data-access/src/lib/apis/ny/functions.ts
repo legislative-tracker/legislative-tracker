@@ -2,7 +2,11 @@ import got from "got";
 import * as api from "@jpstroud/nys-openlegislation-types";
 import { defineSecret } from "firebase-functions/params";
 
-import {  Legislator, Legislation, Cosponsor  } from "@legislative-tracker/shared/models";
+import {
+  Legislator,
+  Legislation,
+  Cosponsor,
+} from "@legislative-tracker/shared/models";
 import {
   JurisdictionStub,
   OrganizationStub,
@@ -59,7 +63,7 @@ export const updateMembers = async (): Promise<Partial<Legislator>[]> => {
     if (isSuccess<api.FullMember[]>(res)) {
       if (isItemsResponse<api.FullMember>(res.result)) {
         const legislators: Partial<Legislator>[] = res.result.items.map(
-          (m: api.FullMember) => mapAPIMemberToLegislator(m)
+          (m: api.FullMember) => mapAPIMemberToLegislator(m),
         );
         return legislators;
       } else {
@@ -94,14 +98,14 @@ export const updateBills = async (billList: string[]) => {
       const instance = got.extend(options);
       try {
         const res = await instance<any>(
-          `bills/${billParts.pop()}/${billParts.pop()}`
+          `bills/${billParts.pop()}/${billParts.pop()}`,
         );
         if (isSuccess<api.Bill>(res)) {
           if (!isItemsResponse<api.Bill>(res.result)) {
             return mapAPIBillToLegislation(res.result);
           } else {
             throw new Error(
-              "Expected single bill, but received items response."
+              "Expected single bill, but received items response.",
             );
           }
         } else {
@@ -111,7 +115,7 @@ export const updateBills = async (billList: string[]) => {
         console.error(`Error fetching bill ${bill}:`, error);
         throw error;
       }
-    })
+    }),
   );
 };
 
@@ -209,7 +213,7 @@ const mapCosponsorsToSponsorships = (b: api.Bill) => {
       entity_type: "person" as const,
       primary: false,
       classification: "cosponsor",
-    })
+    }),
   );
 };
 
@@ -227,7 +231,7 @@ const getCosponsors = (b: api.Bill): { [key: string]: Cosponsor[] } => {
           name: c.fullName,
           chamber: c.chamber,
           district: `${c.districtCode}`,
-        })
+        }),
       );
     }
     cosponsorsByVersion[v === "" ? "Original" : v] = cosponsors;

@@ -1,6 +1,6 @@
-import { Person as PopoloPerson, Motion as PopoloMotion } from 'popolo-types';
+import { Person as PopoloPerson, Motion as PopoloMotion } from "popolo-types";
 
-export interface Legislator extends Omit<Partial<PopoloPerson>, 'gender'> {
+export interface Legislator extends Omit<Partial<PopoloPerson>, "gender"> {
   id: string;
   name: string;
   honorific_prefix?: string;
@@ -25,7 +25,10 @@ export interface Legislator extends Omit<Partial<PopoloPerson>, 'gender'> {
   updated_at?: string;
 }
 
-export interface Legislation extends Omit<Partial<PopoloMotion>, 'classification' | 'identifier'> {
+export interface Legislation extends Omit<
+  Partial<PopoloMotion>,
+  "classification" | "identifier"
+> {
   id: string;
   title?: string;
   version?: string;

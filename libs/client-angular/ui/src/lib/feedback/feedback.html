@@ -3,7 +3,8 @@
 <mat-dialog-content>
   <p class="subtitle">
     Found a bug or have an idea? Let us know by filling out this form OR
-    <a href="https://github.com/legislative-tracker/reimagined-parakeet/issues/new/choose"
+    <a
+      href="https://github.com/legislative-tracker/reimagined-parakeet/issues/new/choose"
       >submitting an issue on GitHub</a
     >.
   </p>
@@ -13,18 +14,22 @@
       <mat-label>Feedback Type</mat-label>
       <mat-select formControlName="type">
         @for (type of issueTypes; track type.value) {
-          <mat-option [value]="type.value">
-            <mat-icon>{{ type.icon }}</mat-icon> {{ type.label }}
-          </mat-option>
+        <mat-option [value]="type.value">
+          <mat-icon>{{ type.icon }}</mat-icon> {{ type.label }}
+        </mat-option>
         }
       </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Title</mat-label>
-      <input matInput formControlName="title" placeholder="Summary of the issue" />
+      <input
+        matInput
+        formControlName="title"
+        placeholder="Summary of the issue"
+      />
       @if (form.get('title')?.hasError('required')) {
-        <mat-error>Required</mat-error>
+      <mat-error>Required</mat-error>
       }
     </mat-form-field>
 
@@ -32,7 +37,7 @@
       <mat-label>Description</mat-label>
       <textarea matInput formControlName="description" rows="5"></textarea>
       @if (form.get('description')?.hasError('required')) {
-        <mat-error>Required</mat-error>
+      <mat-error>Required</mat-error>
       }
     </mat-form-field>
   </form>
@@ -47,10 +52,6 @@
     (click)="onSubmit()"
     [disabled]="form.invalid || isSubmitting()"
   >
-    @if (isSubmitting()) {
-      Sending...
-    } @else {
-      Submit
-    }
+    @if (isSubmitting()) { Sending... } @else { Submit }
   </button>
 </mat-dialog-actions>

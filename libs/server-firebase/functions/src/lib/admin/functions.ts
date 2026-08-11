@@ -8,7 +8,7 @@ export const addAdminRole = onCall(async (request) => {
   if (request.auth?.token.admin !== true) {
     throw new HttpsError(
       "permission-denied",
-      "Only admins can promote other users."
+      "Only admins can promote other users.",
     );
   }
 

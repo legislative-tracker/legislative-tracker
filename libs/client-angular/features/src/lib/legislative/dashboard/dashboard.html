@@ -1,13 +1,12 @@
 <div class="dashboard-container">
   @if (isLoading()) {
-    <div class="loading-shade">
-      <mat-spinner diameter="50"></mat-spinner>
-    </div>
-  }
-  @if (error()) {
-    <div class="error-container">
-      <p>Unable to load legislative data.</p>
-    </div>
+  <div class="loading-shade">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+  } @if (error()) {
+  <div class="error-container">
+    <p>Unable to load legislative data.</p>
+  </div>
   }
 
   <mat-tab-group

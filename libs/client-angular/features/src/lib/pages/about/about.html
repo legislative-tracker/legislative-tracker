@@ -2,8 +2,14 @@
   <header class="about-header">
     <h1 class="mat-headline-large">About the Legislative Tracker</h1>
     <p class="mat-body-large subtitle">
-      The Legislative Tracker assists in tracking sponsorship for bills supported by
-      <a class="inline-link" [href]="orgUrl()" target="_blank" rel="noopener noreferrer">
+      The Legislative Tracker assists in tracking sponsorship for bills
+      supported by
+      <a
+        class="inline-link"
+        [href]="orgUrl()"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         {{ orgName() }} </a
       >.
     </p>
@@ -14,17 +20,17 @@
 
     <div class="details-grid">
       @for (detail of details(); track detail.title) {
-        <mat-card appearance="outlined" class="detail-card">
-          <mat-card-header>
-            <div mat-card-avatar class="detail-icon-container">
-              <mat-icon>{{ detail.icon }}</mat-icon>
-            </div>
-            <mat-card-title>{{ detail.title }}</mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <p>{{ detail.content }}</p>
-          </mat-card-content>
-        </mat-card>
+      <mat-card appearance="outlined" class="detail-card">
+        <mat-card-header>
+          <div mat-card-avatar class="detail-icon-container">
+            <mat-icon>{{ detail.icon }}</mat-icon>
+          </div>
+          <mat-card-title>{{ detail.title }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ detail.content }}</p>
+        </mat-card-content>
+      </mat-card>
       }
     </div>
   </section>
@@ -36,12 +42,17 @@
 
     <mat-nav-list>
       @for (resource of resources(); track resource.url) {
-        <a mat-list-item [href]="resource.url" target="_blank" rel="noopener noreferrer">
-          <mat-icon matListItemIcon>{{ resource.icon }}</mat-icon>
-          <span matListItemTitle>{{ resource.title }}</span>
-          <span matListItemLine>{{ resource.description }}</span>
-          <mat-icon matListItemMeta>open_in_new</mat-icon>
-        </a>
+      <a
+        mat-list-item
+        [href]="resource.url"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <mat-icon matListItemIcon>{{ resource.icon }}</mat-icon>
+        <span matListItemTitle>{{ resource.title }}</span>
+        <span matListItemLine>{{ resource.description }}</span>
+        <mat-icon matListItemMeta>open_in_new</mat-icon>
+      </a>
       }
     </mat-nav-list>
 

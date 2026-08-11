@@ -1,11 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { provideRouter } from '@angular/router';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { provideRouter } from "@angular/router";
 
-import { Footer } from './footer';
-import { UiService } from '@legislative-tracker/client-angular/core';
+import { Footer } from "./footer";
+import { UiService } from "@legislative-tracker/client-angular/core";
 
-describe('Footer', () => {
+describe("Footer", () => {
   let component: Footer;
   let fixture: ComponentFixture<Footer>;
 
@@ -31,11 +31,11 @@ describe('Footer', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize signals with correct defaults', () => {
+  it("should initialize signals with correct defaults", () => {
     const currentYear = new Date().getFullYear();
 
     // Verify the signals hold data (version/date come from imports)
@@ -44,7 +44,7 @@ describe('Footer', () => {
     expect(component.buildTimestamp()).toBeDefined();
   });
 
-  it('should open feedback dialog when requested', () => {
+  it("should open feedback dialog when requested", () => {
     // Trigger the method
     component.openFeedback();
 

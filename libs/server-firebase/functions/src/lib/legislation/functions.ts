@@ -3,7 +3,11 @@ import { onSchedule } from "firebase-functions/v2/scheduler";
 import * as logger from "firebase-functions/logger";
 
 // App imports
-import { db, getBillUpdates, nySenateKey } from "@legislative-tracker/server-firebase/data-access";
+import {
+  db,
+  getBillUpdates,
+  nySenateKey,
+} from "@legislative-tracker/server-firebase/data-access";
 import { performLegislationUpdate } from "./service";
 
 /**
@@ -13,7 +17,7 @@ export const addBill = onCall({ secrets: [nySenateKey] }, async (request) => {
   if (request.auth?.token.admin !== true) {
     throw new HttpsError(
       "permission-denied",
-      "Only admins can add legislation."
+      "Only admins can add legislation.",
     );
   }
 
@@ -32,7 +36,7 @@ export const addBill = onCall({ secrets: [nySenateKey] }, async (request) => {
 
     try {
       logger.info(
-        `Attempting to fetch details for ${bill.id} from ${state}...`
+        `Attempting to fetch details for ${bill.id} from ${state}...`,
       );
 
       const updates = await getBillUpdates({ id: state, bills: [bill.id] });
@@ -50,7 +54,7 @@ export const addBill = onCall({ secrets: [nySenateKey] }, async (request) => {
       }
     } catch (apiError) {
       logger.warn(
-        `Bill added, but failed to fetch remote details: ${apiError}`
+        `Bill added, but failed to fetch remote details: ${apiError}`,
       );
 
       return {
@@ -74,7 +78,7 @@ export const removeBill = onCall(async (request) => {
   if (request.auth?.token.admin !== true) {
     throw new HttpsError(
       "permission-denied",
-      "Only admins can delete legislation."
+      "Only admins can delete legislation.",
     );
   }
   const { state, billId } = request.data;
@@ -106,7 +110,7 @@ export const nightlyUpdate = onSchedule(
     logger.info("🌙 Starting nightly legislation update...");
     await performLegislationUpdate();
     logger.info("✅ Nightly update finished.");
-  }
+  },
 );
 
 /**
@@ -126,5 +130,5 @@ export const manualUpdate = onRequest(
       logger.error("HTTP Update Failed", error);
       response.status(500).send({ error: error });
     }
-  }
+  },
 );

@@ -1,7 +1,10 @@
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-import { openStatesKey, nySenateKey } from "@legislative-tracker/server-firebase/data-access";
+import {
+  openStatesKey,
+  nySenateKey,
+} from "@legislative-tracker/server-firebase/data-access";
 import { updateLegislators } from "./service";
 
 export const manualUpdate = onRequest(
@@ -20,7 +23,7 @@ export const manualUpdate = onRequest(
       const msg = error instanceof Error ? error.message : "Unknown error";
       response.status(500).send({ error: msg });
     }
-  }
+  },
 );
 
 export const monthlyUpdate = onSchedule(
@@ -40,5 +43,5 @@ export const monthlyUpdate = onSchedule(
     } catch (error) {
       logger.error("❌ Monthly update failed.", error);
     }
-  }
+  },
 );
