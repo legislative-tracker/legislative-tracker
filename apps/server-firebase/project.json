@@ -6,14 +6,26 @@
   "tags": ["type:app", "domain:server"],
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/dist/apps/server-firebase"],
       "options": {
-        "outputPath": "dist/apps/server-firebase",
-        "main": "apps/server-firebase/src/index.ts",
-        "tsConfig": "apps/server-firebase/tsconfig.app.json",
-        "rootDir": ".",
-        "assets": ["apps/server-firebase/package.json"]
+        "commands": [
+          "mkdir -p dist/apps/server-firebase",
+          "cp apps/server-firebase/package.json dist/apps/server-firebase/",
+          "npx esbuild apps/server-firebase/src/index.ts --bundle --platform=node --target=node22 --packages=external --outfile=dist/apps/server-firebase/index.js"
+        ],
+        "parallel": false
+      }
+    },
+    "serve": {
+      "dependsOn": ["build"],
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "npx esbuild apps/server-firebase/src/index.ts --bundle --platform=node --target=node22 --packages=external --outfile=dist/apps/server-firebase/index.js --watch",
+          "firebase emulators:start --only functions,pubsub,firestore"
+        ],
+        "parallel": true
       }
     },
     "lint": {
