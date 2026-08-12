@@ -23,9 +23,15 @@
       "options": {
         "commands": [
           "npx esbuild apps/server-firebase/src/index.ts --bundle --platform=node --target=node22 --packages=external --outfile=dist/apps/server-firebase/index.js --watch",
-          "firebase emulators:start --only functions,pubsub,firestore,auth"
+          "fuser -k 8085/tcp 8080/tcp 9099/tcp 5001/tcp || true; firebase emulators:start --only functions,pubsub,firestore,auth --import=./emulator_data --export-on-exit=./emulator_data"
         ],
         "parallel": true
+      }
+    },
+    "export": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "firebase emulators:export ./emulator_data --force"
       }
     },
     "lint": {
