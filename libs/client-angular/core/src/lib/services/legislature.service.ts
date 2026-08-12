@@ -1,5 +1,6 @@
 import { Injectable, inject } from "@angular/core";
 import { FirebaseApp } from "@angular/fire/app";
+import { Functions, httpsCallable } from "@angular/fire/functions";
 import { Observable, from } from "rxjs";
 import { switchMap, map } from "rxjs/operators";
 
@@ -9,6 +10,7 @@ import { Legislation, Legislator } from "@legislative-tracker/shared/models";
 @Injectable({ providedIn: "root" })
 export class LegislatureService {
   private app = inject(FirebaseApp);
+  private functions = inject(Functions);
 
   // provides a db path string for the 'get' functions
   private getPaths = (stateCd: string): { bills: string; members: string } => {
@@ -84,12 +86,7 @@ export class LegislatureService {
 
   //ADMIN FUNCTIONS
   async addBill(state: string, billData: Legislation) {
-    // Lazy load Functions SDK
-    const { getFunctions, httpsCallable } =
-      await import("@angular/fire/functions");
-    const functions = getFunctions(this.app);
-
-    const addBillFn = httpsCallable(functions, "legislation-addBill");
+    const addBillFn = httpsCallable(this.functions, "legislation-addBill");
 
     try {
       const result = await addBillFn({ state, bill: billData });
@@ -102,11 +99,7 @@ export class LegislatureService {
   }
 
   async removeBill(state: string, billId: string) {
-    const { getFunctions, httpsCallable } =
-      await import("@angular/fire/functions");
-    const functions = getFunctions(this.app);
-
-    const removeBillFn = httpsCallable(functions, "legislation-removeBill");
+    const removeBillFn = httpsCallable(this.functions, "legislation-removeBill");
 
     try {
       const result = await removeBillFn({ state, billId });

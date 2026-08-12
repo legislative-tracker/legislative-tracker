@@ -1,5 +1,6 @@
 import { TestBed } from "@angular/core/testing";
 import { FirebaseApp } from "@angular/fire/app";
+import { Functions } from "@angular/fire/functions";
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 
 import { UserManagementService } from "./user-management.service";
@@ -10,8 +11,8 @@ import { UserManagementService } from "./user-management.service";
 const mockHttpsCallable = vi.fn();
 const mockGetFunctions = vi.fn();
 
-// This intercepts "await import('@angular/fire/functions')"
 vi.mock("@angular/fire/functions", () => ({
+  Functions: class {},
   getFunctions: (...args: any[]) => mockGetFunctions(...args),
   httpsCallable: (...args: any[]) => mockHttpsCallable(...args),
 }));
@@ -19,6 +20,7 @@ vi.mock("@angular/fire/functions", () => ({
 describe("UserManagementService", () => {
   let service: UserManagementService;
   const mockFirebaseApp = { name: "[DEFAULT]" };
+  const mockFunctions = {};
 
   beforeEach(() => {
     // Reset spies before every test
@@ -28,6 +30,7 @@ describe("UserManagementService", () => {
       providers: [
         UserManagementService,
         { provide: FirebaseApp, useValue: mockFirebaseApp },
+        { provide: Functions, useValue: mockFunctions },
       ],
     });
 
@@ -58,10 +61,9 @@ describe("UserManagementService", () => {
       const email = "test@example.com";
       const result = await service.grantAdminPrivileges(email);
 
-      // Verify Lazy Loading & Setup
-      expect(mockGetFunctions).toHaveBeenCalledWith(mockFirebaseApp);
+      // Verify Setup
       expect(mockHttpsCallable).toHaveBeenCalledWith(
-        undefined,
+        mockFunctions,
         "admin-addAdminRole",
       );
 
@@ -103,7 +105,7 @@ describe("UserManagementService", () => {
 
       // Verify Setup
       expect(mockHttpsCallable).toHaveBeenCalledWith(
-        undefined,
+        mockFunctions,
         "admin-removeAdminRole",
       );
 

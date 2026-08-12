@@ -10,18 +10,21 @@ import {
   withRouterConfig,
 } from "@angular/router";
 import { initializeApp, provideFirebaseApp } from "@angular/fire/app";
-import { connectAuthEmulator, getAuth, provideAuth } from "@angular/fire/auth";
+import { Auth, connectAuthEmulator, getAuth, provideAuth } from "@angular/fire/auth";
 import {
+  Firestore,
   connectFirestoreEmulator,
   getFirestore,
   provideFirestore,
 } from "@angular/fire/firestore";
 import {
+  Functions,
   connectFunctionsEmulator,
   getFunctions,
   provideFunctions,
 } from "@angular/fire/functions";
 import {
+  Storage,
   connectStorageEmulator,
   getStorage,
   provideStorage,
@@ -115,7 +118,17 @@ export const getAppConfig = (
       ScreenTrackingService,
       UserTrackingService,
 
-      provideAppInitializer(() => inject(ConfigService).load()),
+      provideAppInitializer(() => {
+        const configService = inject(ConfigService);
+        const config = inject(APP_CONFIG);
+        if (config.useEmulators) {
+          inject(Auth);
+          inject(Firestore);
+          inject(Functions);
+          inject(Storage);
+        }
+        return configService.load();
+      }),
     ],
   };
 };

@@ -1,5 +1,6 @@
 import { TestBed } from "@angular/core/testing";
 import { FirebaseApp } from "@angular/fire/app";
+import { Functions } from "@angular/fire/functions";
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 
 import { FeedbackService } from "./feedback.service";
@@ -10,8 +11,8 @@ import { FeedbackService } from "./feedback.service";
 const mockHttpsCallable = vi.fn();
 const mockGetFunctions = vi.fn();
 
-// Intercept the dynamic "await import(...)" call
 vi.mock("@angular/fire/functions", () => ({
+  Functions: class {},
   getFunctions: (...args: any[]) => mockGetFunctions(...args),
   httpsCallable: (...args: any[]) => mockHttpsCallable(...args),
 }));
@@ -19,12 +20,14 @@ vi.mock("@angular/fire/functions", () => ({
 describe("FeedbackService", () => {
   let service: FeedbackService;
   const mockFirebaseApp = { name: "[DEFAULT]" };
+  const mockFunctions = {};
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         FeedbackService,
         { provide: FirebaseApp, useValue: mockFirebaseApp },
+        { provide: Functions, useValue: mockFunctions },
       ],
     });
     service = TestBed.inject(FeedbackService);
@@ -53,10 +56,9 @@ describe("FeedbackService", () => {
       // Call the service method
       const result = await service.sendFeedback(title, body);
 
-      // Verify Lazy Loading & Setup
-      expect(mockGetFunctions).toHaveBeenCalledWith(mockFirebaseApp);
+      // Verify Setup
       expect(mockHttpsCallable).toHaveBeenCalledWith(
-        undefined,
+        mockFunctions,
         "submitAnonymousIssue",
       );
 

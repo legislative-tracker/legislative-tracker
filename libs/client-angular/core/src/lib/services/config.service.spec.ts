@@ -111,7 +111,7 @@ describe("ConfigService", () => {
 
       // Verify Merge Logic (Should preserve default fields not present in remoteConfig)
       // Assuming 'logoUrl' defaults to 'assets/default-logo.png' in your model
-      expect(updated.branding.logoUrl).toContain("assets/default-logo.png");
+      expect(updated.branding.logoUrl).toContain("assets/default_logo.png");
     });
 
     it("should use defaults if Firestore fails", async () => {

@@ -1,5 +1,6 @@
 import { TestBed } from "@angular/core/testing";
 import { FirebaseApp } from "@angular/fire/app";
+import { Functions } from "@angular/fire/functions";
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { of } from "rxjs";
 
@@ -29,6 +30,7 @@ const mockHttpsCallable = vi.fn();
 const mockGetFunctions = vi.fn();
 
 vi.mock("@angular/fire/functions", () => ({
+  Functions: class {},
   getFunctions: (...args: any[]) => mockGetFunctions(...args),
   httpsCallable: (...args: any[]) => mockHttpsCallable(...args),
 }));
@@ -36,12 +38,14 @@ vi.mock("@angular/fire/functions", () => ({
 describe("LegislatureService", () => {
   let service: LegislatureService;
   const mockFirebaseApp = { name: "[DEFAULT]" };
+  const mockFunctions = {};
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         LegislatureService,
         { provide: FirebaseApp, useValue: mockFirebaseApp },
+        { provide: Functions, useValue: mockFunctions },
       ],
     });
     service = TestBed.inject(LegislatureService);
@@ -154,9 +158,8 @@ describe("LegislatureService", () => {
 
       const result = await service.addBill("ny", billData);
 
-      expect(mockGetFunctions).toHaveBeenCalledWith(mockFirebaseApp);
       expect(mockHttpsCallable).toHaveBeenCalledWith(
-        undefined,
+        mockFunctions,
         "legislation-addBill",
       );
       expect(callableFn).toHaveBeenCalledWith({ state: "ny", bill: billData });
@@ -170,7 +173,7 @@ describe("LegislatureService", () => {
       await service.removeBill("ny", "123");
 
       expect(mockHttpsCallable).toHaveBeenCalledWith(
-        undefined,
+        mockFunctions,
         "legislation-removeBill",
       );
       expect(callableFn).toHaveBeenCalledWith({ state: "ny", billId: "123" });

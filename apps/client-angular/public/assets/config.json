@@ -3,27 +3,27 @@
   "useEmulators": true,
   "emulatorHosts": {
     "auth": {
-      "host": "127.0.0.1",
+      "host": "localhost",
       "port": 9099
     },
     "firestore": {
-      "host": "127.0.0.1",
+      "host": "localhost",
       "port": 8080
     },
     "functions": {
-      "host": "127.0.0.1",
+      "host": "localhost",
       "port": 5001
     },
     "pubsub": {
-      "host": "127.0.0.1",
+      "host": "localhost",
       "port": 8085
     },
     "pub/sub": {
-      "host": "127.0.0.1",
+      "host": "localhost",
       "port": 8085
     },
     "storage": {
-      "host": "127.0.0.1",
+      "host": "localhost",
       "port": 9199
     }
   },

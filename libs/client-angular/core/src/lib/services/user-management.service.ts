@@ -1,18 +1,14 @@
 import { Injectable, inject } from "@angular/core";
-import { FirebaseApp } from "@angular/fire/app";
+import { Functions, httpsCallable } from "@angular/fire/functions";
 
 @Injectable({
   providedIn: "root",
 })
 export class UserManagementService {
-  private app = inject(FirebaseApp);
+  private functions = inject(Functions);
 
   async grantAdminPrivileges(email: string) {
-    const { getFunctions, httpsCallable } =
-      await import("@angular/fire/functions");
-
-    const functions = getFunctions(this.app);
-    const addAdminRole = httpsCallable(functions, "admin-addAdminRole");
+    const addAdminRole = httpsCallable(this.functions, "admin-addAdminRole");
     try {
       const result = await addAdminRole({ email });
       console.log("Promotion successful:", result.data);
@@ -24,11 +20,7 @@ export class UserManagementService {
   }
 
   async revokeAdminPrivileges(email: string) {
-    const { getFunctions, httpsCallable } =
-      await import("@angular/fire/functions");
-
-    const functions = getFunctions(this.app);
-    const removeAdminRole = httpsCallable(functions, "admin-removeAdminRole");
+    const removeAdminRole = httpsCallable(this.functions, "admin-removeAdminRole");
     try {
       const result = await removeAdminRole({ email });
       console.log("Demotion successful:", result.data);
