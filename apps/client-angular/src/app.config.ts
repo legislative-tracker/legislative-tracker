@@ -22,6 +22,11 @@ import {
   provideFunctions,
 } from "@angular/fire/functions";
 import {
+  connectStorageEmulator,
+  getStorage,
+  provideStorage,
+} from "@angular/fire/storage";
+import {
   getAnalytics,
   provideAnalytics,
   ScreenTrackingService,
@@ -35,8 +40,11 @@ import {
   ConfigService,
 } from "@legislative-tracker/client-angular/core";
 import { routes } from "./app.routes";
+import configJson from "../public/assets/config.json";
 
-export const getAppConfig = (runtimeConfig: AppConfig): ApplicationConfig => {
+export const getAppConfig = (
+  runtimeConfig: AppConfig = configJson as AppConfig,
+): ApplicationConfig => {
   return {
     providers: [
       { provide: APP_CONFIG, useValue: runtimeConfig },
@@ -54,11 +62,11 @@ export const getAppConfig = (runtimeConfig: AppConfig): ApplicationConfig => {
       provideAuth(() => {
         const auth = getAuth();
         const config = inject(APP_CONFIG);
-        if (config.useEmulators) {
-          const authHost = config.emulatorHosts?.auth;
+        if (config.useEmulators && config.emulatorHosts?.auth) {
+          const authHost = config.emulatorHosts.auth;
           connectAuthEmulator(
             auth,
-            `http://${authHost?.host ?? "127.0.0.1"}:${authHost?.port ?? 9099}`,
+            `http://${authHost.host}:${authHost.port}`,
             { disableWarnings: true },
           );
         }
@@ -67,12 +75,12 @@ export const getAppConfig = (runtimeConfig: AppConfig): ApplicationConfig => {
       provideFirestore(() => {
         const firestore = getFirestore();
         const config = inject(APP_CONFIG);
-        if (config.useEmulators) {
-          const fsHost = config.emulatorHosts?.firestore;
+        if (config.useEmulators && config.emulatorHosts?.firestore) {
+          const fsHost = config.emulatorHosts.firestore;
           connectFirestoreEmulator(
             firestore,
-            fsHost?.host ?? "127.0.0.1",
-            fsHost?.port ?? 8080,
+            fsHost.host,
+            fsHost.port,
           );
         }
         return firestore;
@@ -80,15 +88,28 @@ export const getAppConfig = (runtimeConfig: AppConfig): ApplicationConfig => {
       provideFunctions(() => {
         const functions = getFunctions();
         const config = inject(APP_CONFIG);
-        if (config.useEmulators) {
-          const fnHost = config.emulatorHosts?.functions;
+        if (config.useEmulators && config.emulatorHosts?.functions) {
+          const fnHost = config.emulatorHosts.functions;
           connectFunctionsEmulator(
             functions,
-            fnHost?.host ?? "127.0.0.1",
-            fnHost?.port ?? 5001,
+            fnHost.host,
+            fnHost.port,
           );
         }
         return functions;
+      }),
+      provideStorage(() => {
+        const storage = getStorage();
+        const config = inject(APP_CONFIG);
+        if (config.useEmulators && config.emulatorHosts?.storage) {
+          const stHost = config.emulatorHosts.storage;
+          connectStorageEmulator(
+            storage,
+            stHost.host,
+            stHost.port,
+          );
+        }
+        return storage;
       }),
       provideAnalytics(() => getAnalytics()),
       ScreenTrackingService,
@@ -98,3 +119,5 @@ export const getAppConfig = (runtimeConfig: AppConfig): ApplicationConfig => {
     ],
   };
 };
+
+export const appConfig: ApplicationConfig = getAppConfig(configJson as AppConfig);

@@ -1,0 +1,42 @@
+{
+  "production": false,
+  "useEmulators": true,
+  "emulatorHosts": {
+    "auth": {
+      "host": "127.0.0.1",
+      "port": 9099
+    },
+    "firestore": {
+      "host": "127.0.0.1",
+      "port": 8080
+    },
+    "functions": {
+      "host": "127.0.0.1",
+      "port": 5001
+    },
+    "pubsub": {
+      "host": "127.0.0.1",
+      "port": 8085
+    },
+    "pub/sub": {
+      "host": "127.0.0.1",
+      "port": 8085
+    },
+    "storage": {
+      "host": "127.0.0.1",
+      "port": 9199
+    }
+  },
+  "firebase": {
+    "projectId": "demo-legislative-tracker",
+    "appId": "demo-app-id",
+    "databaseURL": "http://127.0.0.1:9000?ns=demo-legislative-tracker",
+    "storageBucket": "demo-legislative-tracker.appspot.com",
+    "apiKey": "demo-api-key",
+    "authDomain": "demo-legislative-tracker.firebaseapp.com",
+    "messagingSenderId": "1234567890",
+    "measurementId": "G-DEMO",
+    "projectNumber": "1234567890",
+    "version": "2"
+  }
+}
