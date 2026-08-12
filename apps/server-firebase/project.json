@@ -12,6 +12,8 @@
         "commands": [
           "mkdir -p dist/apps/server-firebase",
           "cp apps/server-firebase/package.json dist/apps/server-firebase/",
+          "cp apps/server-firebase/.env* dist/apps/server-firebase/ 2>/dev/null || true",
+          "cp apps/server-firebase/.secret* dist/apps/server-firebase/ 2>/dev/null || true",
           "npx esbuild apps/server-firebase/src/index.ts --bundle --platform=node --target=node22 --packages=external --outfile=dist/apps/server-firebase/index.js"
         ],
         "parallel": false

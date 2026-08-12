@@ -29,6 +29,7 @@ emulator_data/
 .env.local
 .env.*.local
 *.env
+.secret.local
 apps/client-angular/public/assets/config.json
 
 # IDEs and Editors

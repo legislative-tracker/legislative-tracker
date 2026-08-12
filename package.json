@@ -12,7 +12,7 @@
     "build:client": "nx build client-angular",
     "build:server": "nx build server-firebase",
     "serve:client": "nx serve client-angular",
-    "serve:server": "fuser -k 8085/tcp 8080/tcp 9099/tcp 5001/tcp || true; nx build server-firebase && cp apps/server-firebase/.env* dist/apps/server-firebase/ 2>/dev/null || true; cp apps/server-firebase/.env* . 2>/dev/null || true; firebase emulators:start --project demo-legislative-tracker --only functions,pubsub,firestore,auth --import=./emulator_data --export-on-exit=./emulator_data",
+    "serve:server": "fuser -k 8085/tcp 8080/tcp 9099/tcp 5001/tcp || true; nx build server-firebase && cp apps/server-firebase/.env* dist/apps/server-firebase/ 2>/dev/null || true; cp apps/server-firebase/.secret* dist/apps/server-firebase/ 2>/dev/null || true; cp apps/server-firebase/.env* . 2>/dev/null || true; cp apps/server-firebase/.secret* . 2>/dev/null || true; firebase emulators:start --project demo-legislative-tracker --only functions,pubsub,firestore,auth --import=./emulator_data --export-on-exit=./emulator_data",
     "export:server": "nx export server-firebase",
     "test": "nx run-many -t test",
     "test:client": "nx test client-angular",
