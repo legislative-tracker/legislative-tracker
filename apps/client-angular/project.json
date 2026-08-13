@@ -12,7 +12,7 @@
         "outputPath": "dist/apps/client-angular",
         "index": "apps/client-angular/src/index.html",
         "browser": "apps/client-angular/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": [],
         "tsConfig": "apps/client-angular/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [

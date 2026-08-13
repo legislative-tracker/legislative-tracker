@@ -1,7 +1,7 @@
 import {
   Directive,
   HostListener,
-  Input,
+  input,
   ElementRef,
   Renderer2,
 } from '@angular/core';
@@ -12,7 +12,7 @@ import {
 export class ImgFallbackDirective {
   // Allow the user to pass a custom fallback, or use a default
   private readonly DEFAULT_IMAGE = '/assets/account_circle_40.svg';
-  @Input() appFallback = this.DEFAULT_IMAGE;
+  appFallback = input<string>(this.DEFAULT_IMAGE);
 
   constructor(
     private el: ElementRef<HTMLImageElement>,
@@ -22,7 +22,7 @@ export class ImgFallbackDirective {
   @HostListener('error')
   onError() {
     // We must revert to the default if the input is falsy.
-    const targetFallback = this.appFallback || this.DEFAULT_IMAGE;
+    const targetFallback = this.appFallback() || this.DEFAULT_IMAGE;
 
     const img = this.el.nativeElement;
 
