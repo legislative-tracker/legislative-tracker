@@ -1,13 +1,16 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "rootDir": ".",
     "outDir": "../../dist/apps/server-firebase",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "target": "ES2022",
     "types": ["node"]
   },
-  "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts"],
-  "include": ["src/**/*.ts", "../../libs/**/*.ts"]
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"],
+  "include": [
+    "src/**/*.ts",
+    "../../libs/server-firebase/**/*.ts",
+    "../../libs/shared/**/*.ts"
+  ]
 }
