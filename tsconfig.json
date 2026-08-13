@@ -16,19 +16,7 @@
       ],
       "@legislative-tracker/client-angular/features": [
         "libs/client-angular/features/src/index.ts"
-      ],
-      "@legislative-tracker/server-firebase/data-access": [
-        "libs/server-firebase/data-access/src/index.ts"
-      ],
-      "@legislative-tracker/server-firebase/functions": [
-        "libs/server-firebase/functions/src/index.ts"
-      ],
-      "@app-models/*": ["libs/shared/models/src/lib/*"],
-      "@app-core/*": ["libs/client-angular/core/src/lib/*"],
-      "@app-shared/*": ["libs/client-angular/ui/src/lib/*"],
-      "@app-features/*": ["libs/client-angular/features/src/lib/*"],
-      "@app-pages/*": ["libs/client-angular/features/src/lib/pages/*"],
-      "@app-admin/*": ["libs/client-angular/features/src/lib/admin/*"]
+      ]
     }
   },
   "include": ["apps/**/*.ts", "libs/**/*.ts"],

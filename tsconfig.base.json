@@ -16,12 +16,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@app-admin/*": ["libs/client-angular/features/src/lib/admin/*"],
-      "@app-core/*": ["libs/client-angular/core/src/lib/*"],
-      "@app-features/*": ["libs/client-angular/features/src/lib/*"],
-      "@app-models/*": ["libs/shared/models/src/lib/*"],
-      "@app-pages/*": ["libs/client-angular/features/src/lib/pages/*"],
-      "@app-shared/*": ["libs/client-angular/ui/src/lib/*"],
       "@legislative-tracker/client-angular/core": [
         "libs/client-angular/core/src/index.ts"
       ],
