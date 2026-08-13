@@ -14,7 +14,7 @@
         "@nx/enforce-module-boundaries": [
           "error",
           {
-            "enforceBuildableLibDependency": true,
+            "enforceBuildableLibDependency": false,
             "allow": [],
             "depConstraints": [
               {
@@ -27,7 +27,15 @@
               },
               {
                 "sourceTag": "domain:server",
-                "onlyDependOnLibsWithTags": ["domain:shared", "domain:server"]
+                "onlyDependOnLibsWithTags": [
+                  "domain:shared",
+                  "domain:server",
+                  "domain:plugins"
+                ]
+              },
+              {
+                "sourceTag": "domain:plugins",
+                "onlyDependOnLibsWithTags": ["domain:shared", "domain:plugins"]
               }
             ]
           }

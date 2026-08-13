@@ -1,0 +1,13 @@
+{
+  "name": "triggers-firebase",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/server/triggers-firebase/src",
+  "projectType": "library",
+  "tags": ["domain:server"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}

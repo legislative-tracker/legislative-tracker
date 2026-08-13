@@ -1,0 +1,13 @@
+{
+  "name": "data-access-openstates",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/server/data-access-openstates/src",
+  "projectType": "library",
+  "tags": ["domain:server"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    }
+  }
+}

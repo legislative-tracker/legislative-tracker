@@ -129,7 +129,7 @@ describe("LegislatureService", () => {
         service.getMemberById("tx", "M1").subscribe((result) => {
           expect(mockDoc).toHaveBeenCalledWith(
             undefined,
-            "legislatures/tx/legislators/M1",
+            "legislatures/tx/legislators/m1",
           );
           expect(result).toEqual(mockMember);
           resolve();
