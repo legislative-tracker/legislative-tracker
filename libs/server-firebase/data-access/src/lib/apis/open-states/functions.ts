@@ -1,4 +1,3 @@
-import got from "got";
 import { openStatesKey } from "../../common/config";
 import { Person } from "@jpstroud/opencivicdata-types";
 import { OSResponse } from "./types";
@@ -14,49 +13,52 @@ export const getOpenStatesData = async (
   jurisdiction: string,
   targetEndpoint: string,
 ): Promise<Person[]> => {
-  const url = `${BASE_URL}/${targetEndpoint}`;
+  const endpointUrl = `${BASE_URL}/${targetEndpoint}`;
   console.log(`Fetching ${targetEndpoint} for ${jurisdiction}...`);
 
+  const results: Person[] = [];
+  let currentPage = 1;
+  let maxPage = 1;
+
   try {
-    const results = await got.paginate.all<Person, OSResponse<Person>>(url, {
-      responseType: "json",
-      searchParams: {
-        jurisdiction: jurisdiction,
-        page: 1,
-        per_page: 50,
-        apikey: openStatesKey.value(),
-      },
-      pagination: {
-        transform: (response) => {
-          return response.body.results;
+    do {
+      const url = new URL(endpointUrl);
+      url.searchParams.set("jurisdiction", jurisdiction);
+      url.searchParams.set("page", String(currentPage));
+      url.searchParams.set("per_page", "50");
+      url.searchParams.set("apikey", openStatesKey.value());
+
+      if (targetEndpoint === "people") {
+        url.searchParams.append("include", "offices");
+        url.searchParams.append("include", "links");
+        url.searchParams.append("include", "other_identifiers");
+      }
+
+      console.log(url.toString());
+
+      const response = await fetch(url.toString(), {
+        headers: {
+          "User-Agent": "LegislativeTracker/1.0",
         },
-        paginate: ({ response }) => {
-          const { pagination } = response.body;
-          const previousParams = response.request.options
-            .searchParams as URLSearchParams;
+      });
+      if (!response.ok) {
+        throw new Error(
+          `OpenStates API error: ${response.status} ${response.statusText}`,
+        );
+      }
 
-          const currentPage = Number(previousParams.get("page") || 1);
-          const lastPage = pagination.max_page;
+      const body = (await response.json()) as OSResponse<Person>;
+      if (body.results) {
+        results.push(...body.results);
+      }
 
-          if (currentPage >= lastPage) {
-            return false;
-          }
-
-          return {
-            searchParams: {
-              apikey: openStatesKey.value(),
-              jurisdiction: jurisdiction,
-              per_page: 50,
-              page: currentPage + 1,
-            },
-          };
-        },
-      },
-    });
+      maxPage = body.pagination?.max_page || currentPage;
+      currentPage++;
+    } while (currentPage <= maxPage);
 
     return results;
   } catch (error: any) {
-    console.error(`Failed to fetch data from ${url}:`, error.message);
+    console.error(`Failed to fetch data from ${endpointUrl}:`, error.message);
     throw error;
   }
 };

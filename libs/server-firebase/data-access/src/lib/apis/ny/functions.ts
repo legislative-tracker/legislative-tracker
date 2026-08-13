@@ -1,4 +1,3 @@
-import got from "got";
 import * as api from "@jpstroud/nys-openlegislation-types";
 import { defineSecret } from "firebase-functions/params";
 
@@ -41,25 +40,28 @@ const isItemsResponse = <T>(v: unknown): v is api.Items<T> => {
   return false;
 };
 
-export const updateMembers = async (): Promise<Partial<Legislator>[]> => {
-  const options = {
-    prefixUrl: "https://legislation.nysenate.gov/api/3/",
-    responseType: "json" as const,
-    resolveBodyOnly: true,
-    searchParams: {
-      key: nySenateKey.value(),
-      full: "true",
-      limit: 1000,
-    },
-  };
+const fetchNYSenateAPI = async <T>(path: string): Promise<T> => {
+  const url = new URL(`https://legislation.nysenate.gov/api/3/${path}`);
+  url.searchParams.set("key", nySenateKey.value());
+  url.searchParams.set("full", "true");
+  url.searchParams.set("limit", "1000");
 
+  console.log(url.toString());
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    throw new Error(
+      `NY Senate API request failed: ${response.status} ${response.statusText}`,
+    );
+  }
+  return (await response.json()) as T;
+};
+
+export const updateMembers = async (): Promise<Partial<Legislator>[]> => {
   let year: number = new Date().getFullYear();
   if (year % 2 === 0) year--;
 
-  const instance = got.extend(options);
-
   try {
-    const res = await instance<any>("members/" + year);
+    const res = await fetchNYSenateAPI<any>("members/" + year);
     if (isSuccess<api.FullMember[]>(res)) {
       if (isItemsResponse<api.FullMember>(res.result)) {
         const legislators: Partial<Legislator>[] = res.result.items.map(
@@ -81,23 +83,11 @@ export const updateMembers = async (): Promise<Partial<Legislator>[]> => {
 };
 
 export const updateBills = async (billList: string[]) => {
-  const options = {
-    prefixUrl: "https://legislation.nysenate.gov/api/3/",
-    responseType: "json" as const,
-    resolveBodyOnly: true,
-    searchParams: {
-      key: nySenateKey.value(),
-      full: "true",
-      limit: 1000,
-    },
-  };
-
   return await Promise.all(
     billList.map(async (bill: string) => {
       const billParts: string[] = bill.split("-");
-      const instance = got.extend(options);
       try {
-        const res = await instance<any>(
+        const res = await fetchNYSenateAPI<any>(
           `bills/${billParts.pop()}/${billParts.pop()}`,
         );
         if (isSuccess<api.Bill>(res)) {
@@ -136,7 +126,10 @@ const mapAPIMemberToLegislator = (m: api.FullMember): Partial<Legislator> => {
     jurisdiction: NY_JURISDICTION,
     given_name: m.person.firstName,
     family_name: m.person.lastName,
-    image: m.imgName,
+    image:
+      m.imgName && !m.imgName.includes("no_image")
+        ? `https://legislation.nysenate.gov/static/img/business_assets/members/mini/${m.imgName}`
+        : undefined,
     email: m.person.email,
     updated_at: now,
 

@@ -75,7 +75,7 @@ export class LegislatureService {
     return from(import("@angular/fire/firestore")).pipe(
       switchMap((firestoreLib) => {
         const firestore = firestoreLib.getFirestore(this.app);
-        const path = this.getPaths(stateCode).members + `/${id}`;
+        const path = this.getPaths(stateCode).members + `/${id.toLowerCase()}`;
         const memberRef = firestoreLib.doc(firestore, path);
         return firestoreLib.docData(memberRef, {
           idField: "id",
@@ -99,7 +99,10 @@ export class LegislatureService {
   }
 
   async removeBill(state: string, billId: string) {
-    const removeBillFn = httpsCallable(this.functions, "legislation-removeBill");
+    const removeBillFn = httpsCallable(
+      this.functions,
+      "legislation-removeBill",
+    );
 
     try {
       const result = await removeBillFn({ state, billId });

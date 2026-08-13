@@ -8,7 +8,7 @@ import { Success, ChamberMapping } from "@legislative-tracker/shared/models";
 import * as ny from "../apis/ny/functions";
 
 /**
- * Determines if 'got' responded with a successful fetch
+ * Determines if an API response object contains successful results
  * @param {unknown} res The response object
  * @return {boolean}
  */
@@ -112,13 +112,17 @@ export const getMemberUpdates = async (
  */
 export const isImageLink = (urlStr: string | undefined): boolean => {
   if (!urlStr || typeof urlStr !== "string") return false;
+  if (/(no[-_]?image|placeholder|default[-_]?photo)/i.test(urlStr)) return false;
 
   try {
     const url = new URL(urlStr);
     if (!["http:", "https:"].includes(url.protocol)) return false;
 
-    const imageExtensions = /\.(jpg|jpeg|png|webp|avif|gif|svg)$/i;
-    return imageExtensions.test(url.pathname);
+    const imageExtensions = /\.(jpg|jpeg|png|webp|avif|gif|svg)($|\?)/i;
+    if (imageExtensions.test(url.pathname) || imageExtensions.test(url.href)) {
+      return true;
+    }
+    return /\/(images|headshot|photos?|avatars?)\//i.test(url.pathname);
   } catch (e) {
     return false;
   }

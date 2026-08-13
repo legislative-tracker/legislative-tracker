@@ -8,7 +8,7 @@ import {
 import { updateLegislators } from "./service";
 
 export const manualUpdate = onRequest(
-  { secrets: [openStatesKey, nySenateKey] },
+  { secrets: [openStatesKey, nySenateKey], timeoutSeconds: 300 },
   async (request, response) => {
     try {
       const results = await updateLegislators();

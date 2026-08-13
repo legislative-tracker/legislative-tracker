@@ -1,22 +1,22 @@
 import { HttpsError } from "firebase-functions/v2/https";
-import got from "got";
 
 import { GoogleGeocodingResponse } from "./types";
 import { isSuccess } from "../../common/helpers";
 
 export const getGeocode = async (address: string, googleMapsKey: string) => {
-  const options = {
-    prefixUrl: "https://maps.googleapis.com/maps/api/geocode",
-    responseType: "json" as const,
-    resolveBodyOnly: true,
-    searchParams: {
-      key: googleMapsKey,
-      address: address,
-    },
-  };
+  const url = new URL("https://maps.googleapis.com/maps/api/geocode/json");
+  url.searchParams.set("key", googleMapsKey);
+  url.searchParams.set("address", address);
 
-  const instance = got.extend(options);
-  const res = await instance("json");
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    throw new HttpsError(
+      "unavailable",
+      `Geocoding service error: ${response.statusText}`,
+    );
+  }
+
+  const res = await response.json();
 
   if (isSuccess<GoogleGeocodingResponse[]>(res)) {
     return res.results[0].geometry.location;

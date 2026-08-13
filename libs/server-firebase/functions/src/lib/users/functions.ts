@@ -1,5 +1,4 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import got from "got";
 import { Person } from "@jpstroud/opencivicdata-types";
 import {
   db,
@@ -28,19 +27,20 @@ export const fetchUserReps = onCall(
     const geocoding = await getGeocode(address, googleMapsKey.value());
     if (!geocoding) throw new HttpsError("not-found", "Geocoding failed");
 
-    const instance = got.extend({
-      prefixUrl: "https://v3.openstates.org/",
-      responseType: "json",
-      resolveBodyOnly: true,
-      searchParams: {
-        apikey: openStatesKey.value(),
-        lat: geocoding.lat,
-        lng: geocoding.lng,
-      },
-    });
+    const url = new URL("https://v3.openstates.org/people.geo");
+    url.searchParams.set("apikey", openStatesKey.value());
+    url.searchParams.set("lat", String(geocoding.lat));
+    url.searchParams.set("lng", String(geocoding.lng));
 
     try {
-      const res = await instance("people.geo");
+      const response = await fetch(url.toString());
+      if (!response.ok) {
+        throw new Error(
+          `OpenStates API request failed: ${response.status} ${response.statusText}`,
+        );
+      }
+
+      const res = await response.json();
 
       if (isSuccess<Person[]>(res)) {
         const people = {

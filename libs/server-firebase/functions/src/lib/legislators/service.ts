@@ -16,6 +16,15 @@ export interface UpdateResult {
   error?: string;
 }
 
+const slugify = (text: string): string => {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+};
+
 export const updateLegislators = async (): Promise<UpdateResult[]> => {
   const bulkWriter = db.bulkWriter();
   const results: UpdateResult[] = [];
@@ -58,68 +67,165 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
           stateMemberMap.set(key, m);
         });
 
-        // Fetch existing Firestore docs to update
+        // Fetch existing Firestore docs to match against
         const snapshot = await db
           .collection(`legislatures/${stateCode}/legislators`)
           .get();
 
-        const warnings: string[] = [];
-
-        // Merge and Update
+        const existingDocMap = new Map<
+          string,
+          FirebaseFirestore.QueryDocumentSnapshot
+        >();
         snapshot.docs.forEach((doc) => {
-          const currentData = doc.data();
-
+          const data = doc.data();
           const docChamber =
-            currentData.chamber?.toUpperCase() === "SENATE"
-              ? "SENATE"
-              : "ASSEMBLY";
-          const lookupKey = `${docChamber}-${currentData.district}`;
+            data.chamber?.toUpperCase() === "SENATE" ? "SENATE" : "ASSEMBLY";
+          if (data.district) {
+            existingDocMap.set(`${docChamber}-${data.district}`, doc);
+          }
+        });
 
-          const osMatch = openStatesMembers.find(
-            (m: Person) =>
-              m.current_role.title === currentData.honorific_prefix &&
-              m.current_role.district === currentData.district,
-          );
+        // Combine OpenStates and State API members into a single map keyed by CHAMBER-DISTRICT
+        interface MemberCombination {
+          chamber: string;
+          district: string;
+          osMatch?: Person;
+          stateMatch?: Legislator;
+        }
 
-          const stateMatch = stateMemberMap.get(lookupKey);
+        const targetMap = new Map<string, MemberCombination>();
 
-          if (osMatch || stateMatch) {
-            const updates: any = {
-              updated_at: new Date().toISOString(),
-            };
+        openStatesMembers.forEach((os: any) => {
+          const isSenate =
+            os.current_role?.org_classification === "upper" ||
+            os.current_role?.title?.toLowerCase().includes("senat");
+          const chamber = isSenate ? "SENATE" : "ASSEMBLY";
+          const district = os.current_role?.district || "";
+          if (!district) return;
 
-            // Merge Strategies
-            updates.party = stateMatch?.party || osMatch?.party;
+          const key = `${chamber}-${district}`;
+          const existing: MemberCombination = targetMap.get(key) || { chamber, district };
+          existing.osMatch = os;
+          targetMap.set(key, existing);
+        });
 
-            const newImage = stateMatch?.image || osMatch?.image;
-            if (isImageLink(newImage)) updates.image = newImage;
+        stateMembers.forEach((sm: Legislator) => {
+          const chamber =
+            sm.chamber?.toUpperCase() === "SENATE" ? "SENATE" : "ASSEMBLY";
+          const district = sm.district || "";
+          if (!district) return;
 
-            const newEmail = stateMatch?.email || osMatch?.email;
-            if (isEmail(newEmail)) updates.email = newEmail;
+          const key = `${chamber}-${district}`;
+          const existing: MemberCombination = targetMap.get(key) || { chamber, district };
+          existing.stateMatch = sm;
+          targetMap.set(key, existing);
+        });
 
-            if (stateMatch?.offices && stateMatch.offices.length > 0) {
-              updates.offices = stateMatch.offices;
-            } else if (osMatch?.offices) {
-              updates.offices = osMatch.offices;
+        const warnings: string[] = [];
+        let matchedCount = 0;
+        let createdCount = 0;
+
+        // Upsert legislators into Firestore
+        targetMap.forEach((combo, key) => {
+          const { chamber, district, osMatch, stateMatch } = combo;
+          const existingDoc = existingDocMap.get(key);
+
+          const updates: Partial<Legislator> = {
+            updated_at: new Date().toISOString(),
+          };
+
+          const name = stateMatch?.name || osMatch?.name;
+          if (name) updates.name = name;
+
+          const prefix =
+            osMatch?.current_role?.title ||
+            (chamber === "SENATE" ? "Senator" : "Assembly Member");
+          if (prefix) updates.honorific_prefix = prefix;
+
+          const suffix =
+            (osMatch as any)?.honorific_suffix || stateMatch?.honorific_suffix;
+          if (suffix) updates.honorific_suffix = suffix;
+
+          const givenName = osMatch?.given_name || stateMatch?.given_name;
+          if (givenName) updates.given_name = givenName;
+
+          const familyName = osMatch?.family_name || stateMatch?.family_name;
+          if (familyName) updates.family_name = familyName;
+
+          const sortName = (osMatch as any)?.sort_name || stateMatch?.sort_name;
+          if (sortName) updates.sort_name = sortName;
+
+          const gender = (osMatch as any)?.gender || stateMatch?.gender;
+          if (gender) updates.gender = gender;
+
+          updates.chamber = chamber;
+          updates.district = district;
+
+          const party = stateMatch?.party || osMatch?.party;
+          if (party) updates.party = party;
+
+          const validImage =
+            (isImageLink(stateMatch?.image) ? stateMatch?.image : undefined) ||
+            (isImageLink(osMatch?.image) ? osMatch?.image : undefined);
+          if (validImage) updates.image = validImage;
+
+          const newEmail = stateMatch?.email || osMatch?.email;
+          if (isEmail(newEmail)) updates.email = newEmail;
+
+          if (stateMatch?.offices && stateMatch.offices.length > 0) {
+            updates.offices = stateMatch.offices;
+          } else if (osMatch?.offices && osMatch.offices.length > 0) {
+            updates.offices = osMatch.offices;
+          }
+
+          updates.links = osMatch?.links || stateMatch?.links || [];
+          if (osMatch?.openstates_url)
+            updates.openstates_url = osMatch.openstates_url;
+
+          updates.other_identifiers = [
+            ...(osMatch?.other_identifiers || []),
+            ...(stateMatch?.other_identifiers || []),
+          ];
+
+          if (existingDoc) {
+            updates.id = existingDoc.id;
+            bulkWriter.set(existingDoc.ref, updates, { merge: true });
+            matchedCount++;
+          } else {
+            const rawName = updates.name || "";
+            const suff = updates.honorific_suffix || "";
+            let fullName = rawName;
+            if (
+              suff &&
+              !rawName.toLowerCase().includes(suff.toLowerCase())
+            ) {
+              fullName = `${rawName} ${suff}`;
             }
 
-            updates.links = osMatch?.links || stateMatch?.links || [];
-            updates.openstates_url = osMatch?.openstates_url || "";
+            const docId =
+              slugify(fullName) ||
+              `${stateCode.toLowerCase()}-${chamber.toLowerCase()}-${district}`;
+            const newDocRef = db
+              .collection(`legislatures/${stateCode}/legislators`)
+              .doc(docId);
 
-            updates.other_identifiers = [
-              ...(osMatch?.other_identifiers || []),
-              ...(stateMatch?.other_identifiers || []),
-            ];
+            updates.id = docId;
+            (updates as any).created_at = new Date().toISOString();
+            bulkWriter.set(newDocRef, updates, { merge: true });
+            createdCount++;
+          }
+        });
 
-            bulkWriter.set(doc.ref, updates, { merge: true });
-          } else {
-            warnings.push(`No match for ${currentData.name} (${lookupKey})`);
+        // Record any existing Firestore docs that were not matched by API data
+        existingDocMap.forEach((doc, key) => {
+          if (!targetMap.has(key)) {
+            warnings.push(`No API match for existing legislator ${doc.data().name} (${key})`);
           }
         });
 
         results.push({
           state: stateCode,
-          matched: snapshot.size - warnings.length,
+          matched: matchedCount + createdCount,
           warnings: warnings,
         });
       } catch (err) {
