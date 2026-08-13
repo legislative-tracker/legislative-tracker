@@ -26,6 +26,12 @@
       },
       "configurations": {
         "production": {
+          "fileReplacements": [
+            {
+              "replace": "apps/client-angular/src/backend.providers.ts",
+              "with": "apps/client-angular/src/backend.providers.firebase.ts"
+            }
+          ],
           "budgets": [
             {
               "type": "initial",
@@ -44,6 +50,17 @@
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
+        },
+        "firebase": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "fileReplacements": [
+            {
+              "replace": "apps/client-angular/src/backend.providers.ts",
+              "with": "apps/client-angular/src/backend.providers.firebase.ts"
+            }
+          ]
         }
       },
       "defaultConfiguration": "production"
@@ -59,6 +76,9 @@
         },
         "development": {
           "buildTarget": "client-angular:build:development"
+        },
+        "firebase": {
+          "buildTarget": "client-angular:build:firebase"
         }
       },
       "defaultConfiguration": "development"

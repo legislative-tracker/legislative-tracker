@@ -7,7 +7,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 // App Imports
-import { LegislatureService } from '@legislative-tracker/client-angular/core';
+import { LegislatureService } from '@legislative-tracker/client-angular/data-access-legislature';
 import { TableComponent } from '@legislative-tracker/client-angular/ui';
 import {
   BILL_COLS,

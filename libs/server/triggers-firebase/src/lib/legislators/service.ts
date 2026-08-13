@@ -1,7 +1,7 @@
 import * as logger from 'firebase-functions/logger';
 import { Person } from '@jpstroud/opencivicdata-types';
 import { Legislator } from '@legislative-tracker/shared/models';
-import { db, openStatesKey } from '../config';
+import { db, dataAccessOpenStatesKey } from '../config';
 import { getOpenStatesData } from '@legislative-tracker/server-data-access-openstates';
 import {
   isEmail,
@@ -39,7 +39,7 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
         const openStatesPromise = getOpenStatesData(
           stateName,
           'people',
-          openStatesKey.value(),
+          dataAccessOpenStatesKey.value(),
         );
 
         // Fetch State-Specific Data (Specific)

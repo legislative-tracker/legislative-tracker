@@ -8,7 +8,7 @@ import { of } from 'rxjs';
 import { BillDetail } from './bill-detail';
 
 // Dependencies
-import { LegislatureService } from '@legislative-tracker/client-angular/core';
+import { LegislatureService } from '@legislative-tracker/client-angular/data-access-legislature';
 import { TableComponent } from '@legislative-tracker/client-angular/ui';
 
 // -------------------------------------------------------------------------

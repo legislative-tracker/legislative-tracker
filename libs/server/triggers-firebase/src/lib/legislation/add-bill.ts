@@ -1,12 +1,12 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import * as logger from 'firebase-functions/logger';
-import { db, nySenateKey } from '../config';
+import { db, pluginLegUsNyKey } from '../config';
 import { getBillUpdates } from '@legislative-tracker/server-util-core';
 
 /**
  * Adds a Bill & Pulls Updates (Callable)
  */
-export const addBill = onCall({ secrets: [nySenateKey] }, async (request) => {
+export const addBill = onCall({ secrets: [pluginLegUsNyKey] }, async (request) => {
   if (request.auth?.token.admin !== true) {
     throw new HttpsError(
       'permission-denied',

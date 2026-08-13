@@ -1,6 +1,10 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { Person } from '@jpstroud/opencivicdata-types';
-import { db, openStatesKey, googleMapsKey } from '../config';
+import {
+  db,
+  dataAccessOpenStatesKey,
+  dataAccessGoogleMapsKey,
+} from '../config';
 import { getGeocode } from '@legislative-tracker/server-data-access-google-maps';
 import { mapPersonToLegislator } from '@legislative-tracker/plugins-core';
 
@@ -14,7 +18,7 @@ const updateUserProfile = async (userId: string, data: object) => {
 };
 
 export const fetchUserReps = onCall(
-  { secrets: [openStatesKey, googleMapsKey] },
+  { secrets: [dataAccessOpenStatesKey, dataAccessGoogleMapsKey] },
   async (request) => {
     const address = request.data.address;
     if (!address) throw new HttpsError('invalid-argument', 'Address required.');
@@ -23,11 +27,14 @@ export const fetchUserReps = onCall(
     if (!userId) throw new HttpsError('invalid-argument', 'User ID required.');
 
     try {
-      const geocoding = await getGeocode(address, googleMapsKey.value());
+      const geocoding = await getGeocode(
+        address,
+        dataAccessGoogleMapsKey.value(),
+      );
       if (!geocoding) throw new HttpsError('not-found', 'Geocoding failed');
 
       const url = new URL('https://v3.openstates.org/people.geo');
-      url.searchParams.set('apikey', openStatesKey.value());
+      url.searchParams.set('apikey', dataAccessOpenStatesKey.value());
       url.searchParams.set('lat', String(geocoding.lat));
       url.searchParams.set('lng', String(geocoding.lng));
       const response = await fetch(url.toString());

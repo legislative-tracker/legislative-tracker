@@ -1,8 +1,8 @@
-import { Injectable, inject, signal, effect, Injector } from '@angular/core';
+import { Injectable, inject, signal, effect } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { Firestore, doc, docData, setDoc } from '@angular/fire/firestore';
 import { timeout, catchError, map, take } from 'rxjs/operators';
 import { firstValueFrom, of } from 'rxjs';
-import { FirebaseApp } from '@angular/fire/app';
 
 // App imports
 import {
@@ -23,7 +23,7 @@ const GITHUB_RESOURCE: ResourceLink = {
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
   private readonly document = inject(DOCUMENT);
-  private readonly app = inject(FirebaseApp);
+  private readonly firestore = inject(Firestore, { optional: true });
 
   readonly config = signal<RuntimeConfig>(DEFAULT_CONFIG);
 
@@ -42,13 +42,9 @@ export class ConfigService {
   }
 
   async save(newConfig: Partial<RuntimeConfig>): Promise<void> {
+    if (!this.firestore) return;
     try {
-      const { getFirestore, doc, setDoc } =
-        await import('@angular/fire/firestore');
-
-      const firestore = getFirestore(this.app);
-      const configDoc = doc(firestore, 'configurations/global');
-
+      const configDoc = doc(this.firestore, 'configurations/global');
       await setDoc(configDoc, newConfig, { merge: true });
 
       this.config.update((current) => ({ ...current, ...newConfig }));
@@ -59,13 +55,9 @@ export class ConfigService {
   }
 
   async load(): Promise<void> {
+    if (!this.firestore) return;
     try {
-      // Destructure 'Firestore' (the Class/Token) alongside the functions
-      const { getFirestore, doc, docData } =
-        await import('@angular/fire/firestore');
-
-      const firestore = getFirestore(this.app);
-      const configDoc = doc(firestore, 'configurations/global');
+      const configDoc = doc(this.firestore, 'configurations/global');
 
       const data$ = docData(configDoc).pipe(
         map((data) => data as RuntimeConfig),

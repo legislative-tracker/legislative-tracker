@@ -14,9 +14,10 @@ export const fetchNYSenateAPI = async <T>(
   path: string,
   apiKey?: string,
 ): Promise<T> => {
+  const keyToUse = apiKey || process.env['PLUGIN_LEG_US_NY'];
   const url = new URL(`https://legislation.nysenate.gov/api/3/${path}`);
-  if (apiKey) {
-    url.searchParams.set('key', apiKey);
+  if (keyToUse) {
+    url.searchParams.set('key', keyToUse);
   }
   url.searchParams.set('full', 'true');
   url.searchParams.set('limit', '1000');

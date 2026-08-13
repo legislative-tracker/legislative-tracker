@@ -1,13 +1,13 @@
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import * as logger from 'firebase-functions/logger';
-import { openStatesKey, nySenateKey } from '../config';
+import { dataAccessOpenStatesKey, pluginLegUsNyKey } from '../config';
 import { updateLegislators } from './service';
 
 export const monthlyUpdate = onSchedule(
   {
     schedule: '1st Monday of month 05:00',
     timeZone: 'America/New_York',
-    secrets: [openStatesKey, nySenateKey],
+    secrets: [dataAccessOpenStatesKey, pluginLegUsNyKey],
     retryCount: 3,
   },
   async () => {

@@ -1,10 +1,10 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import * as logger from 'firebase-functions/logger';
-import { openStatesKey, nySenateKey } from '../config';
+import { dataAccessOpenStatesKey, pluginLegUsNyKey } from '../config';
 import { updateLegislators } from './service';
 
 export const manualUpdate = onRequest(
-  { secrets: [openStatesKey, nySenateKey], timeoutSeconds: 300 },
+  { secrets: [dataAccessOpenStatesKey, pluginLegUsNyKey], timeoutSeconds: 300 },
   async (request, response) => {
     try {
       const results = await updateLegislators();

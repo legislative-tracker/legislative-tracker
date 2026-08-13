@@ -1,7 +1,6 @@
 import { Component, inject, signal, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SlicePipe } from '@angular/common';
-import { FirebaseApp } from '@angular/fire/app';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -13,8 +12,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   AuthService,
   ImplementedStatePairs,
-  LegislatureService,
 } from '@legislative-tracker/client-angular/core';
+import { LegislatureService } from '@legislative-tracker/client-angular/data-access-legislature';
 
 interface SimpleBill {
   id: string;
@@ -40,7 +39,6 @@ interface SimpleBill {
 export class RemoveBill {
   public auth = inject(AuthService);
 
-  private app = inject(FirebaseApp);
   private legislature = inject(LegislatureService);
   private snackBar = inject(MatSnackBar);
 
@@ -67,38 +65,27 @@ export class RemoveBill {
     });
   }
 
-  async fetchBillsForState(state: string) {
+  fetchBillsForState(state: string) {
     this.isLoadingBills.set(true);
     this.selectedBillId.set(''); // Reset selected bill
 
-    try {
-      const { getFirestore, collection, query, orderBy, getDocs } =
-        await import('@angular/fire/firestore');
+    this.legislature.getBillsByState(state).subscribe({
+      next: (billsData) => {
+        const bills = billsData.map((doc) => ({
+          id: doc.id,
+          number: doc.id || 'Unknown',
+          title: doc.title || 'No Title',
+        })) as SimpleBill[];
 
-      const firestore = getFirestore(this.app);
-
-      // Path: legislatures/{state}/legislation
-      const billsRef = collection(
-        firestore,
-        `legislatures/${state}/legislation`,
-      );
-      const q = query(billsRef, orderBy('id')); // Sort alphabetically by bill number
-
-      const snapshot = await getDocs(q);
-
-      const bills = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        number: doc.data()['id'] || 'Unknown',
-        title: doc.data()['title'] || 'No Title',
-      })) as SimpleBill[];
-
-      this.availableBills.set(bills);
-    } catch (error) {
-      console.error('Error fetching bills:', error);
-      this.snackBar.open('Could not load bills for this state.', 'Close');
-    } finally {
-      this.isLoadingBills.set(false);
-    }
+        this.availableBills.set(bills);
+        this.isLoadingBills.set(false);
+      },
+      error: (error) => {
+        console.error('Error fetching bills:', error);
+        this.snackBar.open('Could not load bills for this state.', 'Close');
+        this.isLoadingBills.set(false);
+      },
+    });
   }
 
   async onDelete() {
@@ -119,7 +106,7 @@ export class RemoveBill {
     this.isDeleting.set(true);
 
     try {
-      // Call the Cloud Function via AuthService
+      // Call the Cloud Function via LegislatureService
       await this.legislature.removeBill(state, billId);
 
       this.snackBar.open('Bill deleted successfully.', 'Close', {

@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed, effect } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Auth, user } from '@angular/fire/auth';
-import { FirebaseApp } from '@angular/fire/app';
+import { Firestore, doc, docData, setDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 
 // App imports
@@ -13,7 +13,7 @@ import { AppUser } from '@legislative-tracker/shared/models';
 export class AuthService {
   private auth = inject(Auth);
   private router = inject(Router);
-  private app = inject(FirebaseApp);
+  private firestore = inject(Firestore, { optional: true });
 
   // Signals
   readonly userSig = toSignal(user(this.auth), { initialValue: null });
@@ -46,14 +46,11 @@ export class AuthService {
   }
 
   /**
-   * Lazy loads Firestore and subscribes to the user's profile document.
+   * Subscribes to the user's profile document in Firestore.
    */
-  private async fetchUserProfile(uid: string) {
-    const { getFirestore, doc, docData } =
-      await import('@angular/fire/firestore');
-
-    const firestore = getFirestore(this.app);
-    const userDoc = doc(firestore, `users/${uid}`);
+  private fetchUserProfile(uid: string) {
+    if (!this.firestore) return;
+    const userDoc = doc(this.firestore, `users/${uid}`);
 
     docData(userDoc).subscribe((data) => {
       this.userProfile.set(data as AppUser);
@@ -62,7 +59,7 @@ export class AuthService {
 
   /**
    * Logs the user in with Google and updates their User Record in Firestore.
-   * Lazily loads both Auth Providers and Firestore.
+   * Lazily loads Auth Provider logic.
    */
   async loginWithGoogle() {
     // Lazy Load Auth Logic
@@ -72,13 +69,9 @@ export class AuthService {
     const provider = new GoogleAuthProvider();
     const credential = await signInWithPopup(this.auth, provider);
 
-    // Lazy Load Firestore to save/update the user record
-    if (credential.user) {
-      const { getFirestore, doc, setDoc } =
-        await import('@angular/fire/firestore');
-      const firestore = getFirestore(this.app);
-
-      const userRef = doc(firestore, `users/${credential.user.uid}`);
+    // Update the user record in Firestore
+    if (credential.user && this.firestore) {
+      const userRef = doc(this.firestore, `users/${credential.user.uid}`);
       await setDoc(
         userRef,
         {
@@ -109,25 +102,19 @@ export class AuthService {
 
   /**
    * Toggles a bill as a favorite.
-   * Lazily loads Firestore to perform the write.
    */
   async toggleFavorite(billId: string) {
     const profile = this.userProfile();
     const currentUser = this.userSig();
 
-    if (!profile || !currentUser) return;
+    if (!profile || !currentUser || !this.firestore) return;
 
     const currentFavorites = profile.favorites || [];
     const newFavorites = currentFavorites.includes(billId)
       ? currentFavorites.filter((id: string) => id !== billId)
       : [...currentFavorites, billId];
 
-    // Lazy Load Firestore for the write operation
-    const { getFirestore, doc, setDoc } =
-      await import('@angular/fire/firestore');
-    const firestore = getFirestore(this.app);
-
-    const userRef = doc(firestore, `users/${currentUser.uid}`);
+    const userRef = doc(this.firestore, `users/${currentUser.uid}`);
     return setDoc(userRef, { favorites: newFavorites }, { merge: true });
   }
 }

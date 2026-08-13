@@ -8,7 +8,7 @@ import { of } from 'rxjs';
 import { MemberDetail } from './member-detail';
 
 // Dependencies
-import { LegislatureService } from '@legislative-tracker/client-angular/core';
+import { LegislatureService } from '@legislative-tracker/client-angular/data-access-legislature';
 import { TableComponent } from '@legislative-tracker/client-angular/ui';
 import { ImgFallbackDirective } from '@legislative-tracker/client-angular/ui';
 import { Legislator } from '@legislative-tracker/shared/models';

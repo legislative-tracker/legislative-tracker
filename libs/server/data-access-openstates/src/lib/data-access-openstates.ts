@@ -23,7 +23,7 @@ export const getOpenStatesData = async (
   targetEndpoint: string,
   apiKey?: string,
 ): Promise<Person[]> => {
-  const keyToUse = apiKey || process.env['OPENSTATES_API_KEY'] || '';
+  const keyToUse = apiKey || process.env['DATA_ACCESS_OPENSTATES'] || '';
   const endpointUrl = `${BASE_URL}/${targetEndpoint}`;
   console.log(`Fetching ${targetEndpoint} for ${jurisdiction}...`);
 

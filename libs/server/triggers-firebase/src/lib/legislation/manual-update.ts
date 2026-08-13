@@ -1,13 +1,13 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import * as logger from 'firebase-functions/logger';
-import { nySenateKey } from '../config';
+import { pluginLegUsNyKey } from '../config';
 import { performLegislationUpdate } from './service';
 
 /**
  * Manual Trigger for Debugging (HTTPS)
  */
 export const manualUpdate = onRequest(
-  { secrets: [nySenateKey] },
+  { secrets: [pluginLegUsNyKey] },
   async (request, response) => {
     try {
       const data = await performLegislationUpdate();

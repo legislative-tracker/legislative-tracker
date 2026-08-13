@@ -1,34 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { FirebaseApp } from '@angular/fire/app';
+import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 // Target Component
 import { RemoveBill } from './remove-bill';
 
 // Dependencies
-import {
-  AuthService,
-  LegislatureService,
-} from '@legislative-tracker/client-angular/core';
-
-// -------------------------------------------------------------------------
-// Mock Dynamic Imports (Firestore)
-// -------------------------------------------------------------------------
-const mockGetFirestore = vi.fn().mockReturnValue({});
-const mockCollection = vi.fn();
-const mockQuery = vi.fn();
-const mockOrderBy = vi.fn();
-const mockGetDocs = vi.fn();
-
-vi.mock('@angular/fire/firestore', () => ({
-  getFirestore: (...args: any[]) => mockGetFirestore(...args),
-  collection: (...args: any[]) => mockCollection(...args),
-  query: (...args: any[]) => mockQuery(...args),
-  orderBy: (...args: any[]) => mockOrderBy(...args),
-  getDocs: (...args: any[]) => mockGetDocs(...args),
-}));
+import { AuthService } from '@legislative-tracker/client-angular/core';
+import { LegislatureService } from '@legislative-tracker/client-angular/data-access-legislature';
 
 describe('RemoveBill', () => {
   let component: RemoveBill;
@@ -41,19 +22,16 @@ describe('RemoveBill', () => {
   };
 
   const mockLegislatureService = {
+    getBillsByState: vi.fn().mockReturnValue(of([])),
     removeBill: vi.fn(),
   };
   const mockSnackBar = {
     open: vi.fn(),
   };
-  const mockFirebaseApp = { name: '[DEFAULT]' };
 
   beforeEach(async () => {
     vi.clearAllMocks();
-
-    // Restore mock values immediately after clearing
-    mockGetFirestore.mockReturnValue({});
-    mockGetDocs.mockResolvedValue({ docs: [] }); // Prevent crash if effect runs early
+    mockLegislatureService.getBillsByState.mockReturnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [RemoveBill],
@@ -62,7 +40,6 @@ describe('RemoveBill', () => {
         { provide: AuthService, useValue: mockAuthService },
         { provide: LegislatureService, useValue: mockLegislatureService },
         { provide: MatSnackBar, useValue: mockSnackBar },
-        { provide: FirebaseApp, useValue: mockFirebaseApp },
       ],
     })
       .overrideComponent(RemoveBill, {
@@ -87,43 +64,34 @@ describe('RemoveBill', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Fetching Bills (Effect & Firestore)', () => {
+  describe('Fetching Bills', () => {
     it('should fetch bills when selectedState changes', async () => {
-      const mockSnapshot = {
-        docs: [
-          { id: '1', data: () => ({ id: 'BILL-1', title: 'Test Bill' }) },
-          { id: '2', data: () => ({ id: 'BILL-2', title: 'Other Bill' }) },
-        ],
-      };
-      mockGetDocs.mockResolvedValue(mockSnapshot);
+      const mockBillsData = [
+        { id: 'BILL-1', title: 'Test Bill' } as any,
+        { id: 'BILL-2', title: 'Other Bill' } as any,
+      ];
+      mockLegislatureService.getBillsByState.mockReturnValue(of(mockBillsData));
 
       component.selectedState.set('ny');
       fixture.detectChanges();
 
       await TestBed.flushEffects();
-      await new Promise((resolve) => setTimeout(resolve, 0));
 
-      expect(mockGetFirestore).toHaveBeenCalledWith(mockFirebaseApp);
-      // Now mockGetFirestore returns {}, so expect.anything() passes
-      expect(mockCollection).toHaveBeenCalledWith(
-        expect.anything(),
-        'legislatures/ny/legislation',
-      );
-      expect(mockGetDocs).toHaveBeenCalled();
-
+      expect(mockLegislatureService.getBillsByState).toHaveBeenCalledWith('ny');
       expect(component.availableBills().length).toBe(2);
       expect(component.availableBills()[0].title).toBe('Test Bill');
       expect(component.isLoadingBills()).toBe(false);
     });
 
     it('should handle errors when fetching bills fails', async () => {
-      mockGetDocs.mockRejectedValue(new Error('Firestore Error'));
+      mockLegislatureService.getBillsByState.mockReturnValue(
+        throwError(() => new Error('Service Error')),
+      );
 
       component.selectedState.set('ca');
       fixture.detectChanges();
 
       await TestBed.flushEffects();
-      await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(component.availableBills()).toEqual([]);
       expect(mockSnackBar.open).toHaveBeenCalledWith(
@@ -131,7 +99,6 @@ describe('RemoveBill', () => {
         'Close',
       );
       expect(console.error).toHaveBeenCalled();
-
       expect(component.isLoadingBills()).toBe(false);
     });
   });
@@ -156,8 +123,6 @@ describe('RemoveBill', () => {
       mockLegislatureService.removeBill.mockResolvedValue({ success: true });
 
       const fetchSpy = vi.spyOn(component, 'fetchBillsForState');
-      // Ensure the re-fetch gets a valid empty snapshot
-      mockGetDocs.mockResolvedValue({ docs: [] });
 
       await component.onDelete();
 
