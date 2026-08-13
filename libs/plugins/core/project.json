@@ -25,7 +25,7 @@
       "outputs": ["{options.outputFile}"]
     }
   },
-  "tags": ["domain:plugins"],
+  "tags": ["domain:plugins", "type:core"],
   "release": {
     "version": {
       "generatorOptions": {

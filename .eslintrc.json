@@ -36,6 +36,32 @@
               {
                 "sourceTag": "domain:plugins",
                 "onlyDependOnLibsWithTags": ["domain:shared", "domain:plugins"]
+              },
+              {
+                "sourceTag": "type:model",
+                "onlyDependOnLibsWithTags": ["type:model"]
+              },
+              {
+                "sourceTag": "type:util",
+                "onlyDependOnLibsWithTags": ["type:model", "type:util", "type:core", "type:plugin"]
+              },
+              {
+                "sourceTag": "type:ui",
+                "onlyDependOnLibsWithTags": ["type:model", "type:util", "type:core", "type:ui"]
+              },
+              {
+                "sourceTag": "type:core",
+                "onlyDependOnLibsWithTags": ["type:model", "type:util", "type:core"]
+              },
+              {
+                "sourceTag": "type:feature",
+                "onlyDependOnLibsWithTags": [
+                  "type:model",
+                  "type:util",
+                  "type:ui",
+                  "type:core",
+                  "type:feature"
+                ]
               }
             ]
           }

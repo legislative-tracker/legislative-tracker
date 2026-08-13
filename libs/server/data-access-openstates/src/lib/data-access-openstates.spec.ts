@@ -1,7 +1,7 @@
-import { dataAccessOpenstates } from './data-access-openstates';
+import { getOpenStatesData } from './data-access-openstates';
 
-describe('dataAccessOpenstates', () => {
-  it('should work', () => {
-    expect(dataAccessOpenstates()).toEqual('data-access-openstates');
+describe('getOpenStatesData', () => {
+  it('should be defined', () => {
+    expect(getOpenStatesData).toBeDefined();
   });
 });

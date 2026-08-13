@@ -3,7 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/server/data-access-google-maps/src",
   "projectType": "library",
-  "tags": ["domain:server"],
+  "tags": ["domain:server", "type:data-access"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint",

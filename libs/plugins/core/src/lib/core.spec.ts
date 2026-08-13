@@ -1,7 +1,7 @@
-import { core } from './core';
+import { chamberMapper } from './chamber-mapper';
 
-describe('core', () => {
-  it('should work', () => {
-    expect(core()).toEqual('core');
+describe('chamberMapper', () => {
+  it('should map state upper chamber to Senate', () => {
+    expect(chamberMapper('state', 'upper')).toEqual('Senate');
   });
 });

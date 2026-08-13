@@ -1,7 +1,7 @@
-import { utilCore } from './util-core';
+import { slugify } from './string';
 
-describe('utilCore', () => {
-  it('should work', () => {
-    expect(utilCore()).toEqual('util-core');
+describe('slugify', () => {
+  it('should slugify text', () => {
+    expect(slugify('Hello World!')).toEqual('hello-world');
   });
 });

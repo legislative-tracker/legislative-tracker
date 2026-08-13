@@ -1,7 +1,7 @@
-import { dataAccessGoogleMaps } from './data-access-google-maps';
+import { getGeocode } from './data-access-google-maps';
 
-describe('dataAccessGoogleMaps', () => {
-  it('should work', () => {
-    expect(dataAccessGoogleMaps()).toEqual('data-access-google-maps');
+describe('getGeocode', () => {
+  it('should be defined', () => {
+    expect(getGeocode).toBeDefined();
   });
 });

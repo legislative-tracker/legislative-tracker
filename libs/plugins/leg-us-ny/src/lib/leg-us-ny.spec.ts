@@ -1,7 +1,7 @@
-import { legUsNy } from './leg-us-ny';
+import { nyLegislaturePlugin } from './plugin';
 
-describe('legUsNy', () => {
-  it('should work', () => {
-    expect(legUsNy()).toEqual('leg-us-ny');
+describe('nyLegislaturePlugin', () => {
+  it('should have id ny', () => {
+    expect(nyLegislaturePlugin.id).toEqual('ny');
   });
 });
