@@ -1,7 +1,4 @@
-import {
-  Legislator,
-  Legislation,
-} from "@legislative-tracker/shared/models";
+import { Legislator, Legislation } from '@legislative-tracker/shared/models';
 
 /**
  * Interface definition for State Legislature Plugins

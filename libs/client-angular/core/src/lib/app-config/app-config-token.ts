@@ -1,4 +1,4 @@
-import { InjectionToken } from "@angular/core";
+import { InjectionToken } from '@angular/core';
 
 export interface AppConfig {
   production: boolean;
@@ -8,7 +8,7 @@ export interface AppConfig {
     functions?: { host: string; port: number };
     auth?: { host: string; port: number };
     pubsub?: { host: string; port: number };
-    "pub/sub"?: { host: string; port: number };
+    'pub/sub'?: { host: string; port: number };
     storage?: { host: string; port: number };
   };
   firebase: {
@@ -26,4 +26,4 @@ export interface AppConfig {
   apiUrl?: string;
 }
 
-export const APP_CONFIG = new InjectionToken<AppConfig>("APP_CONFIG");
+export const APP_CONFIG = new InjectionToken<AppConfig>('APP_CONFIG');

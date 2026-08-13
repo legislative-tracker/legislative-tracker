@@ -1,20 +1,20 @@
-import { Component, input, inject, computed, signal } from "@angular/core";
-import { rxResource } from "@angular/core/rxjs-interop";
-import { of } from "rxjs";
+import { Component, input, inject, computed, signal } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { of } from 'rxjs';
 
 // Angular Material Imports
-import { MatTabsModule } from "@angular/material/tabs";
-import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 // App Imports
-import { LegislatureService } from "@legislative-tracker/client-angular/core";
-import { TableComponent } from "@legislative-tracker/client-angular/ui";
+import { LegislatureService } from '@legislative-tracker/client-angular/core';
+import { TableComponent } from '@legislative-tracker/client-angular/ui';
 import {
   BILL_COLS,
   MEMBER_COLS,
   Legislation,
   Legislator,
-} from "@legislative-tracker/shared/models";
+} from '@legislative-tracker/shared/models';
 
 enum DashboardTab {
   Bills = 0,
@@ -23,10 +23,10 @@ enum DashboardTab {
 }
 
 @Component({
-  selector: "app-dashboard",
+  selector: 'app-dashboard',
   imports: [MatTabsModule, TableComponent, MatProgressSpinnerModule],
-  templateUrl: "./dashboard.html",
-  styleUrl: "./dashboard.scss",
+  templateUrl: './dashboard.html',
+  styleUrl: './dashboard.scss',
 })
 export class Dashboard {
   stateCd = input.required<string>();
@@ -84,10 +84,10 @@ export class Dashboard {
   );
 
   senateMembers = computed(() =>
-    this.members().filter((m) => m.chamber === "SENATE"),
+    this.members().filter((m) => m.chamber === 'SENATE'),
   );
   assemblyMembers = computed(() =>
-    this.members().filter((m) => m.chamber === "ASSEMBLY"),
+    this.members().filter((m) => m.chamber === 'ASSEMBLY'),
   );
 
   onTabChange(index: number) {

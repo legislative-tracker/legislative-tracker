@@ -1,16 +1,16 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { provideNoopAnimations } from "@angular/platform-browser/animations";
-import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 // Target Component
-import { FirebaseApp } from "@angular/fire/app";
-import { RemoveAdmin } from "./remove-admin";
+import { FirebaseApp } from '@angular/fire/app';
+import { RemoveAdmin } from './remove-admin';
 
 // Dependencies
-import { UserManagementService } from "@legislative-tracker/client-angular/core";
+import { UserManagementService } from '@legislative-tracker/client-angular/core';
 
-describe("RemoveAdmin", () => {
+describe('RemoveAdmin', () => {
   let component: RemoveAdmin;
   let fixture: ComponentFixture<RemoveAdmin>;
 
@@ -31,7 +31,7 @@ describe("RemoveAdmin", () => {
         { provide: UserManagementService, useValue: mockUserMgmt },
         // We provide the mock here, but we also need to ensure the component uses it
         { provide: MatSnackBar, useValue: mockSnackBar },
-        { provide: FirebaseApp, useValue: { name: "[DEFAULT]" } },
+        { provide: FirebaseApp, useValue: { name: '[DEFAULT]' } },
       ],
     })
       // Remove MatSnackBarModule from component imports to prevent it
@@ -48,7 +48,7 @@ describe("RemoveAdmin", () => {
     vi.clearAllMocks();
 
     // Spy on console.error to suppress "Network Error" logs during tests
-    vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 
     fixture.detectChanges();
   });
@@ -57,18 +57,18 @@ describe("RemoveAdmin", () => {
     vi.restoreAllMocks();
   });
 
-  it("should create", () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it("should defaults to empty email and not loading", () => {
-    expect(component.email()).toBe("");
+  it('should defaults to empty email and not loading', () => {
+    expect(component.email()).toBe('');
     expect(component.isLoading()).toBe(false);
   });
 
-  describe("demoteAdmin", () => {
-    it("should do nothing if email is empty", async () => {
-      component.email.set("");
+  describe('demoteAdmin', () => {
+    it('should do nothing if email is empty', async () => {
+      component.email.set('');
 
       await component.demoteAdmin();
 
@@ -76,10 +76,10 @@ describe("RemoveAdmin", () => {
       expect(component.isLoading()).toBe(false);
     });
 
-    it("should call service, show success snackbar, and clear form on success", async () => {
-      const testEmail = "admin@example.com";
+    it('should call service, show success snackbar, and clear form on success', async () => {
+      const testEmail = 'admin@example.com';
       component.email.set(testEmail);
-      mockUserMgmt.revokeAdminPrivileges.mockResolvedValue({ data: "success" });
+      mockUserMgmt.revokeAdminPrivileges.mockResolvedValue({ data: 'success' });
 
       await component.demoteAdmin();
 
@@ -89,18 +89,18 @@ describe("RemoveAdmin", () => {
 
       // Verify Success Snackbar
       expect(mockSnackBar.open).toHaveBeenCalledWith(
-        expect.stringContaining("Success"),
-        "Close",
-        expect.objectContaining({ panelClass: ["success-snackbar"] }),
+        expect.stringContaining('Success'),
+        'Close',
+        expect.objectContaining({ panelClass: ['success-snackbar'] }),
       );
 
-      expect(component.email()).toBe("");
+      expect(component.email()).toBe('');
       expect(component.isLoading()).toBe(false);
     });
 
-    it("should show error snackbar if service fails", async () => {
-      const errorMsg = "Network Error";
-      component.email.set("fail@example.com");
+    it('should show error snackbar if service fails', async () => {
+      const errorMsg = 'Network Error';
+      component.email.set('fail@example.com');
       // Mock the rejection
       mockUserMgmt.revokeAdminPrivileges.mockRejectedValue(new Error(errorMsg));
 
@@ -111,15 +111,15 @@ describe("RemoveAdmin", () => {
       // Verify Error Snackbar
       expect(mockSnackBar.open).toHaveBeenCalledWith(
         errorMsg,
-        "Close",
-        expect.objectContaining({ panelClass: ["error-snackbar"] }),
+        'Close',
+        expect.objectContaining({ panelClass: ['error-snackbar'] }),
       );
 
       // Verify console.error was called (proving we suppressed the log)
       expect(console.error).toHaveBeenCalled();
 
       expect(component.isLoading()).toBe(false);
-      expect(component.email()).toBe("fail@example.com");
+      expect(component.email()).toBe('fail@example.com');
     });
   });
 });

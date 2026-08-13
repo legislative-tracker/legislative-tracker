@@ -1,11 +1,11 @@
-import { db } from "../config";
-import { getBillUpdates } from "@legislative-tracker/server-util-core";
+import { db } from '../config';
+import { getBillUpdates } from '@legislative-tracker/server-util-core';
 
 /**
  * Core business logic for updating legislation from 3rd party APIs
  */
 export const performLegislationUpdate = async () => {
-  const legislaturesSnapshot = await db.collection("legislatures").get();
+  const legislaturesSnapshot = await db.collection('legislatures').get();
   const legislaturesList = legislaturesSnapshot.docs.map((doc) => doc.id);
 
   const pendingLookups = legislaturesList.map(async (legislature) => {

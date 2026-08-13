@@ -4,22 +4,22 @@ import {
   signal,
   inject,
   computed,
-} from "@angular/core";
-import { MatCardModule } from "@angular/material/card";
-import { MatButtonModule } from "@angular/material/button";
-import { MatListModule } from "@angular/material/list";
-import { MatIconModule } from "@angular/material/icon";
+} from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
 
 // App Imports
-import { ConfigService } from "@legislative-tracker/client-angular/core";
-import { ResourceLink } from "@legislative-tracker/shared/models";
+import { ConfigService } from '@legislative-tracker/client-angular/core';
+import { ResourceLink } from '@legislative-tracker/shared/models';
 
 @Component({
-  selector: "app-about",
+  selector: 'app-about',
   standalone: true,
   imports: [MatCardModule, MatButtonModule, MatListModule, MatIconModule],
-  templateUrl: "./about.html",
-  styleUrls: ["../pages.scss", "./about.scss"],
+  templateUrl: './about.html',
+  styleUrls: ['../pages.scss', './about.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class About {
@@ -40,22 +40,22 @@ export class About {
 
   readonly details = signal([
     {
-      title: "Data Sources",
-      icon: "dns",
+      title: 'Data Sources',
+      icon: 'dns',
       content:
-        "We aggregate data via OpenStates & State Legislature APIs, syncing nightly to capture the latest bill sponsorships and legislator movements.",
+        'We aggregate data via OpenStates & State Legislature APIs, syncing nightly to capture the latest bill sponsorships and legislator movements.',
     },
     {
-      title: "Open Source",
-      icon: "terminal",
+      title: 'Open Source',
+      icon: 'terminal',
       content:
-        "Built with Angular v20 and Firebase. We welcome community contributions to help improve transparency in advocacy.",
+        'Built with Angular v20 and Firebase. We welcome community contributions to help improve transparency in advocacy.',
     },
     {
-      title: "Disclaimer",
-      icon: "warning",
+      title: 'Disclaimer',
+      icon: 'warning',
       content:
-        "This tool is for informational purposes only and is not an official government service. Always verify with official legislative records.",
+        'This tool is for informational purposes only and is not an official government service. Always verify with official legislative records.',
     },
   ]);
 }

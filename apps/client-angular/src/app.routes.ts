@@ -1,86 +1,86 @@
-import { Routes } from "@angular/router";
-import { NavComponent } from "@legislative-tracker/client-angular/ui";
+import { Routes } from '@angular/router';
+import { NavComponent } from '@legislative-tracker/client-angular/ui';
 import {
   stateGuard,
   adminGuard,
-} from "@legislative-tracker/client-angular/core";
+} from '@legislative-tracker/client-angular/core';
 
 export const routes: Routes = [
   {
-    path: "",
+    path: '',
     component: NavComponent,
     children: [
       {
-        path: "",
-        pathMatch: "full",
-        redirectTo: "ny",
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'ny',
       },
       // --- Public Static Pages ---
       {
-        path: "404",
+        path: '404',
         loadComponent: () =>
-          import("@legislative-tracker/client-angular/features").then(
+          import('@legislative-tracker/client-angular/features').then(
             (m) => m.NotFound,
           ),
-        title: "404 | Legislative Tracker",
+        title: '404 | Legislative Tracker',
       },
       {
-        path: "about",
+        path: 'about',
         loadComponent: () =>
-          import("@legislative-tracker/client-angular/features").then(
+          import('@legislative-tracker/client-angular/features').then(
             (m) => m.About,
           ),
-        title: "About | Legislative Tracker",
+        title: 'About | Legislative Tracker',
       },
       {
-        path: "privacy",
+        path: 'privacy',
         loadComponent: () =>
-          import("@legislative-tracker/client-angular/features").then(
+          import('@legislative-tracker/client-angular/features').then(
             (m) => m.Privacy,
           ),
-        title: "Privacy Policy | Legislative Tracker",
+        title: 'Privacy Policy | Legislative Tracker',
       },
 
       // --- Feature: Authentication ---
       {
-        path: "login",
+        path: 'login',
         loadComponent: () =>
-          import("@legislative-tracker/client-angular/features").then(
+          import('@legislative-tracker/client-angular/features').then(
             (m) => m.Login,
           ),
-        title: "Login | Legislative Tracker",
+        title: 'Login | Legislative Tracker',
       },
 
       // --- Feature: Admin ---
       {
-        path: "admin",
+        path: 'admin',
         canActivate: [adminGuard],
         loadChildren: () =>
-          import("@legislative-tracker/client-angular/features").then(
+          import('@legislative-tracker/client-angular/features').then(
             (m) => m.ADMIN_ROUTES,
           ),
       },
 
       // --- Feature: User Profile ---
       {
-        path: "profile",
+        path: 'profile',
         loadComponent: () =>
-          import("@legislative-tracker/client-angular/features").then(
+          import('@legislative-tracker/client-angular/features').then(
             (m) => m.Profile,
           ),
-        title: "Profile | Legislative Tracker",
+        title: 'Profile | Legislative Tracker',
       },
 
       // --- Feature: Legislative Tracker (State Wildcard) ---
       {
-        path: ":stateCd",
+        path: ':stateCd',
         canActivate: [stateGuard],
         loadChildren: () =>
-          import("@legislative-tracker/client-angular/features").then(
+          import('@legislative-tracker/client-angular/features').then(
             (m) => m.LEGISLATIVE_ROUTES,
           ),
       },
     ],
   },
-  { path: "**", redirectTo: "" },
+  { path: '**', redirectTo: '' },
 ];

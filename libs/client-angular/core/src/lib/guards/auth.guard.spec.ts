@@ -1,11 +1,11 @@
-import { TestBed } from "@angular/core/testing";
-import { CanActivateFn, Router, UrlTree } from "@angular/router";
-import { vi, describe, it, expect, beforeEach } from "vitest";
+import { TestBed } from '@angular/core/testing';
+import { CanActivateFn, Router, UrlTree } from '@angular/router';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
-import { authGuard } from "./auth.guard";
-import { AuthService } from "../services/auth.service";
+import { authGuard } from './auth.guard';
+import { AuthService } from '../services/auth.service';
 
-describe("authGuard", () => {
+describe('authGuard', () => {
   // Helper to execute the functional guard in context
   const executeGuard: CanActivateFn = (...guardParameters) =>
     TestBed.runInInjectionContext(() => authGuard(...guardParameters));
@@ -27,7 +27,7 @@ describe("authGuard", () => {
     });
   });
 
-  it("should allow navigation (return true) if user is logged in", () => {
+  it('should allow navigation (return true) if user is logged in', () => {
     // Mock the Signal: isLoggedIn() returns true
     authServiceSpy.isLoggedIn.mockReturnValue(true);
 
@@ -37,7 +37,7 @@ describe("authGuard", () => {
     expect(routerSpy.parseUrl).not.toHaveBeenCalled();
   });
 
-  it("should redirect to /login if user is NOT logged in", () => {
+  it('should redirect to /login if user is NOT logged in', () => {
     // Mock the Signal: isLoggedIn() returns false
     authServiceSpy.isLoggedIn.mockReturnValue(false);
 
@@ -48,7 +48,7 @@ describe("authGuard", () => {
     const result = executeGuard({} as any, {} as any);
 
     // Verify logic
-    expect(routerSpy.parseUrl).toHaveBeenCalledWith("/login");
+    expect(routerSpy.parseUrl).toHaveBeenCalledWith('/login');
     expect(result).toBe(dummyUrlTree);
   });
 });

@@ -1,13 +1,13 @@
-import { Component, Inject } from "@angular/core";
-import { CommonModule } from "@angular/common";
-import { MatButtonModule } from "@angular/material/button";
+import { Component, Inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_SNACK_BAR_DATA,
   MatSnackBarRef,
   MatSnackBarAction,
   MatSnackBarActions,
   MatSnackBarLabel,
-} from "@angular/material/snack-bar";
+} from '@angular/material/snack-bar';
 
 // Define the data shape we expect
 export interface LinkSnackBarData {
@@ -17,7 +17,7 @@ export interface LinkSnackBarData {
 }
 
 @Component({
-  selector: "app-link-snackbar",
+  selector: 'app-link-snackbar',
   standalone: true,
   imports: [
     CommonModule,
@@ -26,8 +26,8 @@ export interface LinkSnackBarData {
     MatSnackBarActions,
     MatSnackBarAction,
   ],
-  templateUrl: "./link-snackbar.html",
-  styleUrls: ["./link-snackbar.scss"],
+  templateUrl: './link-snackbar.html',
+  styleUrls: ['./link-snackbar.scss'],
 })
 export class LinkSnackBar {
   constructor(

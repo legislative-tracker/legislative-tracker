@@ -1,7 +1,7 @@
-import * as api from "@jpstroud/nys-openlegislation-types";
-import { Legislation, Cosponsor } from "@legislative-tracker/shared/models";
-import { NY_JURISDICTION, NY_SENATE_ORG, NY_ASSEMBLY_ORG } from "./constants";
-import { fetchNYSenateAPI, isSuccess, isItemsResponse } from "./api-client";
+import * as api from '@jpstroud/nys-openlegislation-types';
+import { Legislation, Cosponsor } from '@legislative-tracker/shared/models';
+import { NY_JURISDICTION, NY_SENATE_ORG, NY_ASSEMBLY_ORG } from './constants';
+import { fetchNYSenateAPI, isSuccess, isItemsResponse } from './api-client';
 
 export const mapCosponsorsToSponsorships = (b: api.Bill) => {
   const activeVer = b.activeVersion;
@@ -9,18 +9,16 @@ export const mapCosponsorsToSponsorships = (b: api.Bill) => {
 
   return b.amendments.items[activeVer].coSponsors.items.map(
     (c: api.Member) => ({
-      id: c.fullName.replaceAll(".", "").replaceAll(" ", "-"),
+      id: c.fullName.replaceAll('.', '').replaceAll(' ', '-'),
       name: c.fullName,
-      entity_type: "person" as const,
+      entity_type: 'person' as const,
       primary: false,
-      classification: "cosponsor",
+      classification: 'cosponsor',
     }),
   );
 };
 
-export const getCosponsors = (
-  b: api.Bill,
-): { [key: string]: Cosponsor[] } => {
+export const getCosponsors = (b: api.Bill): { [key: string]: Cosponsor[] } => {
   const cosponsorsByVersion: { [key: string]: Cosponsor[] } = {};
   const amendmentVersions: string[] = b.amendmentVersions.items;
 
@@ -30,14 +28,14 @@ export const getCosponsors = (
     if (b.amendments.items[v] && b.amendments.items[v].coSponsors) {
       b.amendments.items[v].coSponsors.items.forEach((c: api.Member) =>
         cosponsors.push({
-          id: c.fullName.replaceAll(".", "").replaceAll(" ", "-"),
+          id: c.fullName.replaceAll('.', '').replaceAll(' ', '-'),
           name: c.fullName,
           chamber: c.chamber,
           district: `${c.districtCode}`,
         }),
       );
     }
-    cosponsorsByVersion[v === "" ? "Original" : v] = cosponsors;
+    cosponsorsByVersion[v === '' ? 'Original' : v] = cosponsors;
   });
 
   return cosponsorsByVersion;
@@ -47,7 +45,7 @@ export const mapAPIBillToLegislation = (b: api.Bill): Legislation => {
   const now = new Date().toISOString();
 
   const fromOrg =
-    b.billType.chamber === "SENATE" ? NY_SENATE_ORG : NY_ASSEMBLY_ORG;
+    b.billType.chamber === 'SENATE' ? NY_SENATE_ORG : NY_ASSEMBLY_ORG;
 
   const legislation: Legislation = {
     id: b.basePrintNoStr,
@@ -56,16 +54,16 @@ export const mapAPIBillToLegislation = (b: api.Bill): Legislation => {
     title: b.title,
     jurisdiction: NY_JURISDICTION,
     from_organization: fromOrg,
-    classification: ["bill"],
+    classification: ['bill'],
     subject: [],
     extras: {},
     created_at: b.publishedDateTime,
     updated_at: now,
-    openstates_url: "",
+    openstates_url: '',
     first_action_date: b.publishedDateTime,
     latest_action_date: b.status.actionDate,
     latest_action_description: b.status.statusDesc,
-    latest_passage_date: "",
+    latest_passage_date: '',
 
     actions: [],
     versions: [],
@@ -87,7 +85,7 @@ export const updateBills = async (
 ): Promise<Legislation[]> => {
   return await Promise.all(
     billList.map(async (bill: string) => {
-      const billParts: string[] = bill.split("-");
+      const billParts: string[] = bill.split('-');
       try {
         const res = await fetchNYSenateAPI<any>(
           `bills/${billParts.pop()}/${billParts.pop()}`,
@@ -98,11 +96,11 @@ export const updateBills = async (
             return mapAPIBillToLegislation(res.result);
           } else {
             throw new Error(
-              "Expected single bill, but received items response.",
+              'Expected single bill, but received items response.',
             );
           }
         } else {
-          throw new Error("Fetch failed");
+          throw new Error('Fetch failed');
         }
       } catch (error) {
         console.error(`Error fetching bill ${bill}:`, error);

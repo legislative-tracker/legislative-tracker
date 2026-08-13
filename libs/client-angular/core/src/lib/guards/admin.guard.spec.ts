@@ -1,27 +1,27 @@
-import { TestBed } from "@angular/core/testing";
+import { TestBed } from '@angular/core/testing';
 import {
   CanActivateFn,
   Router,
   UrlTree,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
-} from "@angular/router";
-import { Auth, authState } from "@angular/fire/auth";
-import { vi, describe, it, expect, beforeEach, afterEach } from "vitest";
-import { of } from "rxjs";
+} from '@angular/router';
+import { Auth, authState } from '@angular/fire/auth';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { of } from 'rxjs';
 
-import { adminGuard } from "./admin.guard";
+import { adminGuard } from './admin.guard';
 
 // Mock the specific Firebase Auth functions we rely on
-vi.mock("@angular/fire/auth", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@angular/fire/auth")>();
+vi.mock('@angular/fire/auth', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@angular/fire/auth')>();
   return {
     ...actual,
     authState: vi.fn(),
   };
 });
 
-describe("adminGuard", () => {
+describe('adminGuard', () => {
   const executeGuard: CanActivateFn = (...guardParameters) =>
     TestBed.runInInjectionContext(() => adminGuard(...guardParameters));
 
@@ -44,7 +44,7 @@ describe("adminGuard", () => {
     vi.clearAllMocks();
   });
 
-  it("should redirect to /login if user is not authenticated", async () => {
+  it('should redirect to /login if user is not authenticated', async () => {
     // Mock authState to emit "null" (logged out)
     (authState as any).mockReturnValue(of(null));
 
@@ -53,11 +53,11 @@ describe("adminGuard", () => {
 
     const result = await runGuard();
 
-    expect(routerSpy.createUrlTree).toHaveBeenCalledWith(["/login"]);
+    expect(routerSpy.createUrlTree).toHaveBeenCalledWith(['/login']);
     expect(result).toBe(mockUrlTree);
   });
 
-  it("should redirect to / (Home) if user is logged in but NOT admin", async () => {
+  it('should redirect to / (Home) if user is logged in but NOT admin', async () => {
     // Mock a standard user without claims
     const mockUser = {
       getIdTokenResult: vi.fn().mockResolvedValue({
@@ -71,11 +71,11 @@ describe("adminGuard", () => {
 
     const result = await runGuard();
 
-    expect(routerSpy.createUrlTree).toHaveBeenCalledWith(["/"]);
+    expect(routerSpy.createUrlTree).toHaveBeenCalledWith(['/']);
     expect(result).toBe(mockUrlTree);
   });
 
-  it("should allow access (return true) if user IS admin", async () => {
+  it('should allow access (return true) if user IS admin', async () => {
     // Mock an admin user
     const mockUser = {
       getIdTokenResult: vi.fn().mockResolvedValue({

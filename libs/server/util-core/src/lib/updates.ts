@@ -2,11 +2,11 @@ import {
   Legislator,
   Legislation,
   LegislatureUpdateFnMap,
-} from "@legislative-tracker/shared/models";
+} from '@legislative-tracker/shared/models';
 import {
   updateBills as updateNyBills,
   updateMembers as updateNyMembers,
-} from "@legislative-tracker/plugins-leg-us-ny";
+} from '@legislative-tracker/plugins-leg-us-ny';
 
 /**
  * Mapping object that returns the specific "updater" function for a given jurisdiction
@@ -40,7 +40,9 @@ export const getMemberUpdates = async (
 ): Promise<Partial<Legislator>[]> => {
   const updateFn = updateFnMap[legislatureCd]?.members;
   if (!updateFn) {
-    throw new Error(`No member update function registered for state: ${legislatureCd}`);
+    throw new Error(
+      `No member update function registered for state: ${legislatureCd}`,
+    );
   }
 
   return (await updateFn()) as Partial<Legislator>[];

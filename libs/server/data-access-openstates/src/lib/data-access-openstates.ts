@@ -1,4 +1,4 @@
-import { Person } from "@jpstroud/opencivicdata-types";
+import { Person } from '@jpstroud/opencivicdata-types';
 
 export interface OSResponse<T> {
   results: T[];
@@ -10,7 +10,7 @@ export interface OSResponse<T> {
   };
 }
 
-const BASE_URL = "https://v3.openstates.org";
+const BASE_URL = 'https://v3.openstates.org';
 
 /**
  * Generic function to fetch paginated data from OpenStates
@@ -23,7 +23,7 @@ export const getOpenStatesData = async (
   targetEndpoint: string,
   apiKey?: string,
 ): Promise<Person[]> => {
-  const keyToUse = apiKey || process.env["OPENSTATES_API_KEY"] || "";
+  const keyToUse = apiKey || process.env['OPENSTATES_API_KEY'] || '';
   const endpointUrl = `${BASE_URL}/${targetEndpoint}`;
   console.log(`Fetching ${targetEndpoint} for ${jurisdiction}...`);
 
@@ -34,24 +34,24 @@ export const getOpenStatesData = async (
   try {
     do {
       const url = new URL(endpointUrl);
-      url.searchParams.set("jurisdiction", jurisdiction);
-      url.searchParams.set("page", String(currentPage));
-      url.searchParams.set("per_page", "50");
+      url.searchParams.set('jurisdiction', jurisdiction);
+      url.searchParams.set('page', String(currentPage));
+      url.searchParams.set('per_page', '50');
       if (keyToUse) {
-        url.searchParams.set("apikey", keyToUse);
+        url.searchParams.set('apikey', keyToUse);
       }
 
-      if (targetEndpoint === "people") {
-        url.searchParams.append("include", "offices");
-        url.searchParams.append("include", "links");
-        url.searchParams.append("include", "other_identifiers");
+      if (targetEndpoint === 'people') {
+        url.searchParams.append('include', 'offices');
+        url.searchParams.append('include', 'links');
+        url.searchParams.append('include', 'other_identifiers');
       }
 
       console.log(url.toString());
 
       const response = await fetch(url.toString(), {
         headers: {
-          "User-Agent": "LegislativeTracker/1.0",
+          'User-Agent': 'LegislativeTracker/1.0',
         },
       });
       if (!response.ok) {

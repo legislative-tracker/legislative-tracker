@@ -1,16 +1,16 @@
-import { Component, inject, signal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { MatCardModule } from "@angular/material/card";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
-import { MatButtonModule } from "@angular/material/button";
-import { MatIconModule } from "@angular/material/icon";
-import { MatSnackBar, MatSnackBarModule } from "@angular/material/snack-bar";
+import { Component, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
-import { UserManagementService } from "@legislative-tracker/client-angular/core";
+import { UserManagementService } from '@legislative-tracker/client-angular/core';
 
 @Component({
-  selector: "app-admin-panel",
+  selector: 'app-admin-panel',
   standalone: true,
   imports: [
     FormsModule,
@@ -21,14 +21,14 @@ import { UserManagementService } from "@legislative-tracker/client-angular/core"
     MatIconModule,
     MatSnackBarModule,
   ],
-  templateUrl: "./add-admin.html",
-  styleUrl: "./add-admin.scss",
+  templateUrl: './add-admin.html',
+  styleUrl: './add-admin.scss',
 })
 export class AddAdmin {
   private userMgmt = inject(UserManagementService);
   private snackBar = inject(MatSnackBar);
 
-  email = signal("");
+  email = signal('');
   isLoading = signal(false);
 
   async promoteUser() {
@@ -40,17 +40,17 @@ export class AddAdmin {
       // Call the function we added to AuthService
       await this.userMgmt.grantAdminPrivileges(this.email());
 
-      this.snackBar.open(`Success! ${this.email()} is now an Admin.`, "Close", {
+      this.snackBar.open(`Success! ${this.email()} is now an Admin.`, 'Close', {
         duration: 5000,
-        panelClass: ["success-snackbar"],
+        panelClass: ['success-snackbar'],
       });
 
-      this.email.set(""); // Clear the form
+      this.email.set(''); // Clear the form
     } catch (error: any) {
       console.error(error);
-      this.snackBar.open(error.message || "Promotion failed.", "Close", {
+      this.snackBar.open(error.message || 'Promotion failed.', 'Close', {
         duration: 5000,
-        panelClass: ["error-snackbar"],
+        panelClass: ['error-snackbar'],
       });
     } finally {
       this.isLoading.set(false);

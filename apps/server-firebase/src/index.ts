@@ -1,1 +1,1 @@
-export * from "@legislative-tracker/server-triggers-firebase";
+export * from '@legislative-tracker/server-triggers-firebase';

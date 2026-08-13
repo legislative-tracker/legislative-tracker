@@ -1,6 +1,6 @@
-import { Person } from "@jpstroud/opencivicdata-types";
-import { Legislator } from "@legislative-tracker/shared/models";
-import { chamberMapper } from "./chamber-mapper";
+import { Person } from '@jpstroud/opencivicdata-types';
+import { Legislator } from '@legislative-tracker/shared/models';
+import { chamberMapper } from './chamber-mapper';
 
 /**
  * Maps an OpenStates "Person" object to a Partial of our custom "Legislator"
@@ -12,7 +12,7 @@ export const mapPersonToLegislator = (person: Person): Partial<Legislator> => {
   );
 
   return {
-    id: person.name.replaceAll(".", "").replaceAll(" ", "-"),
+    id: person.name.replaceAll('.', '').replaceAll(' ', '-'),
     honorific_prefix: person.current_role.title,
     name: person.name,
     party: person.party,

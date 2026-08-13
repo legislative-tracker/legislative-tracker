@@ -1,26 +1,26 @@
-import { Component, inject, signal } from "@angular/core";
-import { Router } from "@angular/router";
-import { CommonModule } from "@angular/common";
+import { Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
   FormBuilder,
   Validators,
   FormGroup,
-} from "@angular/forms";
-import { MatDialogRef, MatDialogModule } from "@angular/material/dialog";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
-import { MatSelectModule } from "@angular/material/select";
-import { MatButtonModule } from "@angular/material/button";
-import { MatIconModule } from "@angular/material/icon";
-import { MatSnackBar } from "@angular/material/snack-bar";
+} from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 // App Imports
-import { LinkSnackBar } from "../snackbars/link-snackbar/link-snackbar";
-import { FeedbackService } from "@legislative-tracker/client-angular/core";
+import { LinkSnackBar } from '../snackbars/link-snackbar/link-snackbar';
+import { FeedbackService } from '@legislative-tracker/client-angular/core';
 
 @Component({
-  selector: "app-feedback",
+  selector: 'app-feedback',
   standalone: true,
   imports: [
     CommonModule,
@@ -32,8 +32,8 @@ import { FeedbackService } from "@legislative-tracker/client-angular/core";
     MatButtonModule,
     MatIconModule,
   ],
-  templateUrl: "./feedback.html",
-  styleUrls: ["./feedback.scss"],
+  templateUrl: './feedback.html',
+  styleUrls: ['./feedback.scss'],
 })
 export class Feedback {
   private fb = inject(FormBuilder);
@@ -47,16 +47,16 @@ export class Feedback {
 
   // Form Definition
   form: FormGroup = this.fb.group({
-    type: ["bug", Validators.required],
-    title: ["", [Validators.required, Validators.minLength(4)]],
-    description: ["", [Validators.required, Validators.minLength(10)]],
+    type: ['bug', Validators.required],
+    title: ['', [Validators.required, Validators.minLength(4)]],
+    description: ['', [Validators.required, Validators.minLength(10)]],
   });
 
   // Issue Types for the Dropdown
   issueTypes = [
-    { value: "bug", label: "Bug Report", icon: "bug_report" },
-    { value: "feature", label: "Feature Request", icon: "lightbulb" },
-    { value: "general", label: "General Feedback", icon: "feedback" },
+    { value: 'bug', label: 'Bug Report', icon: 'bug_report' },
+    { value: 'feature', label: 'Feature Request', icon: 'lightbulb' },
+    { value: 'general', label: 'General Feedback', icon: 'feedback' },
   ];
 
   async onSubmit() {
@@ -81,26 +81,26 @@ export class Feedback {
         duration: 8000, // Give them time to click
         data: {
           message: `Issue #${response.issueNumber} successfully submitted.`,
-          linkText: "View on GitHub",
+          linkText: 'View on GitHub',
           linkUrl: response.issueUrl,
         },
       });
 
       this.dialogRef.close();
 
-      this.form.reset({ type: "bug" });
+      this.form.reset({ type: 'bug' });
       // Reset validation errors visually
       Object.keys(this.form.controls).forEach((key) => {
         this.form.get(key)?.setErrors(null);
       });
     } catch (error) {
-      console.error("Feedback failed", error);
+      console.error('Feedback failed', error);
       this.snackBar.open(
-        "Failed to submit feedback. Please try again.",
-        "Close",
+        'Failed to submit feedback. Please try again.',
+        'Close',
         {
           duration: 5000,
-          panelClass: ["error-snackbar"],
+          panelClass: ['error-snackbar'],
         },
       );
     } finally {

@@ -1,14 +1,14 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { provideRouter, Router } from "@angular/router";
-import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter, Router } from '@angular/router';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 // Target Component
-import { Login } from "./login";
+import { Login } from './login';
 
 // Dependencies
-import { AuthService } from "@legislative-tracker/client-angular/core";
+import { AuthService } from '@legislative-tracker/client-angular/core';
 
-describe("Login", () => {
+describe('Login', () => {
   let component: Login;
   let fixture: ComponentFixture<Login>;
   let router: Router;
@@ -33,10 +33,10 @@ describe("Login", () => {
 
     // Inject the router to spy on it
     router = TestBed.inject(Router);
-    vi.spyOn(router, "navigate");
+    vi.spyOn(router, 'navigate');
 
     // Spy on console.error to keep test output clean and verify exception handling
-    vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
 
     fixture.detectChanges();
   });
@@ -45,25 +45,25 @@ describe("Login", () => {
     vi.clearAllMocks();
   });
 
-  it("should create", () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it("should navigate to /profile on successful login", async () => {
+  it('should navigate to /profile on successful login', async () => {
     // Mock success response (truthy)
-    mockAuthService.loginWithGoogle.mockResolvedValue({ uid: "123" });
+    mockAuthService.loginWithGoogle.mockResolvedValue({ uid: '123' });
 
     // Trigger Action
     await component.loginWithGoogle();
 
     // Assert Navigation
-    expect(router.navigate).toHaveBeenCalledWith(["/profile"]);
+    expect(router.navigate).toHaveBeenCalledWith(['/profile']);
 
     // Assert Error State is clear
     expect(component.authError()).toBeNull();
   });
 
-  it("should set authError when login returns null/false (User cancelled or failed)", async () => {
+  it('should set authError when login returns null/false (User cancelled or failed)', async () => {
     // Mock failure response (falsy)
     mockAuthService.loginWithGoogle.mockResolvedValue(null);
 
@@ -75,13 +75,13 @@ describe("Login", () => {
 
     // Assert Error Signal
     expect(component.authError()).toBe(
-      "Unable to authenticate with Google. Please try again.",
+      'Unable to authenticate with Google. Please try again.',
     );
   });
 
-  it("should log errors to console when exception occurs", async () => {
+  it('should log errors to console when exception occurs', async () => {
     // Mock Exception
-    const mockError = { code: "auth/error", message: "Something went wrong" };
+    const mockError = { code: 'auth/error', message: 'Something went wrong' };
     mockAuthService.loginWithGoogle.mockRejectedValue(mockError);
 
     // Trigger Action
@@ -89,12 +89,12 @@ describe("Login", () => {
 
     // Verify Console Logs (matches your catch block)
     expect(console.error).toHaveBeenCalledWith(
-      "Auth Error Code:",
-      "auth/error",
+      'Auth Error Code:',
+      'auth/error',
     );
     expect(console.error).toHaveBeenCalledWith(
-      "Auth Error Message:",
-      "Something went wrong",
+      'Auth Error Message:',
+      'Something went wrong',
     );
 
     // Verify user stays on page

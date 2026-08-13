@@ -1,4 +1,4 @@
-@if (formType() === "shipping") {
+@if (formType() === 'shipping') {
   <form [formGroup]="shippingAddress" novalidate (ngSubmit)="onSubmit()">
     <mat-card class="shipping-card">
       <mat-card-header>
@@ -20,7 +20,7 @@
                 placeholder="First name"
                 formControlName="firstName"
               />
-              @if (shippingAddress.controls["firstName"].hasError("required")) {
+              @if (shippingAddress.controls['firstName'].hasError('required')) {
                 <mat-error>First name is <strong>required</strong></mat-error>
               }
             </mat-form-field>
@@ -32,7 +32,7 @@
                 placeholder="Last name"
                 formControlName="lastName"
               />
-              @if (shippingAddress.controls["lastName"].hasError("required")) {
+              @if (shippingAddress.controls['lastName'].hasError('required')) {
                 <mat-error>Last name is <strong>required</strong></mat-error>
               }
             </mat-form-field>
@@ -46,7 +46,7 @@
                 placeholder="Address"
                 formControlName="address"
               ></textarea>
-              @if (shippingAddress.controls["address"].hasError("required")) {
+              @if (shippingAddress.controls['address'].hasError('required')) {
                 <mat-error>Address is <strong>required</strong></mat-error>
               }
             </mat-form-field>
@@ -77,7 +77,7 @@
           <div class="col">
             <mat-form-field class="full-width">
               <input matInput placeholder="City" formControlName="city" />
-              @if (shippingAddress.controls["city"].hasError("required")) {
+              @if (shippingAddress.controls['city'].hasError('required')) {
                 <mat-error>City is <strong>required</strong></mat-error>
               }
             </mat-form-field>
@@ -91,7 +91,7 @@
                   }}</mat-option>
                 }
               </mat-select>
-              @if (shippingAddress.controls["state"].hasError("required")) {
+              @if (shippingAddress.controls['state'].hasError('required')) {
                 <mat-error>State is <strong>required</strong></mat-error>
               }
             </mat-form-field>
@@ -134,7 +134,7 @@
     </mat-card>
   </form>
 }
-@if (formType() === "search") {
+@if (formType() === 'search') {
   <form [formGroup]="searchAddress" novalidate (ngSubmit)="onSubmit()">
     <mat-card class="shipping-card">
       <mat-card-header>
@@ -149,7 +149,7 @@
                 placeholder="Address"
                 formControlName="address"
               ></textarea>
-              @if (shippingAddress.controls["address"].hasError("required")) {
+              @if (shippingAddress.controls['address'].hasError('required')) {
                 <mat-error>Address is <strong>required</strong></mat-error>
               }
             </mat-form-field>
@@ -159,7 +159,7 @@
           <div class="col">
             <mat-form-field class="full-width">
               <input matInput placeholder="City" formControlName="city" />
-              @if (shippingAddress.controls["city"].hasError("required")) {
+              @if (shippingAddress.controls['city'].hasError('required')) {
                 <mat-error>City is <strong>required</strong></mat-error>
               }
             </mat-form-field>
@@ -173,7 +173,7 @@
                   }}</mat-option>
                 }
               </mat-select>
-              @if (shippingAddress.controls["state"].hasError("required")) {
+              @if (shippingAddress.controls['state'].hasError('required')) {
                 <mat-error>State is <strong>required</strong></mat-error>
               }
             </mat-form-field>

@@ -1,14 +1,14 @@
-import * as logger from "firebase-functions/logger";
-import { Person } from "@jpstroud/opencivicdata-types";
-import { Legislator } from "@legislative-tracker/shared/models";
-import { db, openStatesKey } from "../config";
-import { getOpenStatesData } from "@legislative-tracker/server-data-access-openstates";
+import * as logger from 'firebase-functions/logger';
+import { Person } from '@jpstroud/opencivicdata-types';
+import { Legislator } from '@legislative-tracker/shared/models';
+import { db, openStatesKey } from '../config';
+import { getOpenStatesData } from '@legislative-tracker/server-data-access-openstates';
 import {
   isEmail,
   isImageLink,
   getMemberUpdates,
   slugify,
-} from "@legislative-tracker/server-util-core";
+} from '@legislative-tracker/server-util-core';
 
 export interface UpdateResult {
   state: string;
@@ -22,7 +22,7 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
   const results: UpdateResult[] = [];
 
   try {
-    const legislaturesSnapshot = await db.collection("legislatures").get();
+    const legislaturesSnapshot = await db.collection('legislatures').get();
 
     // Iterate over each state configured in the database
     const updatePromises = legislaturesSnapshot.docs.map(async (doc) => {
@@ -38,7 +38,7 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
         // Fetch OpenStates Data (Generic)
         const openStatesPromise = getOpenStatesData(
           stateName,
-          "people",
+          'people',
           openStatesKey.value(),
         );
 
@@ -68,7 +68,7 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
         snapshot.docs.forEach((doc) => {
           const data = doc.data();
           const docChamber =
-            data.chamber?.toUpperCase() === "SENATE" ? "SENATE" : "ASSEMBLY";
+            data.chamber?.toUpperCase() === 'SENATE' ? 'SENATE' : 'ASSEMBLY';
           if (data.district) {
             existingDocMap.set(`${docChamber}-${data.district}`, doc);
           }
@@ -86,10 +86,10 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
 
         openStatesMembers.forEach((os: any) => {
           const isSenate =
-            os.current_role?.org_classification === "upper" ||
-            os.current_role?.title?.toLowerCase().includes("senat");
-          const chamber = isSenate ? "SENATE" : "ASSEMBLY";
-          const district = os.current_role?.district || "";
+            os.current_role?.org_classification === 'upper' ||
+            os.current_role?.title?.toLowerCase().includes('senat');
+          const chamber = isSenate ? 'SENATE' : 'ASSEMBLY';
+          const district = os.current_role?.district || '';
           if (!district) return;
 
           const key = `${chamber}-${district}`;
@@ -103,8 +103,8 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
 
         stateMembers.forEach((sm: Partial<Legislator>) => {
           const chamber =
-            sm.chamber?.toUpperCase() === "SENATE" ? "SENATE" : "ASSEMBLY";
-          const district = sm.district || "";
+            sm.chamber?.toUpperCase() === 'SENATE' ? 'SENATE' : 'ASSEMBLY';
+          const district = sm.district || '';
           if (!district) return;
 
           const key = `${chamber}-${district}`;
@@ -134,7 +134,7 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
 
           const prefix =
             osMatch?.current_role?.title ||
-            (chamber === "SENATE" ? "Senator" : "Assembly Member");
+            (chamber === 'SENATE' ? 'Senator' : 'Assembly Member');
           if (prefix) updates.honorific_prefix = prefix;
 
           const suffix =
@@ -147,8 +147,7 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
           const familyName = osMatch?.family_name || stateMatch?.family_name;
           if (familyName) updates.family_name = familyName;
 
-          const sortName =
-            (osMatch as any)?.sort_name || stateMatch?.sort_name;
+          const sortName = (osMatch as any)?.sort_name || stateMatch?.sort_name;
           if (sortName) updates.sort_name = sortName;
 
           const gender = (osMatch as any)?.gender || stateMatch?.gender;
@@ -188,13 +187,10 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
             bulkWriter.set(existingDoc.ref, updates, { merge: true });
             matchedCount++;
           } else {
-            const rawName = updates.name || "";
-            const suff = updates.honorific_suffix || "";
+            const rawName = updates.name || '';
+            const suff = updates.honorific_suffix || '';
             let fullName = rawName;
-            if (
-              suff &&
-              !rawName.toLowerCase().includes(suff.toLowerCase())
-            ) {
+            if (suff && !rawName.toLowerCase().includes(suff.toLowerCase())) {
               fullName = `${rawName} ${suff}`;
             }
 
@@ -230,7 +226,7 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
         logger.error(`Failed to update ${stateName}`, err);
         results.push({
           state: stateCode,
-          error: err instanceof Error ? err.message : "Unknown Error",
+          error: err instanceof Error ? err.message : 'Unknown Error',
         });
       }
     });
@@ -240,7 +236,7 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
 
     return results;
   } catch (error) {
-    logger.error("Global Update Failed", error);
+    logger.error('Global Update Failed', error);
     throw error;
   }
 };

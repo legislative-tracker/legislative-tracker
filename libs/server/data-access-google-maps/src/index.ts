@@ -1,1 +1,1 @@
-export * from "./lib/data-access-google-maps";
+export * from './lib/data-access-google-maps';

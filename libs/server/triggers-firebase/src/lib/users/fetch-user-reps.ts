@@ -1,15 +1,15 @@
-import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { Person } from "@jpstroud/opencivicdata-types";
-import { db, openStatesKey, googleMapsKey } from "../config";
-import { getGeocode } from "@legislative-tracker/server-data-access-google-maps";
-import { mapPersonToLegislator } from "@legislative-tracker/plugins-core";
+import { onCall, HttpsError } from 'firebase-functions/v2/https';
+import { Person } from '@jpstroud/opencivicdata-types';
+import { db, openStatesKey, googleMapsKey } from '../config';
+import { getGeocode } from '@legislative-tracker/server-data-access-google-maps';
+import { mapPersonToLegislator } from '@legislative-tracker/plugins-core';
 
 const isSuccess = <T>(res: unknown): res is { results: T[] } => {
   return Array.isArray((res as { results: T[] })?.results);
 };
 
 const updateUserProfile = async (userId: string, data: object) => {
-  const userRef = db.collection("users").doc(userId);
+  const userRef = db.collection('users').doc(userId);
   await userRef.set(data, { merge: true });
 };
 
@@ -17,19 +17,19 @@ export const fetchUserReps = onCall(
   { secrets: [openStatesKey, googleMapsKey] },
   async (request) => {
     const address = request.data.address;
-    if (!address) throw new HttpsError("invalid-argument", "Address required.");
+    if (!address) throw new HttpsError('invalid-argument', 'Address required.');
 
     const userId = request.auth?.uid;
-    if (!userId) throw new HttpsError("invalid-argument", "User ID required.");
+    if (!userId) throw new HttpsError('invalid-argument', 'User ID required.');
 
     try {
       const geocoding = await getGeocode(address, googleMapsKey.value());
-      if (!geocoding) throw new HttpsError("not-found", "Geocoding failed");
+      if (!geocoding) throw new HttpsError('not-found', 'Geocoding failed');
 
-      const url = new URL("https://v3.openstates.org/people.geo");
-      url.searchParams.set("apikey", openStatesKey.value());
-      url.searchParams.set("lat", String(geocoding.lat));
-      url.searchParams.set("lng", String(geocoding.lng));
+      const url = new URL('https://v3.openstates.org/people.geo');
+      url.searchParams.set('apikey', openStatesKey.value());
+      url.searchParams.set('lat', String(geocoding.lat));
+      url.searchParams.set('lng', String(geocoding.lng));
       const response = await fetch(url.toString());
       if (!response.ok) {
         throw new Error(
@@ -42,37 +42,37 @@ export const fetchUserReps = onCall(
       if (isSuccess<Person>(res)) {
         const people = {
           federal: res.results
-            .filter((p) => p.jurisdiction.classification === "country")
+            .filter((p) => p.jurisdiction.classification === 'country')
             .map(mapPersonToLegislator),
           state: res.results
-            .filter((p) => p.jurisdiction.classification === "state")
+            .filter((p) => p.jurisdiction.classification === 'state')
             .map(mapPersonToLegislator),
         };
 
         const districts = {
-          federal: people.federal.find((p) => p.chamber === "House")?.district,
+          federal: people.federal.find((p) => p.chamber === 'House')?.district,
           state: {
-            assembly: people.state.find((p) => p.chamber === "Assembly")
+            assembly: people.state.find((p) => p.chamber === 'Assembly')
               ?.district,
-            senate: people.state.find((p) => p.chamber === "Senate")?.district,
+            senate: people.state.find((p) => p.chamber === 'Senate')?.district,
           },
         };
 
         const stateCode: string = districts.federal
-          ?.split("-")[0]
+          ?.split('-')[0]
           .toLowerCase() as string;
         const path = `legislatures/${stateCode}/legislators`;
 
         const assemblySnapshot = await db
           .collection(path)
-          .where("chamber", "==", "ASSEMBLY")
-          .where("district", "==", String(districts.state.assembly))
+          .where('chamber', '==', 'ASSEMBLY')
+          .where('district', '==', String(districts.state.assembly))
           .get();
 
         const senateSnapshot = await db
           .collection(path)
-          .where("chamber", "==", "SENATE")
-          .where("district", "==", String(districts.state.senate))
+          .where('chamber', '==', 'SENATE')
+          .where('district', '==', String(districts.state.senate))
           .get();
 
         const a = assemblySnapshot.docs.map((doc) => ({
@@ -93,11 +93,11 @@ export const fetchUserReps = onCall(
 
         return { districts };
       } else {
-        throw new HttpsError("unavailable", "Failed to parse data.");
+        throw new HttpsError('unavailable', 'Failed to parse data.');
       }
     } catch (error: any) {
-      console.error("Fetch Reps Error: ", error);
-      throw new HttpsError("unknown", "Failed to fetch reps.", error.message);
+      console.error('Fetch Reps Error: ', error);
+      throw new HttpsError('unknown', 'Failed to fetch reps.', error.message);
     }
   },
 );

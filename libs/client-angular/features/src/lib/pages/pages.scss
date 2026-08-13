@@ -25,12 +25,12 @@
     margin-bottom: 2rem;
   }
 
-  ul:not([class*="mat-"]) {
+  ul:not([class*='mat-']) {
     margin-left: 1.5rem;
     list-style-type: disc;
   }
 
-  a:not([class*="mat-"]) {
+  a:not([class*='mat-']) {
     color: var(--mat-sys-primary);
     text-decoration: none;
     font-weight: 500;

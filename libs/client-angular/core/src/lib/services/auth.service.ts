@@ -1,14 +1,14 @@
-import { Injectable, inject, signal, computed, effect } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
-import { Auth, user } from "@angular/fire/auth";
-import { FirebaseApp } from "@angular/fire/app";
-import { Router } from "@angular/router";
+import { Injectable, inject, signal, computed, effect } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Auth, user } from '@angular/fire/auth';
+import { FirebaseApp } from '@angular/fire/app';
+import { Router } from '@angular/router';
 
 // App imports
-import { AppUser } from "@legislative-tracker/shared/models";
+import { AppUser } from '@legislative-tracker/shared/models';
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class AuthService {
   private auth = inject(Auth);
@@ -33,7 +33,7 @@ export class AuthService {
       if (currentUser) {
         // Check for Admin User Token
         const token = await currentUser.getIdTokenResult();
-        this.isAdmin.set(!!token.claims["admin"]);
+        this.isAdmin.set(!!token.claims['admin']);
 
         // Load user profile
         this.fetchUserProfile(currentUser.uid);
@@ -50,7 +50,7 @@ export class AuthService {
    */
   private async fetchUserProfile(uid: string) {
     const { getFirestore, doc, docData } =
-      await import("@angular/fire/firestore");
+      await import('@angular/fire/firestore');
 
     const firestore = getFirestore(this.app);
     const userDoc = doc(firestore, `users/${uid}`);
@@ -67,7 +67,7 @@ export class AuthService {
   async loginWithGoogle() {
     // Lazy Load Auth Logic
     const { GoogleAuthProvider, signInWithPopup } =
-      await import("@angular/fire/auth");
+      await import('@angular/fire/auth');
 
     const provider = new GoogleAuthProvider();
     const credential = await signInWithPopup(this.auth, provider);
@@ -75,7 +75,7 @@ export class AuthService {
     // Lazy Load Firestore to save/update the user record
     if (credential.user) {
       const { getFirestore, doc, setDoc } =
-        await import("@angular/fire/firestore");
+        await import('@angular/fire/firestore');
       const firestore = getFirestore(this.app);
 
       const userRef = doc(firestore, `users/${credential.user.uid}`);
@@ -100,11 +100,11 @@ export class AuthService {
    */
   async logout() {
     // Lazy Load SignOut Logic
-    const { signOut } = await import("@angular/fire/auth");
+    const { signOut } = await import('@angular/fire/auth');
 
     await signOut(this.auth);
 
-    this.router.navigate(["/"]);
+    this.router.navigate(['/']);
   }
 
   /**
@@ -124,7 +124,7 @@ export class AuthService {
 
     // Lazy Load Firestore for the write operation
     const { getFirestore, doc, setDoc } =
-      await import("@angular/fire/firestore");
+      await import('@angular/fire/firestore');
     const firestore = getFirestore(this.app);
 
     const userRef = doc(firestore, `users/${currentUser.uid}`);

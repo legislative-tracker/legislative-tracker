@@ -3,47 +3,52 @@ import {
   provideZonelessChangeDetection,
   inject,
   provideAppInitializer,
-} from "@angular/core";
+} from '@angular/core';
 import {
   provideRouter,
   withComponentInputBinding,
   withRouterConfig,
-} from "@angular/router";
-import { initializeApp, provideFirebaseApp } from "@angular/fire/app";
-import { Auth, connectAuthEmulator, getAuth, provideAuth } from "@angular/fire/auth";
+} from '@angular/router';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import {
+  Auth,
+  connectAuthEmulator,
+  getAuth,
+  provideAuth,
+} from '@angular/fire/auth';
 import {
   Firestore,
   connectFirestoreEmulator,
   getFirestore,
   provideFirestore,
-} from "@angular/fire/firestore";
+} from '@angular/fire/firestore';
 import {
   Functions,
   connectFunctionsEmulator,
   getFunctions,
   provideFunctions,
-} from "@angular/fire/functions";
+} from '@angular/fire/functions';
 import {
   Storage,
   connectStorageEmulator,
   getStorage,
   provideStorage,
-} from "@angular/fire/storage";
+} from '@angular/fire/storage';
 import {
   getAnalytics,
   provideAnalytics,
   ScreenTrackingService,
   UserTrackingService,
-} from "@angular/fire/analytics";
-import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
+} from '@angular/fire/analytics';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import {
   APP_CONFIG,
   AppConfig,
   ConfigService,
-} from "@legislative-tracker/client-angular/core";
-import { routes } from "./app.routes";
-import configJson from "../public/assets/config.json";
+} from '@legislative-tracker/client-angular/core';
+import { routes } from './app.routes';
+import configJson from '../public/assets/config.json';
 
 export const getAppConfig = (
   runtimeConfig: AppConfig = configJson as AppConfig,
@@ -58,7 +63,7 @@ export const getAppConfig = (
       provideRouter(
         routes,
         withComponentInputBinding(),
-        withRouterConfig({ paramsInheritanceStrategy: "always" }),
+        withRouterConfig({ paramsInheritanceStrategy: 'always' }),
       ),
 
       provideFirebaseApp(() => initializeApp(inject(APP_CONFIG).firebase)),
@@ -80,11 +85,7 @@ export const getAppConfig = (
         const config = inject(APP_CONFIG);
         if (config.useEmulators && config.emulatorHosts?.firestore) {
           const fsHost = config.emulatorHosts.firestore;
-          connectFirestoreEmulator(
-            firestore,
-            fsHost.host,
-            fsHost.port,
-          );
+          connectFirestoreEmulator(firestore, fsHost.host, fsHost.port);
         }
         return firestore;
       }),
@@ -93,11 +94,7 @@ export const getAppConfig = (
         const config = inject(APP_CONFIG);
         if (config.useEmulators && config.emulatorHosts?.functions) {
           const fnHost = config.emulatorHosts.functions;
-          connectFunctionsEmulator(
-            functions,
-            fnHost.host,
-            fnHost.port,
-          );
+          connectFunctionsEmulator(functions, fnHost.host, fnHost.port);
         }
         return functions;
       }),
@@ -106,11 +103,7 @@ export const getAppConfig = (
         const config = inject(APP_CONFIG);
         if (config.useEmulators && config.emulatorHosts?.storage) {
           const stHost = config.emulatorHosts.storage;
-          connectStorageEmulator(
-            storage,
-            stHost.host,
-            stHost.port,
-          );
+          connectStorageEmulator(storage, stHost.host, stHost.port);
         }
         return storage;
       }),
@@ -133,4 +126,6 @@ export const getAppConfig = (
   };
 };
 
-export const appConfig: ApplicationConfig = getAppConfig(configJson as AppConfig);
+export const appConfig: ApplicationConfig = getAppConfig(
+  configJson as AppConfig,
+);

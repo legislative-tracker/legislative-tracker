@@ -1,7 +1,7 @@
-import { onCall, HttpsError } from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
-import { db, nySenateKey } from "../config";
-import { getBillUpdates } from "@legislative-tracker/server-util-core";
+import { onCall, HttpsError } from 'firebase-functions/v2/https';
+import * as logger from 'firebase-functions/logger';
+import { db, nySenateKey } from '../config';
+import { getBillUpdates } from '@legislative-tracker/server-util-core';
 
 /**
  * Adds a Bill & Pulls Updates (Callable)
@@ -9,14 +9,14 @@ import { getBillUpdates } from "@legislative-tracker/server-util-core";
 export const addBill = onCall({ secrets: [nySenateKey] }, async (request) => {
   if (request.auth?.token.admin !== true) {
     throw new HttpsError(
-      "permission-denied",
-      "Only admins can add legislation.",
+      'permission-denied',
+      'Only admins can add legislation.',
     );
   }
 
   const { state, bill } = request.data;
   if (!state || !bill || !bill.id) {
-    throw new HttpsError("invalid-argument", "Invalid data.");
+    throw new HttpsError('invalid-argument', 'Invalid data.');
   }
 
   const billRef = db
@@ -59,7 +59,7 @@ export const addBill = onCall({ secrets: [nySenateKey] }, async (request) => {
 
     return { message: `Success! Bill ${bill.id} added.`, path: billRef.path };
   } catch (error) {
-    logger.error("Database write failed", error);
-    throw new HttpsError("internal", "Failed to save bill.");
+    logger.error('Database write failed', error);
+    throw new HttpsError('internal', 'Failed to save bill.');
   }
 });

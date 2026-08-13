@@ -1,16 +1,16 @@
-import { ChamberMapping } from "@legislative-tracker/shared/models";
+import { ChamberMapping } from '@legislative-tracker/shared/models';
 
 /**
  * Mapping object that returns the name of a given legislative chamber
  */
 export const chamberMapping: ChamberMapping = {
   country: {
-    upper: "Senate",
-    lower: "House",
+    upper: 'Senate',
+    lower: 'House',
   },
   state: {
-    upper: "Senate",
-    lower: "Assembly",
+    upper: 'Senate',
+    lower: 'Assembly',
   },
 };
 

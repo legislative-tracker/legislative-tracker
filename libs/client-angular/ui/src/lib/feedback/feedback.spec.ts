@@ -1,15 +1,15 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
-import { provideNoopAnimations } from "@angular/platform-browser/animations";
-import { MatDialogRef } from "@angular/material/dialog";
-import { MatSnackBar } from "@angular/material/snack-bar";
-import { Router } from "@angular/router";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-import { Feedback } from "./feedback";
-import { FeedbackService } from "@legislative-tracker/client-angular/core";
-import { LinkSnackBar } from "../snackbars/link-snackbar/link-snackbar";
+import { Feedback } from './feedback';
+import { FeedbackService } from '@legislative-tracker/client-angular/core';
+import { LinkSnackBar } from '../snackbars/link-snackbar/link-snackbar';
 
-describe("Feedback", () => {
+describe('Feedback', () => {
   let component: Feedback;
   let fixture: ComponentFixture<Feedback>;
 
@@ -24,7 +24,7 @@ describe("Feedback", () => {
   };
 
   const mockRouter = {
-    url: "/current/test/route",
+    url: '/current/test/route',
   };
 
   const mockFeedbackService = {
@@ -53,38 +53,38 @@ describe("Feedback", () => {
     vi.clearAllMocks();
   });
 
-  it("should create", () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it("should initialize the form with default values", () => {
+  it('should initialize the form with default values', () => {
     const form = component.form;
-    expect(form.get("type")?.value).toBe("bug");
-    expect(form.get("title")?.value).toBe("");
-    expect(form.get("description")?.value).toBe("");
+    expect(form.get('type')?.value).toBe('bug');
+    expect(form.get('title')?.value).toBe('');
+    expect(form.get('description')?.value).toBe('');
     expect(form.valid).toBe(false); // Should be invalid initially (required fields empty)
   });
 
-  describe("onSubmit", () => {
-    it("should NOT submit if form is invalid", async () => {
+  describe('onSubmit', () => {
+    it('should NOT submit if form is invalid', async () => {
       // Form is empty/invalid by default
       await component.onSubmit();
 
       expect(mockFeedbackService.sendFeedback).not.toHaveBeenCalled();
     });
 
-    it("should submit successfully when form is valid", async () => {
+    it('should submit successfully when form is valid', async () => {
       // Setup Form Data
       component.form.patchValue({
-        type: "feature",
-        title: "Add Dark Mode",
-        description: "Please add dark mode.",
+        type: 'feature',
+        title: 'Add Dark Mode',
+        description: 'Please add dark mode.',
       });
 
       // Mock successful service response
       const mockResponse = {
         issueNumber: 123,
-        issueUrl: "http://github.com/issue/123",
+        issueUrl: 'http://github.com/issue/123',
       };
       mockFeedbackService.sendFeedback.mockResolvedValue(mockResponse);
 
@@ -94,12 +94,12 @@ describe("Feedback", () => {
       // Assert Service Call
       // Expect the body to contain the formatted markdown we constructed in the component
       expect(mockFeedbackService.sendFeedback).toHaveBeenCalledWith(
-        "Add Dark Mode",
-        expect.stringContaining("**Type:** FEATURE"),
+        'Add Dark Mode',
+        expect.stringContaining('**Type:** FEATURE'),
       );
       expect(mockFeedbackService.sendFeedback).toHaveBeenCalledWith(
-        "Add Dark Mode",
-        expect.stringContaining("**Context:** `/current/test/route`"),
+        'Add Dark Mode',
+        expect.stringContaining('**Context:** `/current/test/route`'),
       );
 
       // Assert SnackBar (Success)
@@ -109,9 +109,9 @@ describe("Feedback", () => {
         {
           duration: 8000,
           data: {
-            message: "Issue #123 successfully submitted.",
-            linkText: "View on GitHub",
-            linkUrl: "http://github.com/issue/123",
+            message: 'Issue #123 successfully submitted.',
+            linkText: 'View on GitHub',
+            linkUrl: 'http://github.com/issue/123',
           },
         },
       );
@@ -120,17 +120,17 @@ describe("Feedback", () => {
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
 
-    it("should handle submission errors gracefully", async () => {
+    it('should handle submission errors gracefully', async () => {
       // Setup Form Data
       component.form.patchValue({
-        type: "bug",
-        title: "Broken Link",
-        description: "Link is broken",
+        type: 'bug',
+        title: 'Broken Link',
+        description: 'Link is broken',
       });
 
       // Mock Error response
       mockFeedbackService.sendFeedback.mockRejectedValue(
-        new Error("API Failure"),
+        new Error('API Failure'),
       );
 
       // Act
@@ -139,8 +139,8 @@ describe("Feedback", () => {
       // Assert Error Handling
       expect(mockDialogRef.close).not.toHaveBeenCalled(); // Should stay open so user can retry
       expect(mockSnackBar.open).toHaveBeenCalledWith(
-        expect.stringContaining("Failed to submit"),
-        "Close",
+        expect.stringContaining('Failed to submit'),
+        'Close',
         expect.anything(),
       );
 
