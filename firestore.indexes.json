@@ -1,0 +1,21 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "legislators",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "chamber", "order": "ASCENDING" },
+        { "fieldPath": "district", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "legislation",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "session", "order": "ASCENDING" },
+        { "fieldPath": "updatedAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

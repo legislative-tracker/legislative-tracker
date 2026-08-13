@@ -17,6 +17,7 @@
     "test": "nx run-many -t test",
     "test:client": "nx test client-angular",
     "test:server": "nx test server-firebase",
+    "test:emulator": "nx test-emulator server-firebase",
     "lint": "nx run-many -t lint",
     "format": "prettier --write \"**/*.{ts,js,json,html,scss,md}\"",
     "prepare": "husky"

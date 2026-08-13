@@ -1,4 +1,8 @@
 {
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
   "functions": [
     {
       "source": "dist/apps/server-firebase",
@@ -12,7 +16,6 @@
     }
   ],
   "hosting": {
-    "target": "hosting",
     "public": "dist/apps/client-angular/browser",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
