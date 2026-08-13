@@ -4,10 +4,8 @@ import { Functions } from '@angular/fire/functions';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 import { FeedbackService } from './feedback.service';
+import { FirebaseFeedbackService } from '../adapters/firebase-feedback.service';
 
-// -------------------------------------------------------------------------
-// Mock Dynamic Imports (Firebase Functions)
-// -------------------------------------------------------------------------
 const mockHttpsCallable = vi.fn();
 const mockGetFunctions = vi.fn();
 
@@ -17,7 +15,7 @@ vi.mock('@angular/fire/functions', () => ({
   httpsCallable: (...args: any[]) => mockHttpsCallable(...args),
 }));
 
-describe('FeedbackService', () => {
+describe('FirebaseFeedbackService', () => {
   let service: FeedbackService;
   const mockFirebaseApp = { name: '[DEFAULT]' };
   const mockFunctions = {};
@@ -25,7 +23,7 @@ describe('FeedbackService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        FeedbackService,
+        { provide: FeedbackService, useClass: FirebaseFeedbackService },
         { provide: FirebaseApp, useValue: mockFirebaseApp },
         { provide: Functions, useValue: mockFunctions },
       ],
@@ -43,38 +41,28 @@ describe('FeedbackService', () => {
 
   describe('sendFeedback', () => {
     it('should call the "submitAnonymousIssue" cloud function with correct payload', async () => {
-      // Setup the callable function spy
       const mockResponse = { data: { success: true, message: 'Received' } };
-
-      // The httpsCallable factory returns a function (the actual API caller)
       const callableFn = vi.fn().mockResolvedValue(mockResponse);
       mockHttpsCallable.mockReturnValue(callableFn);
 
       const title = 'Bug Report';
       const body = 'Something went wrong.';
 
-      // Call the service method
       const result = await service.sendFeedback(title, body);
 
-      // Verify Setup
       expect(mockHttpsCallable).toHaveBeenCalledWith(
         mockFunctions,
         'submitAnonymousIssue',
       );
 
-      // Verify Payload
       expect(callableFn).toHaveBeenCalledWith({ title, body });
-
-      // Verify Return Value
       expect(result).toEqual(mockResponse.data);
     });
 
     it('should throw an error if the cloud function fails', async () => {
-      // Setup failure scenario
       const callableFn = vi.fn().mockRejectedValue(new Error('Network Error'));
       mockHttpsCallable.mockReturnValue(callableFn);
 
-      // Call and Assert Rejection
       await expect(service.sendFeedback('Title', 'Body')).rejects.toThrow(
         'Network Error',
       );

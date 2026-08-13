@@ -8,9 +8,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   AuthService,
+  LegislatureService,
   ImplementedStatePairs,
 } from '@legislative-tracker/client-angular/core';
-import { LegislatureService } from '@legislative-tracker/client-angular/data-access-legislature';
 
 @Component({
   selector: 'app-add-bill',

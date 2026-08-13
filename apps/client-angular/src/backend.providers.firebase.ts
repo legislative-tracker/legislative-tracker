@@ -31,14 +31,26 @@ import {
   UserTrackingService,
 } from '@angular/fire/analytics';
 
-import { APP_CONFIG } from '@legislative-tracker/client-angular/core';
 import {
+  APP_CONFIG,
+  AuthService,
+  ConfigService,
+  FeedbackService,
   LegislatureService,
+  UserManagementService,
+  FirebaseAuthService,
+  FirebaseConfigService,
+  FirebaseFeedbackService,
   FirebaseLegislatureService,
-} from '@legislative-tracker/client-angular/data-access-legislature';
+  FirebaseUserManagementService,
+} from '@legislative-tracker/client-angular/core';
 
 export const BACKEND_PROVIDERS: (Provider | EnvironmentProviders)[] = [
   { provide: LegislatureService, useClass: FirebaseLegislatureService },
+  { provide: AuthService, useClass: FirebaseAuthService },
+  { provide: ConfigService, useClass: FirebaseConfigService },
+  { provide: FeedbackService, useClass: FirebaseFeedbackService },
+  { provide: UserManagementService, useClass: FirebaseUserManagementService },
   provideFirebaseApp(() => initializeApp(inject(APP_CONFIG).firebase)),
   provideAuth(() => {
     const auth = getAuth();

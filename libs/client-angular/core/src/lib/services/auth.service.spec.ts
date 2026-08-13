@@ -2,39 +2,33 @@ import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { Auth } from '@angular/fire/auth';
 import { FirebaseApp } from '@angular/fire/app';
+import { Firestore } from '@angular/fire/firestore';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { BehaviorSubject, of } from 'rxjs';
 
-// Target Service
 import { AuthService } from './auth.service';
+import { FirebaseAuthService } from '../adapters/firebase-auth.service';
 
-// -------------------------------------------------------------------------
-// Global Mocks (Dynamic Imports & Auth State)
-// -------------------------------------------------------------------------
-
-// --- Firestore Mocks ---
 const mockDocData = vi.fn();
 const mockSetDoc = vi.fn();
 const mockDoc = vi.fn();
 const mockGetFirestore = vi.fn().mockReturnValue({});
 
 vi.mock('@angular/fire/firestore', () => ({
+  Firestore: class {},
   getFirestore: (...args: any[]) => mockGetFirestore(...args),
   doc: (...args: any[]) => mockDoc(...args),
   setDoc: (...args: any[]) => mockSetDoc(...args),
   docData: (...args: any[]) => mockDocData(...args),
 }));
 
-// --- Auth Mocks ---
 const mockSignInWithPopup = vi.fn();
 const mockSignOut = vi.fn();
 const mockGoogleAuthProvider = vi.fn();
 
-// We need a Subject to control the "user(auth)" stream used by toSignal
 const authState$ = new BehaviorSubject<any>(null);
 
 vi.mock('@angular/fire/auth', () => ({
-  // The 'user' export is what toSignal(user(auth)) listens to
   user: () => authState$,
   GoogleAuthProvider: class {
     constructor() {
@@ -46,27 +40,28 @@ vi.mock('@angular/fire/auth', () => ({
   Auth: class {},
 }));
 
-describe('AuthService', () => {
+describe('FirebaseAuthService', () => {
   let service: AuthService;
   let router: Router;
 
   const mockAuth = {};
   const mockFirebaseApp = { name: '[DEFAULT]' };
+  const mockFirestore = {};
 
   beforeEach(() => {
     vi.clearAllMocks();
     authState$.next(null);
 
-    // Ensure these return objects, not undefined
     mockGetFirestore.mockReturnValue({});
     mockDocData.mockReturnValue(of({}));
-    mockDoc.mockReturnValue({ path: 'dummy/ref' }); // Critical for setDoc test
+    mockDoc.mockReturnValue({ path: 'dummy/ref' });
 
     TestBed.configureTestingModule({
       providers: [
-        AuthService,
+        { provide: AuthService, useClass: FirebaseAuthService },
         { provide: Auth, useValue: mockAuth },
         { provide: FirebaseApp, useValue: mockFirebaseApp },
+        { provide: Firestore, useValue: mockFirestore },
         { provide: Router, useValue: { navigate: vi.fn() } },
       ],
     });
@@ -79,9 +74,6 @@ describe('AuthService', () => {
     expect(service).toBeTruthy();
   });
 
-  // -----------------------------------------------------------------------
-  // Constructor / Effect Logic (Login State)
-  // -----------------------------------------------------------------------
   describe('Auth State Effects', () => {
     it('should initialize as logged out', () => {
       expect(service.userSig()).toBeNull();
@@ -103,14 +95,12 @@ describe('AuthService', () => {
       authState$.next(mockUser);
 
       await TestBed.flushEffects();
-      // Wait for async effect body
       await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(service.userSig()).toEqual(mockUser);
       expect(service.isLoggedIn()).toBe(true);
       expect(service.isAdmin()).toBe(true);
 
-      expect(mockGetFirestore).toHaveBeenCalledWith(mockFirebaseApp);
       expect(mockDoc).toHaveBeenCalledWith(expect.anything(), 'users/123');
       expect(service.userProfile()).toEqual(mockProfile);
     });
@@ -131,9 +121,6 @@ describe('AuthService', () => {
     });
   });
 
-  // -----------------------------------------------------------------------
-  // Login With Google
-  // -----------------------------------------------------------------------
   describe('loginWithGoogle', () => {
     it('should sign in via popup and save user to Firestore', async () => {
       const mockCredential = {
@@ -151,8 +138,6 @@ describe('AuthService', () => {
 
       expect(mockGoogleAuthProvider).toHaveBeenCalled();
       expect(mockSignInWithPopup).toHaveBeenCalled();
-
-      expect(mockGetFirestore).toHaveBeenCalled();
       expect(mockDoc).toHaveBeenCalledWith(expect.anything(), 'users/123');
 
       expect(mockSetDoc).toHaveBeenCalledWith(
@@ -168,9 +153,6 @@ describe('AuthService', () => {
     });
   });
 
-  // -----------------------------------------------------------------------
-  // Logout
-  // -----------------------------------------------------------------------
   describe('logout', () => {
     it('should sign out and navigate to home', async () => {
       await service.logout();
@@ -180,23 +162,17 @@ describe('AuthService', () => {
     });
   });
 
-  // -----------------------------------------------------------------------
-  // Toggle Favorite
-  // -----------------------------------------------------------------------
   describe('toggleFavorite', () => {
     it('should add ID to favorites if not present', async () => {
       const mockProfile = { favorites: ['BILL_A'] };
 
-      // Setup
       mockDocData.mockReturnValue(of(mockProfile));
       authState$.next({
         uid: 'USER_1',
         getIdTokenResult: async () => ({ claims: {} }),
       });
 
-      // Trigger effect
       await TestBed.flushEffects();
-      // Wait for ASYNC effect body to complete signal updates
       await new Promise((resolve) => setTimeout(resolve, 0));
 
       await service.toggleFavorite('BILL_B');
@@ -218,7 +194,6 @@ describe('AuthService', () => {
       });
 
       await TestBed.flushEffects();
-      // Wait for ASYNC effect body
       await new Promise((resolve) => setTimeout(resolve, 0));
 
       await service.toggleFavorite('BILL_A');

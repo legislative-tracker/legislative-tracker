@@ -11,18 +11,18 @@ export interface AppUser {
   email: string;
   uid: string;
   lastLogin: TimestampLike | any;
-  phoneNumber?: string;
-  photoURL: string;
-  districts: {
-    federal: string;
-    state: {
-      assembly: string;
-      senate: string;
+  phoneNumber?: string | null;
+  photoURL?: string | null;
+  districts?: {
+    federal?: string;
+    state?: {
+      assembly?: string;
+      senate?: string;
     };
   };
-  legislators: {
-    federal: Legislator[];
-    state: Legislator[];
+  legislators?: {
+    federal?: Legislator[];
+    state?: Legislator[];
   };
   favorites?: string[];
 }

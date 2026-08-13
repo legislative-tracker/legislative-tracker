@@ -1,8 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 import { FirebaseApp } from '@angular/fire/app';
+import { Firestore } from '@angular/fire/firestore';
 import { Functions, httpsCallable } from '@angular/fire/functions';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { FirebaseLegislatureService } from './firebase-legislature.service';
+
+vi.mock('@angular/fire/firestore', () => ({
+  Firestore: class {},
+  getFirestore: vi.fn().mockReturnValue({}),
+  doc: vi.fn(),
+  docData: vi.fn(),
+  collection: vi.fn(),
+  collectionData: vi.fn(),
+}));
 
 vi.mock('@angular/fire/functions', () => ({
   Functions: class {},
@@ -13,6 +23,7 @@ describe('FirebaseLegislatureService', () => {
   let service: FirebaseLegislatureService;
 
   const mockFirebaseApp = { name: '[DEFAULT]' };
+  const mockFirestore = {};
   const mockFunctions = {};
 
   beforeEach(() => {
@@ -22,6 +33,7 @@ describe('FirebaseLegislatureService', () => {
       providers: [
         FirebaseLegislatureService,
         { provide: FirebaseApp, useValue: mockFirebaseApp },
+        { provide: Firestore, useValue: mockFirestore },
         { provide: Functions, useValue: mockFunctions },
       ],
     });

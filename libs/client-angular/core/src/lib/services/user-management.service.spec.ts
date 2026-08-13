@@ -4,10 +4,8 @@ import { Functions } from '@angular/fire/functions';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 import { UserManagementService } from './user-management.service';
+import { FirebaseUserManagementService } from '../adapters/firebase-user-management.service';
 
-// -------------------------------------------------------------------------
-// Mock Dynamic Imports (Firebase Functions)
-// -------------------------------------------------------------------------
 const mockHttpsCallable = vi.fn();
 const mockGetFunctions = vi.fn();
 
@@ -17,18 +15,17 @@ vi.mock('@angular/fire/functions', () => ({
   httpsCallable: (...args: any[]) => mockHttpsCallable(...args),
 }));
 
-describe('UserManagementService', () => {
+describe('FirebaseUserManagementService', () => {
   let service: UserManagementService;
   const mockFirebaseApp = { name: '[DEFAULT]' };
   const mockFunctions = {};
 
   beforeEach(() => {
-    // Reset spies before every test
     vi.clearAllMocks();
 
     TestBed.configureTestingModule({
       providers: [
-        UserManagementService,
+        { provide: UserManagementService, useClass: FirebaseUserManagementService },
         { provide: FirebaseApp, useValue: mockFirebaseApp },
         { provide: Functions, useValue: mockFunctions },
       ],
@@ -36,7 +33,6 @@ describe('UserManagementService', () => {
 
     service = TestBed.inject(UserManagementService);
 
-    // Spy on console to verify logs and keep test output clean
     vi.spyOn(console, 'log').mockImplementation(() => {});
     vi.spyOn(console, 'error').mockImplementation(() => {});
   });
@@ -51,23 +47,18 @@ describe('UserManagementService', () => {
 
   describe('grantAdminPrivileges', () => {
     it('should call "addAdminRole" cloud function and return result', async () => {
-      // Setup Success Response
       const successResponse = { data: { message: 'Success' } };
-      // The callable factory returns the actual function that makes the request
       const callableFn = vi.fn().mockResolvedValue(successResponse);
       mockHttpsCallable.mockReturnValue(callableFn);
 
-      // Execute
       const email = 'test@example.com';
       const result = await service.grantAdminPrivileges(email);
 
-      // Verify Setup
       expect(mockHttpsCallable).toHaveBeenCalledWith(
         mockFunctions,
         'admin-addAdminRole',
       );
 
-      // Verify Execution
       expect(callableFn).toHaveBeenCalledWith({ email });
       expect(console.log).toHaveBeenCalledWith(
         'Promotion successful:',
@@ -77,39 +68,32 @@ describe('UserManagementService', () => {
     });
 
     it('should handle errors when granting privileges fails', async () => {
-      // Setup Error Response
       const errorObj = new Error('Permission Denied');
       const callableFn = vi.fn().mockRejectedValue(errorObj);
       mockHttpsCallable.mockReturnValue(callableFn);
 
-      // Execute & Assert
       await expect(
         service.grantAdminPrivileges('fail@example.com'),
       ).rejects.toThrow('Permission Denied');
 
-      // Verify Logging
       expect(console.error).toHaveBeenCalledWith('Promotion failed:', errorObj);
     });
   });
 
   describe('revokeAdminPrivileges', () => {
     it('should call "removeAdminRole" cloud function and return result', async () => {
-      // Setup Success Response
       const successResponse = { data: { message: 'Demoted' } };
       const callableFn = vi.fn().mockResolvedValue(successResponse);
       mockHttpsCallable.mockReturnValue(callableFn);
 
-      // Execute
       const email = 'admin@example.com';
       const result = await service.revokeAdminPrivileges(email);
 
-      // Verify Setup
       expect(mockHttpsCallable).toHaveBeenCalledWith(
         mockFunctions,
         'admin-removeAdminRole',
       );
 
-      // Verify Execution
       expect(callableFn).toHaveBeenCalledWith({ email });
       expect(console.log).toHaveBeenCalledWith(
         'Demotion successful:',
@@ -119,17 +103,14 @@ describe('UserManagementService', () => {
     });
 
     it('should handle errors when revoking privileges fails', async () => {
-      // Setup Error Response
       const errorObj = new Error('Network Error');
       const callableFn = vi.fn().mockRejectedValue(errorObj);
       mockHttpsCallable.mockReturnValue(callableFn);
 
-      // Execute & Assert
       await expect(
         service.revokeAdminPrivileges('fail@example.com'),
       ).rejects.toThrow('Network Error');
 
-      // Verify Logging
       expect(console.error).toHaveBeenCalledWith('Demotion failed:', errorObj);
     });
   });

@@ -25,9 +25,6 @@
       "@legislative-tracker/client-angular/core": [
         "libs/client-angular/core/src/index.ts"
       ],
-      "@legislative-tracker/client-angular/data-access-legislature": [
-        "libs/client-angular/data-access-legislature/src/index.ts"
-      ],
       "@legislative-tracker/client-angular/features": [
         "libs/client-angular/features/src/index.ts"
       ],

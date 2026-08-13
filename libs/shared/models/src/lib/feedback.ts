@@ -1,5 +1,6 @@
 export interface FeedbackResponse {
-  success: boolean;
+  success?: boolean;
   issueNumber: number;
-  issueUrl: number;
+  issueUrl: string;
 }
+

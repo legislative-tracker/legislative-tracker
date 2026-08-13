@@ -11,9 +11,9 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 // App imports
 import {
   AuthService,
+  LegislatureService,
   ImplementedStatePairs,
 } from '@legislative-tracker/client-angular/core';
-import { LegislatureService } from '@legislative-tracker/client-angular/data-access-legislature';
 
 interface SimpleBill {
   id: string;
