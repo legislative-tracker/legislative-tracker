@@ -1,8 +1,8 @@
 import { Injectable, inject, signal, effect } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { Firestore, doc, docData, setDoc } from '@angular/fire/firestore';
+import { Firestore, doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { timeout, catchError, map, take } from 'rxjs/operators';
-import { firstValueFrom, of } from 'rxjs';
+import { firstValueFrom, of, Observable } from 'rxjs';
 
 import {
   RuntimeConfig,
@@ -10,6 +10,7 @@ import {
   DEFAULT_CONFIG,
 } from '@legislative-tracker/shared/models';
 import { ConfigService } from '../services/config.service';
+import { FIREBASE_FIRESTORE } from '../firebase-tokens';
 
 const GITHUB_RESOURCE: ResourceLink = {
   title: 'GitHub Repository',
@@ -22,7 +23,7 @@ const GITHUB_RESOURCE: ResourceLink = {
 @Injectable({ providedIn: 'root' })
 export class FirebaseConfigService implements ConfigService {
   private readonly document = inject(DOCUMENT);
-  private readonly firestore = inject(Firestore, { optional: true });
+  private readonly firestore = inject<Firestore>(FIREBASE_FIRESTORE, { optional: true });
 
   readonly config = signal<RuntimeConfig>(DEFAULT_CONFIG);
 
@@ -56,7 +57,13 @@ export class FirebaseConfigService implements ConfigService {
     try {
       const configDoc = doc(this.firestore, 'configurations/global');
 
-      const data$ = docData(configDoc).pipe(
+      const data$ = new Observable<any>((subscriber) => {
+        return onSnapshot(
+          configDoc,
+          (snapshot) => subscriber.next(snapshot.data()),
+          (err) => subscriber.error(err),
+        );
+      }).pipe(
         map((data) => data as RuntimeConfig),
         timeout(3000),
         catchError((err) => {

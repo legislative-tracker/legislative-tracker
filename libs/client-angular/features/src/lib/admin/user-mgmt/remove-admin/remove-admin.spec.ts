@@ -4,7 +4,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 // Target Component
-import { FirebaseApp } from '@angular/fire/app';
 import { RemoveAdmin } from './remove-admin';
 
 // Dependencies
@@ -29,13 +28,9 @@ describe('RemoveAdmin', () => {
       providers: [
         provideNoopAnimations(),
         { provide: UserManagementService, useValue: mockUserMgmt },
-        // We provide the mock here, but we also need to ensure the component uses it
         { provide: MatSnackBar, useValue: mockSnackBar },
-        { provide: FirebaseApp, useValue: { name: '[DEFAULT]' } },
       ],
     })
-      // Remove MatSnackBarModule from component imports to prevent it
-      // from providing the real MatSnackBar and overriding our mock.
       .overrideComponent(RemoveAdmin, {
         remove: { imports: [MatSnackBarModule] },
       })
@@ -44,10 +39,8 @@ describe('RemoveAdmin', () => {
     fixture = TestBed.createComponent(RemoveAdmin);
     component = fixture.componentInstance;
 
-    // Reset mocks
     vi.clearAllMocks();
 
-    // Spy on console.error to suppress "Network Error" logs during tests
     vi.spyOn(console, 'error').mockImplementation(() => {});
 
     fixture.detectChanges();
@@ -87,7 +80,6 @@ describe('RemoveAdmin', () => {
         testEmail,
       );
 
-      // Verify Success Snackbar
       expect(mockSnackBar.open).toHaveBeenCalledWith(
         expect.stringContaining('Success'),
         'Close',
@@ -101,21 +93,18 @@ describe('RemoveAdmin', () => {
     it('should show error snackbar if service fails', async () => {
       const errorMsg = 'Network Error';
       component.email.set('fail@example.com');
-      // Mock the rejection
       mockUserMgmt.revokeAdminPrivileges.mockRejectedValue(new Error(errorMsg));
 
       await component.demoteAdmin();
 
       expect(mockUserMgmt.revokeAdminPrivileges).toHaveBeenCalled();
 
-      // Verify Error Snackbar
       expect(mockSnackBar.open).toHaveBeenCalledWith(
         errorMsg,
         'Close',
         expect.objectContaining({ panelClass: ['error-snackbar'] }),
       );
 
-      // Verify console.error was called (proving we suppressed the log)
       expect(console.error).toHaveBeenCalled();
 
       expect(component.isLoading()).toBe(false);

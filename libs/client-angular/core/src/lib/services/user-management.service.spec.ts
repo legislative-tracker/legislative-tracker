@@ -1,23 +1,18 @@
 import { TestBed } from '@angular/core/testing';
-import { FirebaseApp } from '@angular/fire/app';
-import { Functions } from '@angular/fire/functions';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 import { UserManagementService } from './user-management.service';
 import { FirebaseUserManagementService } from '../adapters/firebase-user-management.service';
+import { FIREBASE_FUNCTIONS } from '../firebase-tokens';
 
 const mockHttpsCallable = vi.fn();
-const mockGetFunctions = vi.fn();
 
-vi.mock('@angular/fire/functions', () => ({
-  Functions: class {},
-  getFunctions: (...args: any[]) => mockGetFunctions(...args),
+vi.mock('firebase/functions', () => ({
   httpsCallable: (...args: any[]) => mockHttpsCallable(...args),
 }));
 
 describe('FirebaseUserManagementService', () => {
   let service: UserManagementService;
-  const mockFirebaseApp = { name: '[DEFAULT]' };
   const mockFunctions = {};
 
   beforeEach(() => {
@@ -26,8 +21,7 @@ describe('FirebaseUserManagementService', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: UserManagementService, useClass: FirebaseUserManagementService },
-        { provide: FirebaseApp, useValue: mockFirebaseApp },
-        { provide: Functions, useValue: mockFunctions },
+        { provide: FIREBASE_FUNCTIONS, useValue: mockFunctions },
       ],
     });
 

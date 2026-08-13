@@ -1,28 +1,24 @@
 import { TestBed } from '@angular/core/testing';
-import { FirebaseApp } from '@angular/fire/app';
-import { Firestore } from '@angular/fire/firestore';
-import { Functions, httpsCallable } from '@angular/fire/functions';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { FirebaseLegislatureService } from './firebase-legislature.service';
+import { FIREBASE_FIRESTORE, FIREBASE_FUNCTIONS } from '../firebase-tokens';
 
-vi.mock('@angular/fire/firestore', () => ({
-  Firestore: class {},
-  getFirestore: vi.fn().mockReturnValue({}),
+const mockHttpsCallable = vi.fn();
+
+vi.mock('firebase/firestore', () => ({
   doc: vi.fn(),
-  docData: vi.fn(),
+  onSnapshot: vi.fn(),
   collection: vi.fn(),
-  collectionData: vi.fn(),
+  query: vi.fn(),
 }));
 
-vi.mock('@angular/fire/functions', () => ({
-  Functions: class {},
-  httpsCallable: vi.fn(),
+vi.mock('firebase/functions', () => ({
+  httpsCallable: (...args: any[]) => mockHttpsCallable(...args),
 }));
 
 describe('FirebaseLegislatureService', () => {
   let service: FirebaseLegislatureService;
 
-  const mockFirebaseApp = { name: '[DEFAULT]' };
   const mockFirestore = {};
   const mockFunctions = {};
 
@@ -32,9 +28,8 @@ describe('FirebaseLegislatureService', () => {
     TestBed.configureTestingModule({
       providers: [
         FirebaseLegislatureService,
-        { provide: FirebaseApp, useValue: mockFirebaseApp },
-        { provide: Firestore, useValue: mockFirestore },
-        { provide: Functions, useValue: mockFunctions },
+        { provide: FIREBASE_FIRESTORE, useValue: mockFirestore },
+        { provide: FIREBASE_FUNCTIONS, useValue: mockFunctions },
       ],
     });
     service = TestBed.inject(FirebaseLegislatureService);
@@ -46,11 +41,11 @@ describe('FirebaseLegislatureService', () => {
 
   it('should call legislation-addBill function on addBill', async () => {
     const mockCallable = vi.fn().mockResolvedValue({ data: { success: true } });
-    vi.mocked(httpsCallable).mockReturnValue(mockCallable as any);
+    mockHttpsCallable.mockReturnValue(mockCallable);
 
     const result = await service.addBill('ny', { id: 'S100' } as any);
 
-    expect(httpsCallable).toHaveBeenCalledWith(
+    expect(mockHttpsCallable).toHaveBeenCalledWith(
       mockFunctions,
       'legislation-addBill',
     );
@@ -63,11 +58,11 @@ describe('FirebaseLegislatureService', () => {
 
   it('should call legislation-removeBill function on removeBill', async () => {
     const mockCallable = vi.fn().mockResolvedValue({ data: { success: true } });
-    vi.mocked(httpsCallable).mockReturnValue(mockCallable as any);
+    mockHttpsCallable.mockReturnValue(mockCallable);
 
     const result = await service.removeBill('ny', 'S100');
 
-    expect(httpsCallable).toHaveBeenCalledWith(
+    expect(mockHttpsCallable).toHaveBeenCalledWith(
       mockFunctions,
       'legislation-removeBill',
     );

@@ -1,12 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { FirebaseApp } from '@angular/fire/app'; // Lightweight import
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { DatePipe } from '@angular/common';
 
-// App imports
-import { AuthService } from '@legislative-tracker/client-angular/core';
+import { AuthService, FIREBASE_FUNCTIONS } from '@legislative-tracker/client-angular/core';
 import {
   AddressForm,
   TableComponent,
@@ -31,7 +29,7 @@ import {
 })
 export class Profile {
   private auth = inject(AuthService);
-  private app = inject(FirebaseApp);
+  private functions = inject(FIREBASE_FUNCTIONS, { optional: true });
 
   user = this.auth.userProfile;
   legislatorCols = LEGISLATOR_COLS;
@@ -42,11 +40,10 @@ export class Profile {
     addressStr += `, ${e.city}, ${e.state} ${e.postalCode}`;
 
     try {
-      const { getFunctions, httpsCallable } =
-        await import('@angular/fire/functions');
+      if (!this.functions) throw new Error('Firebase Functions not available');
+      const { httpsCallable } = await import('firebase/functions');
 
-      const functions = getFunctions(this.app);
-      const fetchUserReps = httpsCallable(functions, 'users-fetchUserReps');
+      const fetchUserReps = httpsCallable(this.functions, 'users-fetchUserReps');
       const result = await fetchUserReps({ address: addressStr });
       alert('Success!');
     } catch (error) {

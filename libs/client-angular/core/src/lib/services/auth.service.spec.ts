@@ -1,35 +1,29 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { Auth } from '@angular/fire/auth';
-import { FirebaseApp } from '@angular/fire/app';
-import { Firestore } from '@angular/fire/firestore';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { BehaviorSubject, of } from 'rxjs';
 
 import { AuthService } from './auth.service';
 import { FirebaseAuthService } from '../adapters/firebase-auth.service';
+import { FIREBASE_AUTH, FIREBASE_FIRESTORE } from '../firebase-tokens';
 
-const mockDocData = vi.fn();
 const mockSetDoc = vi.fn();
 const mockDoc = vi.fn();
-const mockGetFirestore = vi.fn().mockReturnValue({});
+const mockOnSnapshot = vi.fn();
 
-vi.mock('@angular/fire/firestore', () => ({
-  Firestore: class {},
-  getFirestore: (...args: any[]) => mockGetFirestore(...args),
+vi.mock('firebase/firestore', () => ({
   doc: (...args: any[]) => mockDoc(...args),
   setDoc: (...args: any[]) => mockSetDoc(...args),
-  docData: (...args: any[]) => mockDocData(...args),
+  onSnapshot: (...args: any[]) => mockOnSnapshot(...args),
 }));
 
 const mockSignInWithPopup = vi.fn();
 const mockSignOut = vi.fn();
 const mockGoogleAuthProvider = vi.fn();
+const mockOnAuthStateChanged = vi.fn();
 
-const authState$ = new BehaviorSubject<any>(null);
-
-vi.mock('@angular/fire/auth', () => ({
-  user: () => authState$,
+vi.mock('firebase/auth', () => ({
+  onAuthStateChanged: (...args: any[]) => mockOnAuthStateChanged(...args),
   GoogleAuthProvider: class {
     constructor() {
       mockGoogleAuthProvider();
@@ -37,7 +31,6 @@ vi.mock('@angular/fire/auth', () => ({
   },
   signInWithPopup: (...args: any[]) => mockSignInWithPopup(...args),
   signOut: (...args: any[]) => mockSignOut(...args),
-  Auth: class {},
 }));
 
 describe('FirebaseAuthService', () => {
@@ -45,23 +38,35 @@ describe('FirebaseAuthService', () => {
   let router: Router;
 
   const mockAuth = {};
-  const mockFirebaseApp = { name: '[DEFAULT]' };
   const mockFirestore = {};
+
+  let authCallback: ((user: any) => void) | null = null;
+  let snapshotCallback: ((snapshot: any) => void) | null = null;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    authState$.next(null);
+    authCallback = null;
+    snapshotCallback = null;
 
-    mockGetFirestore.mockReturnValue({});
-    mockDocData.mockReturnValue(of({}));
+    mockOnAuthStateChanged.mockImplementation((auth, cb) => {
+      authCallback = cb;
+      cb(null);
+      return () => {};
+    });
+
+    mockOnSnapshot.mockImplementation((docRef, cb) => {
+      snapshotCallback = cb;
+      cb({ data: () => ({}) });
+      return () => {};
+    });
+
     mockDoc.mockReturnValue({ path: 'dummy/ref' });
 
     TestBed.configureTestingModule({
       providers: [
         { provide: AuthService, useClass: FirebaseAuthService },
-        { provide: Auth, useValue: mockAuth },
-        { provide: FirebaseApp, useValue: mockFirebaseApp },
-        { provide: Firestore, useValue: mockFirestore },
+        { provide: FIREBASE_AUTH, useValue: mockAuth },
+        { provide: FIREBASE_FIRESTORE, useValue: mockFirestore },
         { provide: Router, useValue: { navigate: vi.fn() } },
       ],
     });
@@ -90,9 +95,15 @@ describe('FirebaseAuthService', () => {
       };
 
       const mockProfile = { uid: '123', displayName: 'Test User' };
-      mockDocData.mockReturnValue(of(mockProfile));
 
-      authState$.next(mockUser);
+      mockOnSnapshot.mockImplementation((docRef, cb) => {
+        cb({ data: () => mockProfile });
+        return () => {};
+      });
+
+      if (authCallback) {
+        authCallback(mockUser);
+      }
 
       await TestBed.flushEffects();
       await new Promise((resolve) => setTimeout(resolve, 0));
@@ -101,19 +112,25 @@ describe('FirebaseAuthService', () => {
       expect(service.isLoggedIn()).toBe(true);
       expect(service.isAdmin()).toBe(true);
 
-      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), 'users/123');
+      expect(mockDoc).toHaveBeenCalledWith(mockFirestore, 'users/123');
       expect(service.userProfile()).toEqual(mockProfile);
     });
 
     it('should reset state when user logs out', async () => {
-      authState$.next({
+      const mockUser = {
         uid: '123',
         getIdTokenResult: async () => ({ claims: {} }),
-      });
+      };
+
+      if (authCallback) {
+        authCallback(mockUser);
+      }
       await TestBed.flushEffects();
       await new Promise((resolve) => setTimeout(resolve, 0));
 
-      authState$.next(null);
+      if (authCallback) {
+        authCallback(null);
+      }
       await TestBed.flushEffects();
 
       expect(service.userProfile()).toBeNull();
@@ -138,7 +155,7 @@ describe('FirebaseAuthService', () => {
 
       expect(mockGoogleAuthProvider).toHaveBeenCalled();
       expect(mockSignInWithPopup).toHaveBeenCalled();
-      expect(mockDoc).toHaveBeenCalledWith(expect.anything(), 'users/123');
+      expect(mockDoc).toHaveBeenCalledWith(mockFirestore, 'users/123');
 
       expect(mockSetDoc).toHaveBeenCalledWith(
         expect.anything(),
@@ -164,13 +181,19 @@ describe('FirebaseAuthService', () => {
 
   describe('toggleFavorite', () => {
     it('should add ID to favorites if not present', async () => {
-      const mockProfile = { favorites: ['BILL_A'] };
-
-      mockDocData.mockReturnValue(of(mockProfile));
-      authState$.next({
+      const mockUser = {
         uid: 'USER_1',
         getIdTokenResult: async () => ({ claims: {} }),
+      };
+
+      mockOnSnapshot.mockImplementation((docRef, cb) => {
+        cb({ data: () => ({ favorites: ['BILL_A'] }) });
+        return () => {};
       });
+
+      if (authCallback) {
+        authCallback(mockUser);
+      }
 
       await TestBed.flushEffects();
       await new Promise((resolve) => setTimeout(resolve, 0));
@@ -185,13 +208,19 @@ describe('FirebaseAuthService', () => {
     });
 
     it('should remove ID from favorites if already present', async () => {
-      const mockProfile = { favorites: ['BILL_A', 'BILL_B'] };
-
-      mockDocData.mockReturnValue(of(mockProfile));
-      authState$.next({
+      const mockUser = {
         uid: 'USER_1',
         getIdTokenResult: async () => ({ claims: {} }),
+      };
+
+      mockOnSnapshot.mockImplementation((docRef, cb) => {
+        cb({ data: () => ({ favorites: ['BILL_A', 'BILL_B'] }) });
+        return () => {};
       });
+
+      if (authCallback) {
+        authCallback(mockUser);
+      }
 
       await TestBed.flushEffects();
       await new Promise((resolve) => setTimeout(resolve, 0));
@@ -206,7 +235,9 @@ describe('FirebaseAuthService', () => {
     });
 
     it('should do nothing if user is not logged in', async () => {
-      authState$.next(null);
+      if (authCallback) {
+        authCallback(null);
+      }
       await TestBed.flushEffects();
 
       await service.toggleFavorite('BILL_1');

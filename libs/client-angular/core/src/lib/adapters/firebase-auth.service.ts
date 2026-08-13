@@ -1,19 +1,36 @@
 import { Injectable, inject, signal, computed, effect } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Auth, user } from '@angular/fire/auth';
-import { Firestore, doc, docData, setDoc } from '@angular/fire/firestore';
+import {
+  Auth,
+  User,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+} from 'firebase/auth';
+import { Firestore, doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
 import { AppUser } from '@legislative-tracker/shared/models';
 import { AuthService } from '../services/auth.service';
+import { FIREBASE_AUTH, FIREBASE_FIRESTORE } from '../firebase-tokens';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseAuthService implements AuthService {
-  private auth = inject(Auth);
+  private auth = inject<Auth>(FIREBASE_AUTH, { optional: true });
+  private firestore = inject<Firestore>(FIREBASE_FIRESTORE, { optional: true });
   private router = inject(Router);
-  private firestore = inject(Firestore, { optional: true });
 
-  readonly userSig = toSignal(user(this.auth), { initialValue: null });
+  private readonly authState$ = new Observable<User | null>((subscriber) => {
+    if (!this.auth) {
+      subscriber.next(null);
+      return;
+    }
+    return onAuthStateChanged(this.auth, (u) => subscriber.next(u));
+  });
+
+  readonly userSig = toSignal(this.authState$, { initialValue: null });
   readonly isLoggedIn = computed(() => !!this.userSig());
   readonly userProfile = signal<AppUser | null>(null);
   readonly isAdmin = signal<boolean>(false);
@@ -37,15 +54,17 @@ export class FirebaseAuthService implements AuthService {
     if (!this.firestore) return;
     const userDoc = doc(this.firestore, `users/${uid}`);
 
-    docData(userDoc).subscribe((data) => {
+    const user$ = new Observable<any>((subscriber) => {
+      return onSnapshot(userDoc, (snapshot) => subscriber.next(snapshot.data()));
+    });
+
+    user$.subscribe((data) => {
       this.userProfile.set(data as AppUser);
     });
   }
 
   async loginWithGoogle() {
-    const { GoogleAuthProvider, signInWithPopup } =
-      await import('@angular/fire/auth');
-
+    if (!this.auth) throw new Error('Firebase Auth not provided');
     const provider = new GoogleAuthProvider();
     const credential = await signInWithPopup(this.auth, provider);
 
@@ -68,8 +87,9 @@ export class FirebaseAuthService implements AuthService {
   }
 
   async logout() {
-    const { signOut } = await import('@angular/fire/auth');
-    await signOut(this.auth);
+    if (this.auth) {
+      await signOut(this.auth);
+    }
     this.router.navigate(['/']);
   }
 

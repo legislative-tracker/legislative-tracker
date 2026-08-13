@@ -1,14 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { FirebaseApp } from '@angular/fire/app';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 // Target Component
 import { Profile } from './profile';
 
 // Dependencies
-import { AuthService } from '@legislative-tracker/client-angular/core';
+import { AuthService, FIREBASE_FUNCTIONS } from '@legislative-tracker/client-angular/core';
 import {
   AddressForm,
   TableComponent,
@@ -19,10 +18,8 @@ import {
 // -------------------------------------------------------------------------
 const mockCallableFunction = vi.fn();
 const mockHttpsCallable = vi.fn().mockReturnValue(mockCallableFunction);
-const mockGetFunctions = vi.fn().mockReturnValue({});
 
-vi.mock('@angular/fire/functions', () => ({
-  getFunctions: (...args: any[]) => mockGetFunctions(...args),
+vi.mock('firebase/functions', () => ({
   httpsCallable: (...args: any[]) => mockHttpsCallable(...args),
 }));
 
@@ -61,16 +58,12 @@ describe('Profile', () => {
       displayName: 'Test User',
       email: 'test@example.com',
       photoURL: 'https://example.com/photo.jpg',
-
-      // Matches {{ u['lastLogin'].toDate() }} in profile.html
       lastLogin: mockTimestamp,
-
-      // Initialize legislators as null to show the search form by default
       legislators: null,
     }),
   };
 
-  const mockFirebaseApp = { name: '[DEFAULT]' };
+  const mockFunctions = {};
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -78,7 +71,7 @@ describe('Profile', () => {
       providers: [
         DatePipe,
         { provide: AuthService, useValue: mockAuthService },
-        { provide: FirebaseApp, useValue: mockFirebaseApp },
+        { provide: FIREBASE_FUNCTIONS, useValue: mockFunctions },
       ],
     })
       .overrideComponent(Profile, {
@@ -122,9 +115,8 @@ describe('Profile', () => {
 
       await component.searchAddress(searchData);
 
-      expect(mockGetFunctions).toHaveBeenCalledWith(mockFirebaseApp);
       expect(mockHttpsCallable).toHaveBeenCalledWith(
-        expect.anything(),
+        mockFunctions,
         'users-fetchUserReps',
       );
 

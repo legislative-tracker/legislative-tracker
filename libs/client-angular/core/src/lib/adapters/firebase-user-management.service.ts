@@ -1,12 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import { Functions, httpsCallable } from '@angular/fire/functions';
+import { Functions, httpsCallable } from 'firebase/functions';
 import { UserManagementService } from '../services/user-management.service';
+import { FIREBASE_FUNCTIONS } from '../firebase-tokens';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseUserManagementService implements UserManagementService {
-  private functions = inject(Functions);
+  private functions = inject<Functions>(FIREBASE_FUNCTIONS, { optional: true });
 
   async grantAdminPrivileges(email: string) {
+    if (!this.functions) throw new Error('Firebase Functions not provided');
     const addAdminRole = httpsCallable(this.functions, 'admin-addAdminRole');
     try {
       const result = await addAdminRole({ email });
@@ -19,6 +21,7 @@ export class FirebaseUserManagementService implements UserManagementService {
   }
 
   async revokeAdminPrivileges(email: string) {
+    if (!this.functions) throw new Error('Firebase Functions not provided');
     const removeAdminRole = httpsCallable(
       this.functions,
       'admin-removeAdminRole',

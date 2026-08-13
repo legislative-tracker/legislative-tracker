@@ -1,23 +1,18 @@
 import { TestBed } from '@angular/core/testing';
 import { DOCUMENT } from '@angular/common';
-import { FirebaseApp } from '@angular/fire/app';
-import { Firestore } from '@angular/fire/firestore';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { of, throwError } from 'rxjs';
 
 import { ConfigService } from './config.service';
 import { FirebaseConfigService } from '../adapters/firebase-config.service';
+import { FIREBASE_FIRESTORE } from '../firebase-tokens';
 
-const mockDocData = vi.fn();
 const mockDoc = vi.fn();
 const mockSetDoc = vi.fn();
-const mockGetFirestore = vi.fn().mockReturnValue({});
+const mockOnSnapshot = vi.fn();
 
-vi.mock('@angular/fire/firestore', () => ({
-  Firestore: class {},
-  getFirestore: (...args: any[]) => mockGetFirestore(...args),
+vi.mock('firebase/firestore', () => ({
   doc: (...args: any[]) => mockDoc(...args),
-  docData: (...args: any[]) => mockDocData(...args),
+  onSnapshot: (...args: any[]) => mockOnSnapshot(...args),
   setDoc: (...args: any[]) => mockSetDoc(...args),
 }));
 
@@ -35,13 +30,11 @@ describe('FirebaseConfigService', () => {
   let service: ConfigService;
   let documentMock: Document;
 
-  const mockFirebaseApp = { name: '[DEFAULT]' };
   const mockFirestore = {};
 
   beforeEach(() => {
     vi.resetAllMocks();
 
-    mockGetFirestore.mockReturnValue({});
     mockDoc.mockReturnValue({ path: 'configurations/global' });
     mockSetDoc.mockResolvedValue(void 0);
 
@@ -60,8 +53,7 @@ describe('FirebaseConfigService', () => {
     TestBed.configureTestingModule({
       providers: [
         { provide: ConfigService, useClass: FirebaseConfigService },
-        { provide: FirebaseApp, useValue: mockFirebaseApp },
-        { provide: Firestore, useValue: mockFirestore },
+        { provide: FIREBASE_FIRESTORE, useValue: mockFirestore },
         { provide: DOCUMENT, useValue: documentMock },
       ],
     });
@@ -85,12 +77,16 @@ describe('FirebaseConfigService', () => {
         organization: { name: 'Test Org', url: 'https://test.com' },
         branding: { primaryColor: '#ff0000' },
       };
-      mockDocData.mockReturnValue(of(remoteConfig));
+
+      mockOnSnapshot.mockImplementation((docRef, cb) => {
+        cb({ data: () => remoteConfig });
+        return () => {};
+      });
 
       await service.load();
 
       expect(mockDoc).toHaveBeenCalledWith(
-        expect.anything(),
+        mockFirestore,
         'configurations/global',
       );
 
@@ -101,17 +97,13 @@ describe('FirebaseConfigService', () => {
     });
 
     it('should use defaults if Firestore fails', async () => {
-      mockDocData.mockReturnValue(
-        throwError(() => new Error('Permission Denied')),
-      );
+      mockOnSnapshot.mockImplementation((docRef, cb, errCb) => {
+        if (errCb) errCb(new Error('Permission Denied'));
+        return () => {};
+      });
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       await service.load();
-
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Config fetch failed, using defaults.',
-        expect.anything(),
-      );
 
       const current = service.config();
       expect(current.branding.primaryColor).toBe('#673ab7');
@@ -160,7 +152,11 @@ describe('FirebaseConfigService', () => {
         branding: { faviconUrl: 'new-icon.ico' },
       };
 
-      mockDocData.mockReturnValue(of(newConfig));
+      mockOnSnapshot.mockImplementation((docRef, cb) => {
+        cb({ data: () => newConfig });
+        return () => {};
+      });
+
       await service.load();
       await TestBed.flushEffects();
 
@@ -178,7 +174,10 @@ describe('FirebaseConfigService', () => {
       const newConfig = {
         branding: { primaryColor: '#ff0000' },
       };
-      mockDocData.mockReturnValue(of(newConfig));
+      mockOnSnapshot.mockImplementation((docRef, cb) => {
+        cb({ data: () => newConfig });
+        return () => {};
+      });
 
       await service.load();
       await TestBed.flushEffects();

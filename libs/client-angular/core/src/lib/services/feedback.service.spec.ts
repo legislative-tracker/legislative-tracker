@@ -1,31 +1,25 @@
 import { TestBed } from '@angular/core/testing';
-import { FirebaseApp } from '@angular/fire/app';
-import { Functions } from '@angular/fire/functions';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 import { FeedbackService } from './feedback.service';
 import { FirebaseFeedbackService } from '../adapters/firebase-feedback.service';
+import { FIREBASE_FUNCTIONS } from '../firebase-tokens';
 
 const mockHttpsCallable = vi.fn();
-const mockGetFunctions = vi.fn();
 
-vi.mock('@angular/fire/functions', () => ({
-  Functions: class {},
-  getFunctions: (...args: any[]) => mockGetFunctions(...args),
+vi.mock('firebase/functions', () => ({
   httpsCallable: (...args: any[]) => mockHttpsCallable(...args),
 }));
 
 describe('FirebaseFeedbackService', () => {
   let service: FeedbackService;
-  const mockFirebaseApp = { name: '[DEFAULT]' };
   const mockFunctions = {};
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         { provide: FeedbackService, useClass: FirebaseFeedbackService },
-        { provide: FirebaseApp, useValue: mockFirebaseApp },
-        { provide: Functions, useValue: mockFunctions },
+        { provide: FIREBASE_FUNCTIONS, useValue: mockFunctions },
       ],
     });
     service = TestBed.inject(FeedbackService);
