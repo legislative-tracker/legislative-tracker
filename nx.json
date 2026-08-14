@@ -66,7 +66,8 @@
       "pattern": "v{version}"
     },
     "version": {
-      "specifierSource": "conventional-commits"
+      "specifierSource": "conventional-commits",
+      "currentVersionResolver": "git-tag"
     },
     "groups": {
       "app": {
