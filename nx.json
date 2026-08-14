@@ -100,7 +100,7 @@
     "groups": {
       "app": {
         "projectsRelationship": "fixed",
-        "projects": ["@legislative-tracker/source", "server-firebase"],
+        "projects": ["@legislative-tracker/source"],
         "version": {
           "generatorOptions": {
             "specifierSource": "conventional-commits"
