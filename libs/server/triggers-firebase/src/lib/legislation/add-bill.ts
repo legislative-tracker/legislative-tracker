@@ -19,12 +19,11 @@ export const addBill = onCall({ secrets: [pluginLegUsNyKey] }, async (request) =
     throw new HttpsError('invalid-argument', 'Invalid data.');
   }
 
-  const billRef = db
-    .collection(`legislatures/${state}/legislation`)
-    .doc(bill.id);
+  const collectionRef = db.collection(`legislatures/${state}/legislation`);
+  const initialRef = collectionRef.doc(bill.id);
 
   try {
-    await billRef.set(bill, { merge: true });
+    await initialRef.set(bill, { merge: true });
     logger.info(`Initial bill stub created for ${bill.id}`);
 
     try {
@@ -36,12 +35,25 @@ export const addBill = onCall({ secrets: [pluginLegUsNyKey] }, async (request) =
 
       if (updates.bills && updates.bills.length > 0) {
         const fullBillData = updates.bills[0];
-        await billRef.set(fullBillData, { merge: true });
-        logger.info(`Successfully fetched and saved full data for ${bill.id}`);
+        const canonicalId = fullBillData.id || bill.id;
+        const canonicalRef = collectionRef.doc(canonicalId);
+
+        await canonicalRef.set(fullBillData, { merge: true });
+
+        if (canonicalId !== bill.id) {
+          logger.info(
+            `Cleaning up initial stub ${bill.id} in favor of canonical ID ${canonicalId}`,
+          );
+          await initialRef.delete();
+        }
+
+        logger.info(
+          `Successfully fetched and saved full data for ${canonicalId}`,
+        );
 
         return {
-          message: `Success! Bill ${bill.id} added and details fetched.`,
-          path: billRef.path,
+          message: `Success! Bill ${canonicalId} added and details fetched.`,
+          path: canonicalRef.path,
           fetched: true,
         };
       }
@@ -52,14 +64,15 @@ export const addBill = onCall({ secrets: [pluginLegUsNyKey] }, async (request) =
 
       return {
         message: `Success! Bill ${bill.id} added (details pending nightly update).`,
-        path: billRef.path,
+        path: initialRef.path,
         fetched: false,
       };
     }
 
-    return { message: `Success! Bill ${bill.id} added.`, path: billRef.path };
+    return { message: `Success! Bill ${bill.id} added.`, path: initialRef.path };
   } catch (error) {
     logger.error('Database write failed', error);
     throw new HttpsError('internal', 'Failed to save bill.');
   }
 });
+
