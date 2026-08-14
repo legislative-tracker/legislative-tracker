@@ -40,10 +40,10 @@ jobs:
         id: release
         run: |
           PREV_VERSION=$(node -e 'console.log(JSON.parse(fs.readFileSync("package.json")).version)')
-          npx nx release version --group=app
+          npx nx release version --group=app --git-commit=false --git-tag=false
           NEW_VERSION=$(node -e 'console.log(JSON.parse(fs.readFileSync("package.json")).version)')
           node scripts/sync-version.js $NEW_VERSION
-          npx nx release changelog --group=app $NEW_VERSION
+          npx nx release changelog --group=app $NEW_VERSION --git-commit=false --git-tag=false
           echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
           if [ "$PREV_VERSION" != "$NEW_VERSION" ]; then
             echo "RELEASED=true" >> $GITHUB_OUTPUT

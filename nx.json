@@ -62,6 +62,10 @@
     }
   ],
   "release": {
+    "git": {
+      "commit": false,
+      "tag": false
+    },
     "releaseTag": {
       "pattern": "v{version}"
     },
