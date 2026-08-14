@@ -88,7 +88,7 @@
       "outputs": ["{options.reportsDirectory}"],
       "options": {
         "configFile": "apps/client-angular/vitest.config.ts",
-        "reportsDirectory": "../../coverage/apps/client-angular"
+        "reportsDirectory": "coverage/apps/client-angular"
       }
     },
     "lint": {

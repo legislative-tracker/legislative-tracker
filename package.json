@@ -63,7 +63,7 @@
     "@swc-node/register": "1.12.1",
     "@swc/core": "1.15.8",
     "@swc/helpers": "0.5.23",
-    "@types/node": "^22.0.0",
+    "@types/node": "^24.0.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
     "@typescript-eslint/parser": "^8.0.0",
     "@vitest/coverage-v8": "4.1.9",
@@ -82,6 +82,7 @@
     "typescript-eslint": "^8.58.0",
     "verdaccio": "6.9.2",
     "vite": "8.2.1",
+    "vite-tsconfig-paths": "^6.1.1",
     "vitest": "4.1.9"
   },
   "workspaces": [

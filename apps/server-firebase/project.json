@@ -14,7 +14,7 @@
           "cp apps/server-firebase/package.json dist/apps/server-firebase/",
           "cp apps/server-firebase/.env* dist/apps/server-firebase/ 2>/dev/null || true",
           "cp apps/server-firebase/.secret* dist/apps/server-firebase/ 2>/dev/null || true",
-          "npx esbuild apps/server-firebase/src/index.ts --bundle --platform=node --target=node22 --packages=external --outfile=dist/apps/server-firebase/index.js"
+          "npx esbuild apps/server-firebase/src/index.ts --bundle --platform=node --target=node24 --packages=external --outfile=dist/apps/server-firebase/index.js"
         ],
         "parallel": false
       }
@@ -25,7 +25,7 @@
       "options": {
         "cwd": "logs/firebase",
         "commands": [
-          "npx esbuild ../../apps/server-firebase/src/index.ts --bundle --platform=node --target=node22 --packages=external --outfile=../../dist/apps/server-firebase/index.js --watch",
+          "npx esbuild ../../apps/server-firebase/src/index.ts --bundle --platform=node --target=node24 --packages=external --outfile=../../dist/apps/server-firebase/index.js --watch",
           "fuser -k 8085/tcp 8080/tcp 9099/tcp 5001/tcp || true; firebase emulators:start --config ../../firebase.json --project demo-legislative-tracker --only functions,pubsub,firestore,auth --import=../../emulator_data --export-on-exit=../../emulator_data"
         ],
         "parallel": true

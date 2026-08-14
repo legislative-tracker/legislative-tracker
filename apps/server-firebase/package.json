@@ -1,9 +1,10 @@
 {
   "name": "server-firebase",
   "version": "0.8.4",
+  "type": "module",
   "main": "index.js",
   "engines": {
-    "node": "22"
+    "node": "24"
   },
   "dependencies": {
     "@octokit/rest": "^22.0.1",

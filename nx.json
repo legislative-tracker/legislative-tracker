@@ -11,6 +11,7 @@
     },
     "lint": {
       "cache": true,
+      "executor": "@nx/eslint:lint",
       "inputs": ["default", "{workspaceRoot}/eslint.config.mjs"]
     },
     "test": {
@@ -55,6 +56,14 @@
       "options": {
         "testTargetName": "vite:test"
       }
+    },
+    {
+      "plugin": "@nx/vitest",
+      "options": {
+        "testTargetName": "test",
+        "testMode": "run"
+      },
+      "include": ["apps/client-angular/**/*", "apps/server-firebase/**/*"]
     }
   ],
   "release": {
@@ -66,7 +75,6 @@
       "projectChangelogs": true
     }
   },
-
   "analytics": false,
   "generators": {
     "@nx/angular:component": {
