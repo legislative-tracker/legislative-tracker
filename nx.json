@@ -77,7 +77,8 @@
           }
         },
         "changelog": {
-          "createRelease": false
+          "createRelease": false,
+          "file": "{workspaceRoot}/docs/CHANGELOG.md"
         }
       },
       "plugins": {
@@ -91,6 +92,7 @@
       }
     },
     "changelog": {
+      "automaticFromRef": "HEAD~1",
       "projectChangelogs": true
     }
   },
