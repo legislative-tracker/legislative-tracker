@@ -8,7 +8,8 @@
     "tslib": "^2.3.0"
   },
   "peerDependencies": {
-    "@legislative-tracker/plugins-core": "^0.1.0"
+    "@legislative-tracker/plugins-core": "*"
   }
 }
+
 
