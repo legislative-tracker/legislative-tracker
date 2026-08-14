@@ -91,6 +91,7 @@
       }
     },
     "changelog": {
+      "automaticFromRef": "HEAD~1",
       "projectChangelogs": true
     }
   },
