@@ -5,16 +5,22 @@ import {
   BrowserTestingModule,
   platformBrowserTesting,
 } from '@angular/platform-browser/testing';
+import { beforeEach, afterEach } from 'vitest';
 
 const testBed = getTestBed() as any;
-if (!testBed.platform && !testBed.ngModule) {
-  try {
-    testBed.initTestEnvironment(
-      BrowserTestingModule,
-      platformBrowserTesting(),
-    );
-  } catch {
-    // TestBed environment already initialized
-  }
+if (!testBed.platform) {
+  testBed.initTestEnvironment(
+    BrowserTestingModule,
+    platformBrowserTesting(),
+    { teardown: { destroyAfterEach: true } }
+  );
 }
+
+beforeEach(() => {
+  getTestBed().resetTestingModule();
+});
+
+afterEach(() => {
+  getTestBed().resetTestingModule();
+});
 

@@ -15,6 +15,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    pool: 'forks',
     setupFiles: [path.resolve(import.meta.dirname, 'src/test-setup.ts')],
     include: [
       'apps/client-angular/src/**/*.spec.ts',
