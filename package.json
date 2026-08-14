@@ -20,6 +20,7 @@
     "test:emulator": "nx test-emulator server-firebase",
     "lint": "nx run-many -t lint",
     "format": "prettier --write \"**/*.{ts,js,json,html,scss,md}\"",
+    "release": "nx release",
     "prepare": "husky"
   },
   "dependencies": {
@@ -77,12 +78,10 @@
     "nx": "23.1.1",
     "popolo-types": "^0.2.1",
     "prettier": "^3.7.4",
-    "standard-version": "^9.5.0",
     "typescript": "6.0.3",
     "typescript-eslint": "^8.58.0",
     "verdaccio": "6.9.2",
     "vite": "8.2.1",
-    "vite-tsconfig-paths": "^6.0.3",
     "vitest": "4.1.9"
   },
   "workspaces": [

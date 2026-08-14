@@ -54,11 +54,9 @@
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Organization Name</mat-label>
               <input matInput formControlName="name" placeholder="Acme Corp" />
-              <mat-error
-                *ngIf="form.get('organization.name')?.hasError('required')"
-              >
-                Name is required
-              </mat-error>
+              @if (form.get('organization.name')?.hasError('required')) {
+                <mat-error>Name is required</mat-error>
+              }
             </mat-form-field>
           </div>
 
@@ -94,9 +92,9 @@
                   formControlName="primaryColor"
                   placeholder="#673ab7"
                 />
-                <mat-error *ngIf="form.get('branding.primaryColor')?.invalid">
-                  Invalid Hex Color
-                </mat-error>
+                @if (form.get('branding.primaryColor')?.invalid) {
+                  <mat-error>Invalid Hex Color</mat-error>
+                }
               </mat-form-field>
             </div>
           </div>

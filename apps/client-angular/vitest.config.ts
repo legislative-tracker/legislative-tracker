@@ -1,22 +1,21 @@
 import { defineConfig } from 'vitest/config';
 import angular from '@analogjs/vite-plugin-angular';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import path from 'path';
 
 export default defineConfig({
-  root: path.resolve(__dirname, '../../'),
+  root: path.resolve(import.meta.dirname, '../../'),
+  resolve: {
+    tsconfigPaths: true,
+  },
   plugins: [
     angular({
-      tsconfig: path.resolve(__dirname, 'tsconfig.app.json'),
-    }),
-    tsconfigPaths({
-      projects: [path.resolve(__dirname, '../../tsconfig.base.json')],
+      tsconfig: path.resolve(import.meta.dirname, 'tsconfig.app.json'),
     }),
   ],
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: [path.resolve(__dirname, 'src/test-setup.ts')],
+    setupFiles: [path.resolve(import.meta.dirname, 'src/test-setup.ts')],
     include: [
       'apps/client-angular/src/**/*.spec.ts',
       'libs/client-angular/**/*.spec.ts',
