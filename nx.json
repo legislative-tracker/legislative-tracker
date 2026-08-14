@@ -67,10 +67,39 @@
     "releaseTag": {
       "pattern": "v{version}"
     },
+    "version": {
+      "generatorOptions": {
+        "specifierSource": "conventional-commits"
+      },
+      "conventionalCommits": {
+        "types": {
+          "feat": {
+            "semverBump": "minor",
+            "changelog": { "title": "🚀 Features" }
+          },
+          "fix": {
+            "semverBump": "patch",
+            "changelog": { "title": "🐛 Bug Fixes" }
+          },
+          "perf": {
+            "semverBump": "patch",
+            "changelog": { "title": "⚡ Performance Improvements" }
+          },
+          "refactor": {
+            "semverBump": "patch",
+            "changelog": { "title": "♻️ Code Refactoring" }
+          },
+          "build": {
+            "semverBump": "patch",
+            "changelog": { "title": "📦 Build & Dependencies" }
+          }
+        }
+      }
+    },
     "groups": {
       "app": {
         "projectsRelationship": "fixed",
-        "projects": ["self", "server-firebase"],
+        "projects": ["client-angular", "server-firebase"],
         "version": {
           "generatorOptions": {
             "specifierSource": "conventional-commits"
