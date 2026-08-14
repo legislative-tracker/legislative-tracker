@@ -83,7 +83,7 @@
     "jiti": "2.7.0",
     "jsdom": "^27.4.0",
     "knip": "^6.32.2",
-    "lint-staged": "^16.2.7",
+    "lint-staged": "^17.3.0",
     "nx": "23.1.1",
     "popolo-types": "^0.2.1",
     "prettier": "^3.7.4",
