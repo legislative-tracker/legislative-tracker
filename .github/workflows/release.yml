@@ -57,14 +57,12 @@ jobs:
           if [ -n "$(git status --porcelain)" ]; then
             HUSKY=0 git commit -m "chore(release): v${{ steps.release.outputs.VERSION }} [skip ci]"
           fi
-          if ! git rev-parse "v${{ steps.release.outputs.VERSION }}" >/dev/null 2>&1; then
-            git tag -a "v${{ steps.release.outputs.VERSION }}" -m "v${{ steps.release.outputs.VERSION }}"
-            git push origin main --tags
-          fi
+          git tag -f -a "v${{ steps.release.outputs.VERSION }}" -m "v${{ steps.release.outputs.VERSION }}"
+          git push origin HEAD:main "v${{ steps.release.outputs.VERSION }}" --force
 
       - name: Create GitHub Release
         if: steps.release.outputs.RELEASED == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "v${{ steps.release.outputs.VERSION }}" --title "v${{ steps.release.outputs.VERSION }}" --notes-from-tag || true
+          gh release create "v${{ steps.release.outputs.VERSION }}" --title "v${{ steps.release.outputs.VERSION }}" --generate-notes || true
