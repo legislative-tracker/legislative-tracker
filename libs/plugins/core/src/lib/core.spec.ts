@@ -42,4 +42,36 @@ describe('Plugin Core Utilities', () => {
       expect(mapped.party).toEqual('Democrat');
     });
   });
+
+  describe('LegislaturePluginRegistry', () => {
+    const mockPlugin = {
+      id: 'test-st',
+      jurisdiction: 'US-ST',
+      name: 'Test State Legislature',
+      updateMembers: async () => [],
+      updateBills: async () => [],
+    };
+
+    beforeEach(() => {
+      import('./registry').then((m) => m.LegislaturePluginRegistry.clear());
+    });
+
+    it('should register and retrieve a plugin by ID case-insensitively', async () => {
+      const { LegislaturePluginRegistry } = await import('./registry');
+      LegislaturePluginRegistry.register(mockPlugin);
+
+      expect(LegislaturePluginRegistry.has('test-st')).toBe(true);
+      expect(LegislaturePluginRegistry.has('TEST-ST')).toBe(true);
+      expect(LegislaturePluginRegistry.get('TEST-ST')).toBe(mockPlugin);
+      expect(LegislaturePluginRegistry.getAll()).toContain(mockPlugin);
+    });
+
+    it('should unregister a plugin properly', async () => {
+      const { LegislaturePluginRegistry } = await import('./registry');
+      LegislaturePluginRegistry.register(mockPlugin);
+      expect(LegislaturePluginRegistry.unregister('test-st')).toBe(true);
+      expect(LegislaturePluginRegistry.has('test-st')).toBe(false);
+    });
+  });
 });
+

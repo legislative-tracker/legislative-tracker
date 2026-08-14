@@ -38,5 +38,16 @@ describe('Server Util Core', () => {
         'No member update function registered for state: invalid_state',
       );
     });
+
+    it('successfully calls registered plugin for NY state', async () => {
+      const { LegislaturePluginRegistry } = await import('@legislative-tracker/plugins-core');
+      expect(LegislaturePluginRegistry.has('ny')).toBe(true);
+
+      const nyPlugin = LegislaturePluginRegistry.get('ny');
+      expect(nyPlugin).toBeDefined();
+      expect(nyPlugin?.id).toBe('ny');
+      expect(nyPlugin?.jurisdiction).toBe('US-NY');
+    });
   });
 });
+

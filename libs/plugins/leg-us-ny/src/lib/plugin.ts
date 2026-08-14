@@ -4,7 +4,9 @@ import { updateBills } from './bills';
 
 export const nyLegislaturePlugin: LegislaturePlugin = {
   id: 'ny',
+  jurisdiction: 'US-NY',
   name: 'New York State Legislature',
   updateMembers,
   updateBills,
 };
+
