@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideNoopAnimations } from '@angular/platform-browser/animations'; // Critical for MatTable
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { By } from '@angular/platform-browser';
 
@@ -10,12 +10,16 @@ import { ColumnConfig } from '@legislative-tracker/shared/models';
 
 interface TestItem {
   id: string;
-  name: string;
-  role: string;
+  title?: string;
+  name?: string;
+  role?: string;
 }
 
-@Component({ standalone: true, changeDetection: ChangeDetectionStrategy.Eager,
- template: '' })
+@Component({
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  template: '',
+})
 class DummyComponent {}
 
 describe('TableComponent', () => {
@@ -23,8 +27,8 @@ describe('TableComponent', () => {
   let fixture: ComponentFixture<TableComponent<TestItem>>;
 
   const mockData: TestItem[] = [
-    { id: '1', name: 'Alice', role: 'Admin' },
-    { id: '2', name: 'Bob', role: 'User' },
+    { id: '1', name: 'Alice', role: 'Admin', title: 'Zebra Bill' },
+    { id: '2', name: 'Bob', role: 'User', title: 'Apple Bill' },
   ];
 
   const mockColumns: ColumnConfig<TestItem>[] = [
@@ -32,28 +36,29 @@ describe('TableComponent', () => {
     { key: 'role', label: 'Role' },
   ];
 
+  const mockColumnsWithTitle: ColumnConfig<TestItem>[] = [
+    { key: 'id', label: 'Bill Number' },
+    { key: 'title', label: 'Title' },
+  ];
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TableComponent],
       providers: [
         provideRouter([{ path: '**', component: DummyComponent }]),
-        provideNoopAnimations(), // Ensures MatTable renders without waiting for CSS animations
+        provideNoopAnimations(),
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent<TableComponent<TestItem>>(TableComponent);
     component = fixture.componentInstance;
 
-    // Set Inputs
     fixture.componentRef.setInput('dataSource', mockData);
     fixture.componentRef.setInput('columnSource', mockColumns);
     fixture.componentRef.setInput('stateCd', 'ny');
     fixture.componentRef.setInput('routeType', 'bill');
 
-    // Trigger Initial Change Detection
     fixture.detectChanges();
-
-    // Wait for MatTable to render rows (Critical Step)
     await fixture.whenStable();
   });
 
@@ -66,22 +71,43 @@ describe('TableComponent', () => {
     expect(rows.length).toBe(2);
   });
 
-  it('should emit rowClick event when a row is clicked', () => {
-    // Spy on the output emitter
-    const emitSpy = vi.spyOn(component.rowClick, 'emit');
+  it('should render mat-sort-header on table header cells', () => {
+    const headers = fixture.debugElement.queryAll(By.css('th[mat-header-cell]'));
+    expect(headers.length).toBe(2);
+    headers.forEach((header) => {
+      expect(header.attributes['mat-sort-header']).toBeDefined();
+    });
+  });
 
-    // Find the row
+  it('should default sort to first column key when Title column is absent', () => {
+    expect(component.defaultSortKey()).toBe('name');
+  });
+
+  it('should default sort to Title column key when Title column is present', async () => {
+    fixture.componentRef.setInput('columnSource', mockColumnsWithTitle);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(component.defaultSortKey()).toBe('title');
+  });
+
+  it('should respect custom defaultSortKey input', async () => {
+    fixture.componentRef.setInput('defaultSortKey', 'role');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(component.defaultSortKey()).toBe('role');
+  });
+
+  it('should emit rowClick event when a row is clicked', () => {
+    const emitSpy = vi.spyOn(component.rowClick, 'emit');
     const firstRow = fixture.debugElement.query(By.css('tr[mat-row]'));
 
-    // Safety Check: Ensure row exists before clicking to prevent crash
     if (!firstRow) {
       throw new Error('Table row not found! MatTable did not render.');
     }
 
-    // Click
     firstRow.nativeElement.click();
-
-    // Assert
     expect(emitSpy).toHaveBeenCalledWith(mockData[0]);
   });
 });
