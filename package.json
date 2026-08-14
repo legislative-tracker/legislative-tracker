@@ -5,6 +5,9 @@
   "license": "AGPL-3.0-only",
   "author": "jpelton-stroud",
   "type": "module",
+  "engines": {
+    "node": "24"
+  },
   "scripts": {
     "nx": "nx",
     "start": "nx serve client-angular -c firebase",
@@ -92,7 +95,7 @@
   ],
   "overrides": {
     "brace-expansion": "^5.0.9",
-    "image-size": "^2.0.2",
+    "image-size": "^2.0.3",
     "ts-deepmerge": "^8.0.0",
     "uuid": "^11.1.1"
   },

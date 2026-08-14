@@ -6,7 +6,10 @@ import {
   platformBrowserTesting,
 } from '@angular/platform-browser/testing';
 
-getTestBed().initTestEnvironment(
-  BrowserTestingModule,
-  platformBrowserTesting(),
-);
+if (!(getTestBed() as any).isInitialized) {
+  getTestBed().initTestEnvironment(
+    BrowserTestingModule,
+    platformBrowserTesting(),
+  );
+}
+
