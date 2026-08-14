@@ -35,15 +35,15 @@ jobs:
       - name: Bump Application Version & Changelog
         id: release
         run: |
-          npx nx release version --group=app --yes
+          npx nx release version --group=app
           NEW_VERSION=$(node -e 'console.log(JSON.parse(fs.readFileSync("package.json")).version)')
           node scripts/sync-version.js $NEW_VERSION
-          npx nx release changelog --group=app $NEW_VERSION --yes
+          npx nx release changelog --group=app $NEW_VERSION
           echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
 
       - name: Commit & Tag Release
         run: |
-          git add package.json apps/server-firebase/package.json libs/client-angular/core/src/lib/version.ts CHANGELOG.md
+          git add package.json apps/server-firebase/package.json libs/client-angular/core/src/lib/version.ts apps/server-firebase/CHANGELOG.md CHANGELOG.md || true
           git commit -m "chore(release): v${{ steps.release.outputs.VERSION }} [skip ci]" || echo "No changes to commit"
           git tag -a "v${{ steps.release.outputs.VERSION }}" -m "v${{ steps.release.outputs.VERSION }}"
           git push origin main --tags
