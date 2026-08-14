@@ -62,17 +62,17 @@
     }
   ],
   "release": {
-    "git": {
-      "commit": false,
-      "tag": false
-    },
     "releaseTag": {
       "pattern": "v{version}"
     },
     "version": {
       "specifierSource": "conventional-commits",
       "currentVersionResolver": "git-tag",
-      "fallbackCurrentVersionResolver": "disk"
+      "fallbackCurrentVersionResolver": "disk",
+      "git": {
+        "commit": false,
+        "tag": false
+      }
     },
     "groups": {
       "app": {
@@ -90,7 +90,11 @@
     },
     "changelog": {
       "automaticFromRef": "HEAD~1",
-      "projectChangelogs": true
+      "projectChangelogs": true,
+      "git": {
+        "commit": false,
+        "tag": false
+      }
     }
   },
   "analytics": false,
