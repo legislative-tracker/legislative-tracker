@@ -64,14 +64,20 @@
     }
   ],
   "release": {
+    "releaseTag": {
+      "pattern": "v{version}"
+    },
     "groups": {
       "app": {
         "projectsRelationship": "fixed",
-        "projects": ["apps/client-angular", "apps/server-firebase"],
+        "projects": ["self", "server-firebase"],
         "version": {
           "generatorOptions": {
             "specifierSource": "conventional-commits"
           }
+        },
+        "changelog": {
+          "createRelease": false
         }
       },
       "plugins": {
@@ -84,13 +90,8 @@
         }
       }
     },
-    "version": {
-      "preVersionCommand": "npx nx run-many -t build"
-    },
     "changelog": {
-      "workspaceChangelog": {
-        "create": true
-      }
+      "projectChangelogs": true
     }
   },
   "analytics": false,
