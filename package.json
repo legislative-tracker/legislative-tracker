@@ -80,7 +80,7 @@
     "firebase-functions-test": "^3.4.1",
     "husky": "^9.1.7",
     "image-size": "^2.0.2",
-    "jiti": "2.4.2",
+    "jiti": "2.7.0",
     "jsdom": "^27.4.0",
     "knip": "^6.32.2",
     "lint-staged": "^16.2.7",
