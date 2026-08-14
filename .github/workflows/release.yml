@@ -16,6 +16,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          fetch-tags: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
@@ -35,20 +36,32 @@ jobs:
       - name: Bump Application Version & Changelog
         id: release
         run: |
+          PREV_VERSION=$(node -e 'console.log(JSON.parse(fs.readFileSync("package.json")).version)')
           npx nx release version --group=app
           NEW_VERSION=$(node -e 'console.log(JSON.parse(fs.readFileSync("package.json")).version)')
           node scripts/sync-version.js $NEW_VERSION
           npx nx release changelog --group=app $NEW_VERSION
           echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+          if [ "$PREV_VERSION" != "$NEW_VERSION" ]; then
+            echo "RELEASED=true" >> $GITHUB_OUTPUT
+          else
+            echo "RELEASED=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Commit & Tag Release
+        if: steps.release.outputs.RELEASED == 'true'
         run: |
-          git add package.json apps/server-firebase/package.json libs/client-angular/core/src/lib/version.ts apps/server-firebase/CHANGELOG.md CHANGELOG.md || true
-          git commit -m "chore(release): v${{ steps.release.outputs.VERSION }} [skip ci]" || echo "No changes to commit"
-          git tag -a "v${{ steps.release.outputs.VERSION }}" -m "v${{ steps.release.outputs.VERSION }}"
-          git push origin main --tags
+          git add package.json apps/server-firebase/package.json libs/client-angular/core/src/lib/version.ts docs/CHANGELOG.md || true
+          if [ -n "$(git status --porcelain)" ]; then
+            HUSKY=0 git commit -m "chore(release): v${{ steps.release.outputs.VERSION }} [skip ci]"
+          fi
+          if ! git rev-parse "v${{ steps.release.outputs.VERSION }}" >/dev/null 2>&1; then
+            git tag -a "v${{ steps.release.outputs.VERSION }}" -m "v${{ steps.release.outputs.VERSION }}"
+            git push origin main --tags
+          fi
 
       - name: Create GitHub Release
+        if: steps.release.outputs.RELEASED == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
