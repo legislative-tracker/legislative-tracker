@@ -1,6 +1,7 @@
 import { slugify } from './string';
 import { isImageLink, isEmail } from './validators';
 import { getBillUpdates, getMemberUpdates } from './updates';
+import { LegislaturePluginRegistry } from '@legislative-tracker/plugins-core';
 
 describe('Server Util Core', () => {
   describe('slugify', () => {
@@ -40,7 +41,6 @@ describe('Server Util Core', () => {
     });
 
     it('successfully calls registered plugin for NY state', async () => {
-      const { LegislaturePluginRegistry } = await import('@legislative-tracker/plugins-core');
       expect(LegislaturePluginRegistry.has('ny')).toBe(true);
 
       const nyPlugin = LegislaturePluginRegistry.get('ny');
@@ -50,4 +50,5 @@ describe('Server Util Core', () => {
     });
   });
 });
+
 
