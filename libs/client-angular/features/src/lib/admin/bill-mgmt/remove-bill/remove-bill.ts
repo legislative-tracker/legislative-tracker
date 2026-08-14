@@ -1,4 +1,4 @@
-import { Component, inject, signal, effect } from '@angular/core';
+import { Component, inject, signal, effect, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SlicePipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -34,6 +34,7 @@ interface SimpleBill {
     MatSnackBarModule,
   ],
   templateUrl: './remove-bill.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './remove-bill.scss',
 })
 export class RemoveBill {

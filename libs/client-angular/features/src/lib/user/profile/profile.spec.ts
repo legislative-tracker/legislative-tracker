@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
@@ -30,6 +30,7 @@ vi.mock('firebase/functions', () => ({
   selector: 'app-address-form',
   template: '',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   inputs: ['formType'],
 })
 class MockAddressForm {}
@@ -38,6 +39,7 @@ class MockAddressForm {}
   selector: 'app-table',
   template: '',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   inputs: ['dataSource', 'columnSource', 'routeType', 'stateCd'],
 })
 class MockTableComponent {}

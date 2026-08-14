@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { AsyncPipe } from '@angular/common';
 import {
@@ -26,6 +26,7 @@ import { Footer } from '../footer/footer';
   selector: 'app-nav',
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     RouterOutlet,
     RouterLink,

@@ -1,4 +1,4 @@
-import { Component, input, inject, computed } from '@angular/core';
+import { Component, input, inject, computed, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -13,6 +13,7 @@ import { Legislation } from '@legislative-tracker/shared/models';
   selector: 'app-bill-detail',
   imports: [MatTabsModule, TableComponent, MatProgressSpinnerModule],
   templateUrl: './bill-detail.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./bill-detail.scss'],
 })
 export class BillDetail {

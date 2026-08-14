@@ -7,7 +7,7 @@
 
 <div class="row">
   <img
-    [src]="member()?.image"
+    [src]="$safeNavigationMigration(member()?.image)"
     alt="Headshot of {{ member()?.name }}"
     class="headshot"
     appFallback

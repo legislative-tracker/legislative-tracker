@@ -1,4 +1,4 @@
-import { Component, input, computed, output } from '@angular/core';
+import { Component, input, computed, output, ChangeDetectionStrategy } from '@angular/core';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { RouterLink } from '@angular/router';
@@ -10,6 +10,7 @@ import { ColumnConfig } from '@legislative-tracker/shared/models';
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [MatTableModule, MatSortModule, RouterLink],
 })
 export class TableComponent<T> {

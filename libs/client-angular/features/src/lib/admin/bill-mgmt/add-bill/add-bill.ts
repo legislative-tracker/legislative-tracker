@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -24,6 +24,7 @@ import {
     MatSnackBarModule,
   ],
   templateUrl: './add-bill.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './add-bill.scss',
 })
 export class AddBill {

@@ -1,4 +1,4 @@
-import { Component, DebugElement } from '@angular/core';
+import { Component, DebugElement, ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -10,6 +10,7 @@ import { ImgFallbackDirective } from './img-fallback';
 @Component({
   standalone: true,
   imports: [ImgFallbackDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <img id="default-img" src="broken-link.jpg" appFallback />
 

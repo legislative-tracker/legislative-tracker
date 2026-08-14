@@ -1,4 +1,4 @@
-import { Component, inject, signal, effect } from '@angular/core';
+import { Component, inject, signal, effect, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -49,6 +49,7 @@ import { ConfigService } from '@legislative-tracker/client-angular/core';
     MatTooltipModule,
   ],
   templateUrl: './admin.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './admin.scss',
 })
 export class Admin {

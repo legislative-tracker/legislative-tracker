@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of } from 'rxjs';
@@ -18,6 +18,7 @@ import { TableComponent } from '@legislative-tracker/client-angular/ui';
   selector: 'app-table',
   template: '',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   inputs: ['dataSource', 'columnSource', 'isLoading', 'routeType'],
 })
 class MockTableComponent {}

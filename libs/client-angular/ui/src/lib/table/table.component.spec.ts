@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideNoopAnimations } from '@angular/platform-browser/animations'; // Critical for MatTable
 import { describe, it, expect, beforeEach, vi } from 'vitest';
@@ -14,7 +14,8 @@ interface TestItem {
   role: string;
 }
 
-@Component({ standalone: true, template: '' })
+@Component({ standalone: true, changeDetection: ChangeDetectionStrategy.Eager,
+ template: '' })
 class DummyComponent {}
 
 describe('TableComponent', () => {

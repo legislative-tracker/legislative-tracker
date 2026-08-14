@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,6 +22,7 @@ import { UserManagementService } from '@legislative-tracker/client-angular/core'
     MatSnackBarModule,
   ],
   templateUrl: './remove-admin.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './remove-admin.scss',
 })
 export class RemoveAdmin {

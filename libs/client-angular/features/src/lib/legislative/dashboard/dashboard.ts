@@ -1,4 +1,4 @@
-import { Component, input, inject, computed, signal } from '@angular/core';
+import { Component, input, inject, computed, signal, ChangeDetectionStrategy } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
 
@@ -26,6 +26,7 @@ enum DashboardTab {
   selector: 'app-dashboard',
   imports: [MatTabsModule, TableComponent, MatProgressSpinnerModule],
   templateUrl: './dashboard.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './dashboard.scss',
 })
 export class Dashboard {

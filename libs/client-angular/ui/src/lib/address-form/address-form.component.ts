@@ -5,6 +5,7 @@ import {
   output,
   computed,
   effect,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -18,6 +19,7 @@ import { MatCardModule } from '@angular/material/card';
   selector: 'app-address-form',
   templateUrl: './address-form.component.html',
   styleUrl: './address-form.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     MatInputModule,
     MatButtonModule,

@@ -2,8 +2,12 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "types": []
+    "types": [],
+    "moduleResolution": "bundler"
   },
   "files": ["src/main.ts"],
-  "include": ["src/**/*.ts", "../../libs/client-angular/**/*.ts"]
+  "include": ["src/**/*.ts", "../../libs/client-angular/**/*.ts"],
+  "angularCompilerOptions": {
+    "strictTemplates": false
+  }
 }

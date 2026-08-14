@@ -8,6 +8,7 @@
   "targets": {
     "build": {
       "executor": "@angular/build:application",
+      "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/client-angular",
         "index": "apps/client-angular/src/index.html",
@@ -62,11 +63,11 @@
             }
           ]
         }
-      },
-      "defaultConfiguration": "production"
+      }
     },
     "serve": {
       "executor": "@angular/build:dev-server",
+      "defaultConfiguration": "development",
       "options": {
         "buildTarget": "client-angular:build:development"
       },
@@ -80,11 +81,10 @@
         "firebase": {
           "buildTarget": "client-angular:build:firebase"
         }
-      },
-      "defaultConfiguration": "development"
+      }
     },
     "test": {
-      "executor": "@nx/vite:test",
+      "executor": "@nx/vitest:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
         "configFile": "apps/client-angular/vitest.config.ts",

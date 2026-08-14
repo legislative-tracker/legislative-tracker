@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {
@@ -33,6 +33,7 @@ import { FeedbackService } from '@legislative-tracker/client-angular/core';
     MatIconModule,
   ],
   templateUrl: './feedback.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./feedback.scss'],
 })
 export class Feedback {

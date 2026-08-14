@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import {
@@ -27,6 +27,7 @@ export interface LinkSnackBarData {
     MatSnackBarAction,
   ],
   templateUrl: './link-snackbar.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./link-snackbar.scss'],
 })
 export class LinkSnackBar {
