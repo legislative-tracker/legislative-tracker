@@ -1,0 +1,9 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schemas/knip.json",
+  "entry": [
+    "apps/client-angular/src/main.ts",
+    "apps/server-firebase/src/index.ts",
+    "scripts/**/*.js"
+  ],
+  "project": ["apps/**/*.{ts,html}", "libs/**/*.{ts,html}", "scripts/**/*.js"]
+}

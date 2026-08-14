@@ -33,12 +33,19 @@ const serverPkgPath = path.join(rootDir, 'apps/server-firebase/package.json');
 if (fs.existsSync(serverPkgPath)) {
   const serverPkg = JSON.parse(fs.readFileSync(serverPkgPath, 'utf8'));
   serverPkg.version = targetVersion;
-  fs.writeFileSync(serverPkgPath, JSON.stringify(serverPkg, null, 2) + '\n', 'utf8');
+  fs.writeFileSync(
+    serverPkgPath,
+    JSON.stringify(serverPkg, null, 2) + '\n',
+    'utf8',
+  );
   console.log(`- Updated ${path.relative(rootDir, serverPkgPath)}`);
 }
 
 // 3. libs/client-angular/core/src/lib/version.ts
-const versionTsPath = path.join(rootDir, 'libs/client-angular/core/src/lib/version.ts');
+const versionTsPath = path.join(
+  rootDir,
+  'libs/client-angular/core/src/lib/version.ts',
+);
 const versionTsContent = `export const APP_VERSION = '${targetVersion}';\n`;
 fs.writeFileSync(versionTsPath, versionTsContent, 'utf8');
 console.log(`- Updated ${path.relative(rootDir, versionTsPath)}`);

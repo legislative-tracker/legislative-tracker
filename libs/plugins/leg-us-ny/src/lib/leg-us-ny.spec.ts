@@ -129,10 +129,20 @@ describe('NY Legislature Plugin', () => {
     it('getCosponsors groups cosponsors by version string', () => {
       const result = getCosponsors(mockBill);
       expect(result['Original']).toEqual([
-        { id: 'Alice-Smith', name: 'Alice Smith', chamber: 'SENATE', district: '10' },
+        {
+          id: 'Alice-Smith',
+          name: 'Alice Smith',
+          chamber: 'SENATE',
+          district: '10',
+        },
       ]);
       expect(result['A']).toEqual([
-        { id: 'Bob-Johnson', name: 'Bob Johnson', chamber: 'SENATE', district: '15' },
+        {
+          id: 'Bob-Johnson',
+          name: 'Bob Johnson',
+          chamber: 'SENATE',
+          district: '15',
+        },
       ]);
     });
 

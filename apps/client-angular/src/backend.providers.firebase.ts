@@ -47,11 +47,9 @@ export const BACKEND_PROVIDERS: (Provider | EnvironmentProviders)[] = [
       const config = inject(APP_CONFIG);
       if (config.useEmulators && config.emulatorHosts?.auth) {
         const authHost = config.emulatorHosts.auth;
-        connectAuthEmulator(
-          auth,
-          `http://${authHost.host}:${authHost.port}`,
-          { disableWarnings: true },
-        );
+        connectAuthEmulator(auth, `http://${authHost.host}:${authHost.port}`, {
+          disableWarnings: true,
+        });
       }
       return auth;
     },

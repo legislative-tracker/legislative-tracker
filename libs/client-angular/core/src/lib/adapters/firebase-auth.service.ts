@@ -55,7 +55,9 @@ export class FirebaseAuthService implements AuthService {
     const userDoc = doc(this.firestore, `users/${uid}`);
 
     const user$ = new Observable<any>((subscriber) => {
-      return onSnapshot(userDoc, (snapshot) => subscriber.next(snapshot.data()));
+      return onSnapshot(userDoc, (snapshot) =>
+        subscriber.next(snapshot.data()),
+      );
     });
 
     user$.subscribe((data) => {

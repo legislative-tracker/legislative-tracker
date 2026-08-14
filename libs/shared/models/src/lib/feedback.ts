@@ -3,4 +3,3 @@ export interface FeedbackResponse {
   issueNumber: number;
   issueUrl: string;
 }
-

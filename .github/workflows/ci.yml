@@ -27,6 +27,9 @@ jobs:
       - name: Derive Base & Head SHA for Nx Affected
         uses: nrwl/nx-set-shas@v5
 
+      - name: Check Code Formatting
+        run: npx prettier --check "**/*.{ts,js,json,html,scss,md}"
+
       - name: Nx Affected Lint
         run: npx nx affected -t lint
 

@@ -1,4 +1,10 @@
-import { Component, input, inject, computed, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  input,
+  inject,
+  computed,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatListModule } from '@angular/material/list';

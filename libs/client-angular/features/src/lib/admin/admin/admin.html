@@ -55,7 +55,7 @@
               <mat-label>Organization Name</mat-label>
               <input matInput formControlName="name" placeholder="Acme Corp" />
               @if (form.get('organization.name')?.hasError('required')) {
-                <mat-error>Name is required</mat-error>
+              <mat-error>Name is required</mat-error>
               }
             </mat-form-field>
           </div>
@@ -93,7 +93,7 @@
                   placeholder="#673ab7"
                 />
                 @if (form.get('branding.primaryColor')?.invalid) {
-                  <mat-error>Invalid Hex Color</mat-error>
+                <mat-error>Invalid Hex Color</mat-error>
                 }
               </mat-form-field>
             </div>

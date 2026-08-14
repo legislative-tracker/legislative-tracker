@@ -23,7 +23,9 @@ const GITHUB_RESOURCE: ResourceLink = {
 @Injectable({ providedIn: 'root' })
 export class FirebaseConfigService implements ConfigService {
   private readonly document = inject(DOCUMENT);
-  private readonly firestore = inject<Firestore>(FIREBASE_FIRESTORE, { optional: true });
+  private readonly firestore = inject<Firestore>(FIREBASE_FIRESTORE, {
+    optional: true,
+  });
 
   readonly config = signal<RuntimeConfig>(DEFAULT_CONFIG);
 

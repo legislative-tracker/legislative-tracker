@@ -14,7 +14,9 @@ describe('Server Util Core', () => {
   describe('validators', () => {
     it('isImageLink returns true for valid image links', () => {
       expect(isImageLink('https://nysenate.gov/img/member.jpg')).toBe(true);
-      expect(isImageLink('http://nysenate.gov/headshots/member.png')).toBe(true);
+      expect(isImageLink('http://nysenate.gov/headshots/member.png')).toBe(
+        true,
+      );
       expect(isImageLink('https://example.com/photos/member-123')).toBe(true);
     });
 
@@ -33,7 +35,9 @@ describe('Server Util Core', () => {
     it('throws error when requesting updates for an unregistered state', async () => {
       await expect(
         getBillUpdates({ id: 'invalid_state', bills: ['S100-2025'] }),
-      ).rejects.toThrow('No bill update function registered for state: invalid_state');
+      ).rejects.toThrow(
+        'No bill update function registered for state: invalid_state',
+      );
 
       await expect(getMemberUpdates('invalid_state')).rejects.toThrow(
         'No member update function registered for state: invalid_state',
@@ -50,5 +54,3 @@ describe('Server Util Core', () => {
     });
   });
 });
-
-

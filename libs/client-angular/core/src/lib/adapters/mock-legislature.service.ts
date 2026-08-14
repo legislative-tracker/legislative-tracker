@@ -8,8 +8,7 @@ const MOCK_BILLS: Legislation[] = [
     id: 'mock-bill-1',
     session: '2025-2026',
     title: 'Clean Energy Infrastructure Act',
-    text:
-      'An act establishing funding and incentives for renewable energy installation across public facilities.',
+    text: 'An act establishing funding and incentives for renewable energy installation across public facilities.',
     classification: 'bill',
     updated_at: '2025-02-01',
   },
@@ -17,8 +16,7 @@ const MOCK_BILLS: Legislation[] = [
     id: 'mock-bill-2',
     session: '2025-2026',
     title: 'Digital Privacy Protection Amendment',
-    text:
-      'Provides consumer privacy protection and data handling standard requirements for technology companies.',
+    text: 'Provides consumer privacy protection and data handling standard requirements for technology companies.',
     classification: 'bill',
     updated_at: '2025-01-15',
   },
