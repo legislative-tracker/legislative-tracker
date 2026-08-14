@@ -1,0 +1,55 @@
+name: Release Pipeline
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Configure Git User
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump Application Version & Changelog
+        id: release
+        run: |
+          npx nx release version --group=app --yes
+          NEW_VERSION=$(node -e 'console.log(JSON.parse(fs.readFileSync("package.json")).version)')
+          node scripts/sync-version.js $NEW_VERSION
+          npx nx release changelog --group=app $NEW_VERSION --yes
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Commit & Tag Release
+        run: |
+          git add package.json apps/server-firebase/package.json libs/client-angular/core/src/lib/version.ts CHANGELOG.md
+          git commit -m "chore(release): v${{ steps.release.outputs.VERSION }} [skip ci]" || echo "No changes to commit"
+          git tag -a "v${{ steps.release.outputs.VERSION }}" -m "v${{ steps.release.outputs.VERSION }}"
+          git push origin main --tags
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v${{ steps.release.outputs.VERSION }}" --title "v${{ steps.release.outputs.VERSION }}" --notes-from-tag || true

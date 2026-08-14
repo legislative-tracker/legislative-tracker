@@ -64,12 +64,33 @@
     }
   ],
   "release": {
-    "projects": ["libs/plugins/*"],
+    "groups": {
+      "app": {
+        "projectsRelationship": "fixed",
+        "projects": ["apps/client-angular", "apps/server-firebase"],
+        "version": {
+          "generatorOptions": {
+            "specifierSource": "conventional-commits"
+          }
+        }
+      },
+      "plugins": {
+        "projectsRelationship": "independent",
+        "projects": ["libs/plugins/*"],
+        "version": {
+          "generatorOptions": {
+            "specifierSource": "conventional-commits"
+          }
+        }
+      }
+    },
     "version": {
       "preVersionCommand": "npx nx run-many -t build"
     },
     "changelog": {
-      "projectChangelogs": true
+      "workspaceChangelog": {
+        "create": true
+      }
     }
   },
   "analytics": false,

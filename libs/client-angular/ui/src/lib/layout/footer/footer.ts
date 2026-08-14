@@ -2,7 +2,7 @@ import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/cor
 import { RouterLink } from '@angular/router';
 
 // App imports
-import { UiService } from '@legislative-tracker/client-angular/core';
+import { UiService, APP_VERSION } from '@legislative-tracker/client-angular/core';
 import { Feedback } from '../../feedback/feedback';
 
 @Component({
@@ -14,8 +14,9 @@ import { Feedback } from '../../feedback/feedback';
 })
 export class Footer {
   currentYear = signal(new Date().getFullYear());
-  appVersion = signal('0.8.4');
+  appVersion = signal(APP_VERSION);
   buildTimestamp = signal(new Date().toISOString());
+
 
   private ui = inject(UiService);
 

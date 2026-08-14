@@ -22,3 +22,5 @@ export * from './lib/adapters/firebase-legislature.service';
 export * from './lib/adapters/mock-legislature.service';
 export * from './lib/adapters/firebase-user-management.service';
 export * from './lib/adapters/mock-user-management.service';
+export * from './lib/version';
+
