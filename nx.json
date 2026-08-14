@@ -1,8 +1,6 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "affected": {
-    "defaultBase": "main"
-  },
+  "defaultBase": "main",
   "targetDefaults": {
     "build": {
       "cache": true,
@@ -68,44 +66,13 @@
       "pattern": "v{version}"
     },
     "version": {
-      "generatorOptions": {
-        "specifierSource": "conventional-commits"
-      },
-      "fallbackCurrentVersionResolver": "disk",
-      "conventionalCommits": {
-        "types": {
-          "feat": {
-            "semverBump": "minor",
-            "changelog": { "title": "🚀 Features" }
-          },
-          "fix": {
-            "semverBump": "patch",
-            "changelog": { "title": "🐛 Bug Fixes" }
-          },
-          "perf": {
-            "semverBump": "patch",
-            "changelog": { "title": "⚡ Performance Improvements" }
-          },
-          "refactor": {
-            "semverBump": "patch",
-            "changelog": { "title": "♻️ Code Refactoring" }
-          },
-          "build": {
-            "semverBump": "patch",
-            "changelog": { "title": "📦 Build & Dependencies" }
-          }
-        }
-      }
+      "specifierSource": "conventional-commits",
+      "fallbackCurrentVersionResolver": "disk"
     },
     "groups": {
       "app": {
         "projectsRelationship": "fixed",
         "projects": ["@legislative-tracker/source"],
-        "version": {
-          "generatorOptions": {
-            "specifierSource": "conventional-commits"
-          }
-        },
         "changelog": {
           "createRelease": false,
           "file": "{workspaceRoot}/docs/CHANGELOG.md"
@@ -113,12 +80,7 @@
       },
       "plugins": {
         "projectsRelationship": "independent",
-        "projects": ["libs/plugins/*"],
-        "version": {
-          "generatorOptions": {
-            "specifierSource": "conventional-commits"
-          }
-        }
+        "projects": ["libs/plugins/*"]
       }
     },
     "changelog": {
