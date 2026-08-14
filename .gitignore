@@ -35,6 +35,7 @@ apps/client-angular/public/assets/config.json
 
 # IDEs and Editors
 .idea/
+.agents/
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
