@@ -2,7 +2,9 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "paths": {
-      "@legislative-tracker/shared/models": ["./libs/shared/models/src/index.ts"],
+      "@legislative-tracker/shared/models": [
+        "./libs/shared/models/src/index.ts"
+      ],
       "@legislative-tracker/shared/util": ["./libs/shared/util/src/index.ts"],
       "@legislative-tracker/shared/api-types": [
         "./libs/shared/api-types/src/index.ts"

@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { extractSponsors, syncBillSponsorshipsToLegislators } from './sync-sponsorships';
+import {
+  extractSponsors,
+  syncBillSponsorshipsToLegislators,
+} from './sync-sponsorships';
 import { Legislation } from '@legislative-tracker/shared/models';
 
 vi.mock('firebase-functions/logger', () => ({

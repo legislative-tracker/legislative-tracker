@@ -53,4 +53,3 @@ export const getMemberUpdates = async (
 
   return (await plugin.updateMembers()) as Partial<Legislator>[];
 };
-

@@ -10,6 +10,8 @@ export class MockUserManagementService implements UserManagementService {
 
   async revokeAdminPrivileges(email: string) {
     console.log('[Mock] Revoking admin privileges from:', email);
-    return { data: { message: `Successfully revoked admin role from ${email}` } };
+    return {
+      data: { message: `Successfully revoked admin role from ${email}` },
+    };
   }
 }

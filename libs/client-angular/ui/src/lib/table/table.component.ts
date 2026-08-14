@@ -27,7 +27,9 @@ export class TableComponent<T> {
   stateCd = input.required<string>(); // Passed from parent or route
   routeType = input.required<'bill' | 'member'>();
   chamber = input<'SENATE' | 'ASSEMBLY'>();
-  defaultSortKeyInput = input<string | undefined>(undefined, { alias: 'defaultSortKey' });
+  defaultSortKeyInput = input<string | undefined>(undefined, {
+    alias: 'defaultSortKey',
+  });
   defaultSortDirection = input<SortDirection>('asc');
 
   readonly sort = viewChild(MatSort);
@@ -40,7 +42,7 @@ export class TableComponent<T> {
     if (customKey) return customKey;
 
     const titleCol = this.columnSource().find(
-      (c) => c.label === 'Title' || c.key === 'title'
+      (c) => c.label === 'Title' || c.key === 'title',
     );
     return titleCol ? titleCol.key : (this.columnSource()[0]?.key ?? '');
   });

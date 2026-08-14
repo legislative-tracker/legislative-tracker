@@ -9,11 +9,9 @@ import { beforeEach, afterEach } from 'vitest';
 
 const testBed = getTestBed() as any;
 if (!testBed.platform) {
-  testBed.initTestEnvironment(
-    BrowserTestingModule,
-    platformBrowserTesting(),
-    { teardown: { destroyAfterEach: true } }
-  );
+  testBed.initTestEnvironment(BrowserTestingModule, platformBrowserTesting(), {
+    teardown: { destroyAfterEach: true },
+  });
 }
 
 beforeEach(() => {
@@ -23,4 +21,3 @@ beforeEach(() => {
 afterEach(() => {
   getTestBed().resetTestingModule();
 });
-

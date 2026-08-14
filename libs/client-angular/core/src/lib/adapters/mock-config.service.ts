@@ -1,5 +1,8 @@
 import { Injectable, signal } from '@angular/core';
-import { RuntimeConfig, DEFAULT_CONFIG } from '@legislative-tracker/shared/models';
+import {
+  RuntimeConfig,
+  DEFAULT_CONFIG,
+} from '@legislative-tracker/shared/models';
 import { ConfigService } from '../services/config.service';
 
 @Injectable({ providedIn: 'root' })

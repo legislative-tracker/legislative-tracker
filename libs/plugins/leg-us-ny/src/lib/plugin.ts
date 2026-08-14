@@ -9,4 +9,3 @@ export const nyLegislaturePlugin: LegislaturePlugin = {
   updateMembers,
   updateBills,
 };
-

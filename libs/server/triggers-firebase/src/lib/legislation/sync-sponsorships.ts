@@ -1,5 +1,9 @@
 import * as logger from 'firebase-functions/logger';
-import { Legislation, Legislator, Sponsorship } from '@legislative-tracker/shared/models';
+import {
+  Legislation,
+  Legislator,
+  Sponsorship,
+} from '@legislative-tracker/shared/models';
 import { slugify } from '@legislative-tracker/server-util-core';
 
 export interface SponsorInfo {
@@ -33,7 +37,8 @@ export const extractSponsors = (bill?: Legislation | null): SponsorInfo[] => {
         existing.classification = info.classification || 'primary';
       }
       if (info.chamber && !existing.chamber) existing.chamber = info.chamber;
-      if (info.district && !existing.district) existing.district = info.district;
+      if (info.district && !existing.district)
+        existing.district = info.district;
     }
   };
 
@@ -48,7 +53,9 @@ export const extractSponsors = (bill?: Legislation | null): SponsorInfo[] => {
           chamber: s.chamber,
           district: s.district,
           primary: isPrimary,
-          classification: isPrimary ? 'primary' : (s.classification || 'cosponsor'),
+          classification: isPrimary
+            ? 'primary'
+            : s.classification || 'cosponsor',
         });
       }
     });
@@ -115,7 +122,9 @@ export const syncBillSponsorshipsToLegislators = async (
     .get();
 
   if (legislatorsSnapshot.empty) {
-    logger.warn(`No legislators found in state ${stateId} to sync sponsorships for bill ${billId}`);
+    logger.warn(
+      `No legislators found in state ${stateId} to sync sponsorships for bill ${billId}`,
+    );
     return { updatedCount: 0, matchedLegislators: [] };
   }
 
@@ -136,9 +145,19 @@ export const syncBillSponsorshipsToLegislators = async (
   let updatedCount = 0;
   const matchedLegislators: string[] = [];
 
-  const effectiveBillId = afterBill?.identifier || afterBill?.id || beforeBill?.identifier || beforeBill?.id || billId;
+  const effectiveBillId =
+    afterBill?.identifier ||
+    afterBill?.id ||
+    beforeBill?.identifier ||
+    beforeBill?.id ||
+    billId;
   const billTitle = afterBill?.title || beforeBill?.title || '';
-  const billVersion = afterBill?.current_version || afterBill?.version || beforeBill?.current_version || beforeBill?.version || '';
+  const billVersion =
+    afterBill?.current_version ||
+    afterBill?.version ||
+    beforeBill?.current_version ||
+    beforeBill?.version ||
+    '';
 
   legislatorsSnapshot.docs.forEach((doc) => {
     const leg = doc.data() as Legislator;
@@ -157,7 +176,10 @@ export const syncBillSponsorshipsToLegislators = async (
         key === docId ||
         key === legSlug ||
         (s.name && slugify(s.name) === legSlug) ||
-        (s.chamber && s.district && legChamber === s.chamber.toUpperCase() && legDistrict === String(s.district))
+        (s.chamber &&
+          s.district &&
+          legChamber === s.chamber.toUpperCase() &&
+          legDistrict === String(s.district))
       ) {
         matchedAfter = s;
       }
@@ -168,7 +190,10 @@ export const syncBillSponsorshipsToLegislators = async (
         key === docId ||
         key === legSlug ||
         (s.name && slugify(s.name) === legSlug) ||
-        (s.chamber && s.district && legChamber === s.chamber.toUpperCase() && legDistrict === String(s.district))
+        (s.chamber &&
+          s.district &&
+          legChamber === s.chamber.toUpperCase() &&
+          legDistrict === String(s.district))
       ) {
         matchedBefore = s;
       }
@@ -178,7 +203,9 @@ export const syncBillSponsorshipsToLegislators = async (
       return;
     }
 
-    const existingSponsorships: Sponsorship[] = Array.isArray(leg.sponsorships) ? leg.sponsorships : [];
+    const existingSponsorships: Sponsorship[] = Array.isArray(leg.sponsorships)
+      ? leg.sponsorships
+      : [];
     // Remove previous sponsorship entry for this bill
     const filteredSponsorships = existingSponsorships.filter(
       (s) => s.id !== billId && s.id !== effectiveBillId,
@@ -192,7 +219,9 @@ export const syncBillSponsorshipsToLegislators = async (
         title: billTitle,
         name: billTitle,
         primary: isPrimary,
-        classification: isPrimary ? 'primary' : (matchedAfter.classification || 'cosponsor'),
+        classification: isPrimary
+          ? 'primary'
+          : matchedAfter.classification || 'cosponsor',
       };
       filteredSponsorships.push(sponsorshipEntry);
     }

@@ -72,7 +72,9 @@ describe('TableComponent', () => {
   });
 
   it('should render mat-sort-header on table header cells', () => {
-    const headers = fixture.debugElement.queryAll(By.css('th[mat-header-cell]'));
+    const headers = fixture.debugElement.queryAll(
+      By.css('th[mat-header-cell]'),
+    );
     expect(headers.length).toBe(2);
     headers.forEach((header) => {
       expect(header.attributes['mat-sort-header']).toBeDefined();

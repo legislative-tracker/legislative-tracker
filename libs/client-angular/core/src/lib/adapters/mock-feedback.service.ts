@@ -7,7 +7,8 @@ export class MockFeedbackService implements FeedbackService {
   async sendFeedback(title: string, body: string): Promise<FeedbackResponse> {
     return {
       success: true,
-      issueUrl: 'https://github.com/legislative-tracker/reimagined-parakeet/issues/1',
+      issueUrl:
+        'https://github.com/legislative-tracker/reimagined-parakeet/issues/1',
       issueNumber: 1,
     };
   }

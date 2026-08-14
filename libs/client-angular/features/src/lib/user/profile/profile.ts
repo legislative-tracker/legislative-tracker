@@ -4,7 +4,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { DatePipe } from '@angular/common';
 
-import { AuthService, FIREBASE_FUNCTIONS } from '@legislative-tracker/client-angular/core';
+import {
+  AuthService,
+  FIREBASE_FUNCTIONS,
+} from '@legislative-tracker/client-angular/core';
 import {
   AddressForm,
   TableComponent,
@@ -44,7 +47,10 @@ export class Profile {
       if (!this.functions) throw new Error('Firebase Functions not available');
       const { httpsCallable } = await import('firebase/functions');
 
-      const fetchUserReps = httpsCallable(this.functions, 'users-fetchUserReps');
+      const fetchUserReps = httpsCallable(
+        this.functions,
+        'users-fetchUserReps',
+      );
       const result = await fetchUserReps({ address: addressStr });
       alert('Success!');
     } catch (error) {

@@ -91,7 +91,10 @@ export class FirebaseLegislatureService extends LegislatureService {
               fallbackUnsub();
               fallbackUnsub = undefined;
             }
-            subscriber.next({ id: snapshot.id, ...snapshot.data() } as Legislation);
+            subscriber.next({
+              id: snapshot.id,
+              ...snapshot.data(),
+            } as Legislation);
           } else {
             const printNo = id.split('-')[0].toUpperCase();
             const billsRef = collection(this.firestore!, billsPath);
@@ -104,10 +107,14 @@ export class FirebaseLegislatureService extends LegislatureService {
                   (d) =>
                     d.id.toUpperCase() === id.toUpperCase() ||
                     d.id.toUpperCase().startsWith(`${printNo}-`) ||
-                    (d.data() as Legislation).identifier?.toUpperCase() === printNo,
+                    (d.data() as Legislation).identifier?.toUpperCase() ===
+                      printNo,
                 );
                 if (match) {
-                  subscriber.next({ id: match.id, ...match.data() } as Legislation);
+                  subscriber.next({
+                    id: match.id,
+                    ...match.data(),
+                  } as Legislation);
                 } else {
                   subscriber.next(undefined as any);
                 }
@@ -139,7 +146,10 @@ export class FirebaseLegislatureService extends LegislatureService {
         return;
       }
       const membersPath = this.getPaths(stateCode).members;
-      const memberRef = doc(this.firestore, `${membersPath}/${id.toLowerCase()}`);
+      const memberRef = doc(
+        this.firestore,
+        `${membersPath}/${id.toLowerCase()}`,
+      );
 
       let fallbackUnsub: (() => void) | undefined;
 
@@ -151,7 +161,10 @@ export class FirebaseLegislatureService extends LegislatureService {
               fallbackUnsub();
               fallbackUnsub = undefined;
             }
-            subscriber.next({ id: snapshot.id, ...snapshot.data() } as Legislator);
+            subscriber.next({
+              id: snapshot.id,
+              ...snapshot.data(),
+            } as Legislator);
           } else {
             const membersRef = collection(this.firestore!, membersPath);
             if (fallbackUnsub) fallbackUnsub();
@@ -165,7 +178,10 @@ export class FirebaseLegislatureService extends LegislatureService {
                     d.id.toLowerCase().includes(id.toLowerCase()),
                 );
                 if (match) {
-                  subscriber.next({ id: match.id, ...match.data() } as Legislator);
+                  subscriber.next({
+                    id: match.id,
+                    ...match.data(),
+                  } as Legislator);
                 } else {
                   subscriber.next(undefined as any);
                 }

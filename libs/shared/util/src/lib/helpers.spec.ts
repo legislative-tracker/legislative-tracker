@@ -5,7 +5,10 @@ import {
   isImageLink,
   isEmail,
 } from './helpers';
-import { ImplementedStatesList, ImplementedStatePairs } from './implemented-states';
+import {
+  ImplementedStatesList,
+  ImplementedStatePairs,
+} from './implemented-states';
 import { Person } from '@jpstroud/opencivicdata-types';
 
 describe('Shared Utilities', () => {
@@ -69,7 +72,9 @@ describe('Shared Utilities', () => {
   describe('isImageLink', () => {
     it('returns true for valid image HTTP/HTTPS URLs', () => {
       expect(isImageLink('https://example.com/photo.jpg')).toBe(true);
-      expect(isImageLink('https://example.com/headshots/member.png?v=2')).toBe(true);
+      expect(isImageLink('https://example.com/headshots/member.png?v=2')).toBe(
+        true,
+      );
       expect(isImageLink('https://example.com/avatars/123')).toBe(true);
     });
 

@@ -1,5 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component, Directive, Input, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  Directive,
+  Input,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of } from 'rxjs';

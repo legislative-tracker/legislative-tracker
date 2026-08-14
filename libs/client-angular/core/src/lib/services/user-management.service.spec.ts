@@ -20,7 +20,10 @@ describe('FirebaseUserManagementService', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        { provide: UserManagementService, useClass: FirebaseUserManagementService },
+        {
+          provide: UserManagementService,
+          useClass: FirebaseUserManagementService,
+        },
         { provide: FIREBASE_FUNCTIONS, useValue: mockFunctions },
       ],
     });

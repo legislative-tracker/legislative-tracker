@@ -7,7 +7,10 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { Profile } from './profile';
 
 // Dependencies
-import { AuthService, FIREBASE_FUNCTIONS } from '@legislative-tracker/client-angular/core';
+import {
+  AuthService,
+  FIREBASE_FUNCTIONS,
+} from '@legislative-tracker/client-angular/core';
 import {
   AddressForm,
   TableComponent,

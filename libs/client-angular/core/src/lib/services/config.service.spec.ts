@@ -118,11 +118,9 @@ describe('FirebaseConfigService', () => {
 
       await service.save(newConfig as any);
 
-      expect(mockSetDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        newConfig,
-        { merge: true },
-      );
+      expect(mockSetDoc).toHaveBeenCalledWith(expect.anything(), newConfig, {
+        merge: true,
+      });
 
       const current = service.config();
       expect(current.organization.name).toBe('Updated Org');
