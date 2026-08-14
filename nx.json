@@ -66,8 +66,7 @@
       "pattern": "v{version}"
     },
     "version": {
-      "specifierSource": "conventional-commits",
-      "fallbackCurrentVersionResolver": "disk"
+      "specifierSource": "conventional-commits"
     },
     "groups": {
       "app": {
