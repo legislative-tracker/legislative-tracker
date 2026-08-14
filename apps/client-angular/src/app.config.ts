@@ -4,12 +4,7 @@ import {
   inject,
   provideAppInitializer,
 } from '@angular/core';
-import {
-  provideRouter,
-  withComponentInputBinding,
-  withRouterConfig,
-} from '@angular/router';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import {
   APP_CONFIG,
@@ -28,20 +23,12 @@ export const getAppConfig = (
       { provide: APP_CONFIG, useValue: runtimeConfig },
 
       provideZonelessChangeDetection(),
-      provideAnimationsAsync(),
 
-      provideRouter(
-        routes,
-        withComponentInputBinding(),
-        withRouterConfig({ paramsInheritanceStrategy: 'always' }),
-      ),
+      provideRouter(routes, withComponentInputBinding()),
 
       ...BACKEND_PROVIDERS,
 
-      provideAppInitializer(() => {
-        const configService = inject(ConfigService);
-        return configService.load();
-      }),
+      provideAppInitializer(() => inject(ConfigService).load()),
     ],
   };
 };
