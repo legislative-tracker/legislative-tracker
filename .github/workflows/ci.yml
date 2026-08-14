@@ -31,7 +31,7 @@ jobs:
         run: npx nx affected -t lint
 
       - name: Nx Affected Test
-        run: npx nx affected -t test
+        run: npx nx affected -t test --watch=false
 
       - name: Nx Affected Build
         run: npx nx affected -t build

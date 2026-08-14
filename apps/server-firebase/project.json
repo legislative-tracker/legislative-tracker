@@ -37,17 +37,15 @@
         "command": "firebase emulators:export ./emulator_data --force"
       }
     },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
-    },
     "test": {
-      "executor": "@nx/vitest:test",
-      "outputs": ["{options.reportsDirectory}"],
+      "outputs": [
+        "{projectRoot}/{options.coverage.reportsDirectory}",
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
-        "configFile": "apps/server-firebase/vitest.config.ts",
         "passWithNoTests": true,
-        "reportsDirectory": "coverage/apps/server-firebase"
+        "config": "./vitest.config.ts",
+        "coverage.reportsDirectory": "../../coverage/apps/server-firebase"
       }
     },
     "test-emulator": {

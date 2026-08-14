@@ -4,10 +4,6 @@
   "projectType": "library",
   "sourceRoot": "libs/shared/models/src",
   "tags": ["domain:shared", "type:model"],
-  "targets": {
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
-    }
-  }
+  "// targets": "to see all targets run: nx show project shared-models --web",
+  "targets": {}
 }

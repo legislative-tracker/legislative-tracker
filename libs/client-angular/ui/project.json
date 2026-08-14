@@ -4,10 +4,6 @@
   "projectType": "library",
   "sourceRoot": "libs/client-angular/ui/src",
   "tags": ["domain:client", "type:ui"],
-  "targets": {
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
-    }
-  }
+  "// targets": "to see all targets run: nx show project client-angular-ui --web",
+  "targets": {}
 }

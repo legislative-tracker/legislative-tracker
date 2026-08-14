@@ -4,10 +4,6 @@
   "sourceRoot": "libs/server/data-access-google-maps/src",
   "projectType": "library",
   "tags": ["domain:server", "type:data-access"],
-  "targets": {
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
-    }
-  }
+  "// targets": "to see all targets run: nx show project data-access-google-maps --web",
+  "targets": {}
 }

@@ -4,10 +4,6 @@
   "projectType": "library",
   "sourceRoot": "libs/client-angular/core/src",
   "tags": ["domain:client", "type:core"],
-  "targets": {
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"]
-    }
-  }
+  "// targets": "to see all targets run: nx show project client-angular-core --web",
+  "targets": {}
 }
