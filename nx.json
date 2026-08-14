@@ -71,6 +71,7 @@
       "generatorOptions": {
         "specifierSource": "conventional-commits"
       },
+      "fallbackCurrentVersionResolver": "disk",
       "conventionalCommits": {
         "types": {
           "feat": {
