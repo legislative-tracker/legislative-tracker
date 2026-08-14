@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   release:
@@ -50,19 +51,28 @@ jobs:
             echo "RELEASED=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Commit & Tag Release
+      - name: Create Release Pull Request
         if: steps.release.outputs.RELEASED == 'true'
-        run: |
-          git add package.json apps/server-firebase/package.json libs/client-angular/core/src/lib/version.ts docs/CHANGELOG.md || true
-          if [ -n "$(git status --porcelain)" ]; then
-            HUSKY=0 git commit -m "chore(release): v${{ steps.release.outputs.VERSION }} [skip ci]"
-          fi
-          git tag -f -a "v${{ steps.release.outputs.VERSION }}" -m "v${{ steps.release.outputs.VERSION }}"
-          git push origin HEAD:main "v${{ steps.release.outputs.VERSION }}" --force
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(release): v${{ steps.release.outputs.VERSION }} [skip ci]"
+          branch: "release/v${{ steps.release.outputs.VERSION }}"
+          delete-branch: true
+          title: "chore(release): v${{ steps.release.outputs.VERSION }}"
+          body: |
+            Automated release PR for version `v${{ steps.release.outputs.VERSION }}`.
+            
+            This pull request updates `package.json`, `version.ts`, and `docs/CHANGELOG.md`.
+          labels: |
+            release
+            automated pr
 
-      - name: Create GitHub Release
+      - name: Create Git Tag & GitHub Release
         if: steps.release.outputs.RELEASED == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          git tag -f -a "v${{ steps.release.outputs.VERSION }}" -m "v${{ steps.release.outputs.VERSION }}"
+          git push origin "v${{ steps.release.outputs.VERSION }}" --force
           gh release create "v${{ steps.release.outputs.VERSION }}" --title "v${{ steps.release.outputs.VERSION }}" --generate-notes || true
