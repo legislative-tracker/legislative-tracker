@@ -36,14 +36,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Bump Application Version & Changelog
+      - name: Bump Application Version
         id: release
         run: |
           PREV_VERSION=$(node -e 'console.log(JSON.parse(fs.readFileSync("package.json")).version)')
           npx nx release version --group=app --git-commit=false --git-tag=false
           NEW_VERSION=$(node -e 'console.log(JSON.parse(fs.readFileSync("package.json")).version)')
-          node scripts/sync-version.js $NEW_VERSION
-          npx nx release changelog --group=app $NEW_VERSION --git-commit=false --git-tag=false
           echo "VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
           if [ "$PREV_VERSION" != "$NEW_VERSION" ]; then
             echo "RELEASED=true" >> $GITHUB_OUTPUT
@@ -51,18 +49,26 @@ jobs:
             echo "RELEASED=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Synchronize Version Constants
+        if: steps.release.outputs.RELEASED == 'true'
+        run: node scripts/sync-version.js ${{ steps.release.outputs.VERSION }}
+
+      - name: Generate Application Changelog
+        if: steps.release.outputs.RELEASED == 'true'
+        run: npx nx release changelog --group=app ${{ steps.release.outputs.VERSION }} --git-commit=false --git-tag=false
+
       - name: Create Release Pull Request
         if: steps.release.outputs.RELEASED == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: "chore(release): v${{ steps.release.outputs.VERSION }} [skip ci]"
-          branch: "release/v${{ steps.release.outputs.VERSION }}"
+          commit-message: 'chore(release): v${{ steps.release.outputs.VERSION }} [skip ci]'
+          branch: 'release/v${{ steps.release.outputs.VERSION }}'
           delete-branch: true
-          title: "chore(release): v${{ steps.release.outputs.VERSION }}"
+          title: 'chore(release): v${{ steps.release.outputs.VERSION }}'
           body: |
             Automated release PR for version `v${{ steps.release.outputs.VERSION }}`.
-            
+
             This pull request updates `package.json`, `version.ts`, and `docs/CHANGELOG.md`.
           labels: |
             release
