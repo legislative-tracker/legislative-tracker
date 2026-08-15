@@ -1,3 +1,13 @@
+## 0.11.8 (2026-08-15)
+
+### 🩹 Fixes
+
+- **deps:** approve lmdb v3.5.6 script and sync server-firebase package-lock ([25c127e](https://github.com/legislative-tracker/legislative-tracker/commit/25c127e))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.7 (2026-08-15)
 
 ### 🩹 Fixes
