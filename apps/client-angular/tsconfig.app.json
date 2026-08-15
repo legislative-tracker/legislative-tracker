@@ -7,6 +7,11 @@
   },
   "files": ["src/main.ts"],
   "include": ["src/**/*.ts", "../../libs/client-angular/**/*.ts"],
+  "exclude": [
+    "src/**/*.spec.ts",
+    "../../libs/client-angular/*-e2e/**",
+    "../../libs/client-angular/**/*.spec.ts"
+  ],
   "angularCompilerOptions": {
     "strictTemplates": false
   }

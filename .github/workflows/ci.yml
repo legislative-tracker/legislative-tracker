@@ -34,7 +34,7 @@ jobs:
         run: npx nx affected -t lint
 
       - name: Nx Affected Test
-        run: npx nx affected -t test --watch=false
+        run: npx nx affected -t test --parallel=1
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
