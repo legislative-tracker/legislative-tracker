@@ -1,0 +1,13 @@
+{
+  "name": "api-types-e2e",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "libs/shared/api-types-e2e/src",
+  "tags": ["domain:shared", "type:e2e"],
+  "implicitDependencies": ["shared-api-types"],
+  "targets": {
+    "e2e": {
+      "outputs": ["{workspaceRoot}/dist/.playwright/libs/shared/api-types-e2e"]
+    }
+  }
+}

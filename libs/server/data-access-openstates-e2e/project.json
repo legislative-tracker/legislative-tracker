@@ -1,0 +1,15 @@
+{
+  "name": "data-access-openstates-e2e",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "libs/server/data-access-openstates-e2e/src",
+  "tags": ["domain:server", "type:e2e"],
+  "implicitDependencies": ["data-access-openstates"],
+  "targets": {
+    "e2e": {
+      "outputs": [
+        "{workspaceRoot}/dist/.playwright/libs/server/data-access-openstates-e2e"
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "util-e2e",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "libs/shared/util-e2e/src",
+  "tags": ["domain:shared", "type:e2e"],
+  "implicitDependencies": ["shared-util"],
+  "targets": {
+    "e2e": {
+      "outputs": ["{workspaceRoot}/dist/.playwright/libs/shared/util-e2e"]
+    }
+  }
+}

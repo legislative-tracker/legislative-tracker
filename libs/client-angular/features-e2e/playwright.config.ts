@@ -1,0 +1,31 @@
+import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './src',
+  outputDir:
+    '../../../dist/.playwright/libs/client-angular/features-e2e/results',
+  reporter: [
+    [
+      'html',
+      {
+        outputFolder:
+          '../../../dist/.playwright/libs/client-angular/features-e2e/report',
+      },
+    ],
+  ],
+  use: {
+    baseURL: process.env['PLAYWRIGHT_TEST_BASE_URL'] || 'http://localhost:4200',
+    trace: 'on-first-retry',
+  },
+  webServer: {
+    command: 'npx nx serve client-angular -c firebase',
+    url: 'http://localhost:4200',
+    reuseExistingServer: true,
+    timeout: 120 * 1000,
+    env: {
+      ...process.env,
+      NX_TASK_TARGET_TARGET: '',
+      NX_TASK_TARGET_PROJECT: '',
+    },
+  },
+});

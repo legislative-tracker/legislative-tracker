@@ -1,0 +1,13 @@
+{
+  "name": "models-e2e",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "libs/shared/models-e2e/src",
+  "tags": ["domain:shared", "type:e2e"],
+  "implicitDependencies": ["shared-models"],
+  "targets": {
+    "e2e": {
+      "outputs": ["{workspaceRoot}/dist/.playwright/libs/shared/models-e2e"]
+    }
+  }
+}
