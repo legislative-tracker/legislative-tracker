@@ -1,3 +1,14 @@
+## 0.11.6 (2026-08-15)
+
+### 🚀 Features
+
+- **workspace:** update e2e npm scripts to run sequential nx run-many ([78df9e5](https://github.com/legislative-tracker/legislative-tracker/commit/78df9e5))
+- **workspace:** add e2e npm script ([bb76b28](https://github.com/legislative-tracker/legislative-tracker/commit/bb76b28))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.5 (2026-08-15)
 
 ### 🚀 Features
