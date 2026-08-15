@@ -3,13 +3,19 @@
     type="button"
     mat-icon-button
     (click)="drawer.toggle()"
-    aria-label="Toggle sidenav"
+    aria-label="Toggle navigation menu"
+    [attr.aria-expanded]="drawer.opened"
   >
     <mat-icon style="color: white">menu</mat-icon>
   </button>
 
   <div class="branding-container">
-    <img [src]="config().branding.logoUrl" alt="Logo" width="32" height="32" />
+    <img
+      [src]="config().branding.logoUrl"
+      alt="Legislative Tracker Logo"
+      width="32"
+      height="32"
+    />
     <span class="title">| Legislative Tracker</span>
   </div>
 
