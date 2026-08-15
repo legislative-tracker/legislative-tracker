@@ -1,0 +1,15 @@
+{
+  "name": "data-access-google-maps-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/data-access-google-maps-e2e/src",
+  "tags": ["domain:server", "type:e2e"],
+  "implicitDependencies": ["data-access-google-maps"],
+  "targets": {
+    "e2e": {
+      "outputs": [
+        "{workspaceRoot}/dist/.playwright/apps/data-access-google-maps-e2e"
+      ]
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "triggers-firebase-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/triggers-firebase-e2e/src",
+  "tags": ["domain:server", "type:e2e"],
+  "implicitDependencies": ["triggers-firebase"],
+  "targets": {
+    "e2e": {
+      "outputs": ["{workspaceRoot}/dist/.playwright/apps/triggers-firebase-e2e"]
+    }
+  }
+}

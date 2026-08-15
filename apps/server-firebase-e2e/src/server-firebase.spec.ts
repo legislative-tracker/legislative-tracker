@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Server & Cloud Functions API E2E', () => {
-  test('should handle health check / mock server responses gracefully', async ({
+test.describe('Server Firebase E2E', () => {
+  test('should handle health endpoint or offline emulator gracefully', async ({
     request,
   }) => {
     try {
       const response = await request.get(
-        'http://127.0.0.1:5001/legislative-tracker-dev/us-central1/api/health',
+        '/legislative-tracker-dev/us-central1/api/health',
         {
           failOnStatusCode: false,
           timeout: 2000,
@@ -14,7 +14,6 @@ test.describe('Server & Cloud Functions API E2E', () => {
       );
       expect([200, 404, 500]).toContain(response.status());
     } catch {
-      // Graceful fallback when local Firebase emulator server is not active during standalone frontend test run
       expect(true).toBe(true);
     }
   });
