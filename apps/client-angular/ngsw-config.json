@@ -1,0 +1,55 @@
+{
+  "$schema": "../../node_modules/@angular/service-worker/ngsw-config.schema.json",
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "resources": {
+        "files": [
+          "/favicon.ico",
+          "/index.html",
+          "/manifest.webmanifest",
+          "/*.css",
+          "/*.js"
+        ]
+      }
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "resources": {
+        "files": [
+          "/assets/**",
+          "/*.(svg|png|jpg|jpeg|gif|webp|woff|woff2|ttf|eot)"
+        ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "legislative-bills",
+      "urls": [
+        "https://openstates.org/api/**",
+        "https://legislation.nysenate.gov/api/**",
+        "https://firestore.googleapis.com/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 100,
+        "maxAge": "1h",
+        "timeout": "3s",
+        "strategy": "freshness"
+      }
+    },
+    {
+      "name": "legislator-details",
+      "urls": ["https://theunitedstates.io/images/congress/**"],
+      "cacheConfig": {
+        "maxSize": 200,
+        "maxAge": "7d",
+        "strategy": "performance"
+      }
+    }
+  ]
+}
