@@ -45,12 +45,10 @@ describe('performLegislationUpdate', () => {
           get: vi.fn().mockResolvedValue({
             docs: [{ id: 'S100' }, { id: 'A200' }],
           }),
-          doc: vi
-            .fn()
-            .mockImplementation((id: string) => ({
-              id,
-              path: `legislatures/ny/legislation/${id}`,
-            })),
+          doc: vi.fn().mockImplementation((id: string) => ({
+            id,
+            path: `legislatures/ny/legislation/${id}`,
+          })),
         };
       }
       return { get: vi.fn().mockResolvedValue({ docs: [] }) };
