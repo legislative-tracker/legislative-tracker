@@ -17,6 +17,7 @@ export const BILL_COLS: ColumnConfig<Legislation>[] = [
   { key: 'version', label: 'Current Version' },
   { key: 'title', label: 'Title' },
   { key: 'first_action_date', label: 'Published' },
+  { key: 'latest_action_date', label: 'Latest Action' },
 ];
 
 export const MEMBER_COLS: ColumnConfig<Legislator>[] = [
