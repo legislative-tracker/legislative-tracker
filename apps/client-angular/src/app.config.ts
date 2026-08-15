@@ -5,6 +5,7 @@ import {
   provideAppInitializer,
 } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
 
 import {
   APP_CONFIG,
@@ -28,6 +29,11 @@ export const getAppConfig = (
       provideZonelessChangeDetection(),
 
       provideRouter(routes, withComponentInputBinding()),
+
+      provideServiceWorker('ngsw-worker.js', {
+        enabled: true,
+        registrationStrategy: 'registerWhenStable:30000',
+      }),
 
       ...BACKEND_PROVIDERS,
 

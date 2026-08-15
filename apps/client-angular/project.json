@@ -23,7 +23,8 @@
           }
         ],
         "styles": ["apps/client-angular/src/styles.scss"],
-        "scripts": []
+        "scripts": [],
+        "serviceWorker": "apps/client-angular/ngsw-config.json"
       },
       "configurations": {
         "production": {
@@ -45,7 +46,8 @@
               "maximumError": "8kB"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "serviceWorker": "apps/client-angular/ngsw-config.json"
         },
         "development": {
           "optimization": false,
