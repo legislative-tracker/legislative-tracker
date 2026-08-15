@@ -4,7 +4,20 @@
 </div>
 } @else if (bill()) {
 <h1>{{ bill()?.id }}</h1>
-<p>{{ bill()?.text }}</p>
+<p>{{ bill()?.title }}</p>
+<div class="info-panel">
+  <div class="info-panel-1">
+    <h2>Summary</h2>
+    <p>{{ bill()?.text }}</p>
+  </div>
+  <div class="info-panel-2">
+    <h2>Activity</h2>
+    <p>{{ bill()?.first_action_date }}: Published</p>
+    <p>
+      {{ bill()?.latest_action_date }}: {{ bill()?.latest_action_description }}
+    </p>
+  </div>
+</div>
 
 <h2>Cosponsors</h2>
 <mat-tab-group>
