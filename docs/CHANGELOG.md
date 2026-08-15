@@ -1,3 +1,13 @@
+## 0.11.7 (2026-08-15)
+
+### 🩹 Fixes
+
+- **ci:** set production_cwa environment for Firebase deployment workflow ([f962552](https://github.com/legislative-tracker/legislative-tracker/commit/f962552))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.6 (2026-08-15)
 
 ### 🚀 Features
