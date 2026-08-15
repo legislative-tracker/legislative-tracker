@@ -13,6 +13,7 @@ export default defineConfig({
     }),
   ],
   test: {
+    watch: false,
     globals: true,
     environment: 'jsdom',
     pool: 'forks',
@@ -20,6 +21,12 @@ export default defineConfig({
     include: [
       'apps/client-angular/src/**/*.spec.ts',
       'libs/client-angular/**/*.spec.ts',
+    ],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      'libs/client-angular/*-e2e/**',
+      '**/*-e2e/**',
     ],
     server: {
       deps: {
