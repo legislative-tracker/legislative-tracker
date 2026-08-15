@@ -27,7 +27,7 @@ export interface LinkSnackBarData {
     MatSnackBarAction,
   ],
   templateUrl: './link-snackbar.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./link-snackbar.scss'],
 })
 export class LinkSnackBar {

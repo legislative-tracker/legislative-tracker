@@ -38,7 +38,7 @@ import { FeedbackService } from '@legislative-tracker/client-angular/core';
     MatIconModule,
   ],
   templateUrl: './feedback.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./feedback.scss'],
 })
 export class Feedback {

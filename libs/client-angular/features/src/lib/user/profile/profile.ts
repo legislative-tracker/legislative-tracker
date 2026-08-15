@@ -28,7 +28,7 @@ import {
     TableComponent,
   ],
   templateUrl: './profile.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './profile.scss',
 })
 export class Profile {

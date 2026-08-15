@@ -33,7 +33,7 @@ enum DashboardTab {
   selector: 'app-dashboard',
   imports: [MatTabsModule, TableComponent, MatProgressSpinnerModule],
   templateUrl: './dashboard.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './dashboard.scss',
 })
 export class Dashboard {

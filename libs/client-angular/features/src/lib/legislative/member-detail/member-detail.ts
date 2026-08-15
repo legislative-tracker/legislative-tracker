@@ -32,7 +32,7 @@ import {
     ImgFallbackDirective,
   ],
   templateUrl: './member-detail.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./member-detail.scss'],
 })
 export class MemberDetail {

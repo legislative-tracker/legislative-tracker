@@ -1,5 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import { Firestore, collection, doc, onSnapshot } from 'firebase/firestore';
+import {
+  Firestore,
+  collection,
+  doc,
+  onSnapshot,
+  query,
+  where,
+  limit,
+} from 'firebase/firestore';
 import { Functions, httpsCallable } from 'firebase/functions';
 import { Observable } from 'rxjs';
 import { Legislation, Legislator } from '@legislative-tracker/shared/models';
@@ -100,8 +108,14 @@ export class FirebaseLegislatureService extends LegislatureService {
             const billsRef = collection(this.firestore!, billsPath);
             if (fallbackUnsub) fallbackUnsub();
 
-            fallbackUnsub = onSnapshot(
+            const fallbackQuery = query(
               billsRef,
+              where('identifier', '==', printNo),
+              limit(10),
+            );
+
+            fallbackUnsub = onSnapshot(
+              fallbackQuery,
               (collectionSnap) => {
                 const match = collectionSnap.docs.find(
                   (d) =>
@@ -169,8 +183,14 @@ export class FirebaseLegislatureService extends LegislatureService {
             const membersRef = collection(this.firestore!, membersPath);
             if (fallbackUnsub) fallbackUnsub();
 
-            fallbackUnsub = onSnapshot(
+            const fallbackQuery = query(
               membersRef,
+              where('id', '==', id.toLowerCase()),
+              limit(10),
+            );
+
+            fallbackUnsub = onSnapshot(
+              fallbackQuery,
               (collectionSnap) => {
                 const match = collectionSnap.docs.find(
                   (d) =>

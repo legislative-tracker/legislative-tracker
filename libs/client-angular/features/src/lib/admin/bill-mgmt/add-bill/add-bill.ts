@@ -14,8 +14,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   AuthService,
   LegislatureService,
-  ImplementedStatePairs,
 } from '@legislative-tracker/client-angular/core';
+import { LegislaturePluginRegistry } from '@legislative-tracker/plugins-core';
 
 @Component({
   selector: 'app-add-bill',
@@ -29,7 +29,7 @@ import {
     MatSnackBarModule,
   ],
   templateUrl: './add-bill.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './add-bill.scss',
 })
 export class AddBill {
@@ -43,7 +43,12 @@ export class AddBill {
   // Data Model
   state = '';
   billId = '';
-  implementedStates = ImplementedStatePairs;
+  get implementedStates() {
+    return LegislaturePluginRegistry.getAll().map((p) => ({
+      value: p.id,
+      name: `${p.name} (${p.id.toUpperCase()})`,
+    }));
+  }
 
   async onSubmit() {
     if (!this.billId || !this.billId) return;

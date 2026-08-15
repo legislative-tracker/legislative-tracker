@@ -35,6 +35,8 @@ export class FirebaseAuthService implements AuthService {
   readonly userProfile = signal<AppUser | null>(null);
   readonly isAdmin = signal<boolean>(false);
 
+  private profileUnsub?: () => void;
+
   constructor() {
     effect(async () => {
       const currentUser = this.userSig();
@@ -44,6 +46,10 @@ export class FirebaseAuthService implements AuthService {
         this.isAdmin.set(!!token.claims['admin']);
         this.fetchUserProfile(currentUser.uid);
       } else {
+        if (this.profileUnsub) {
+          this.profileUnsub();
+          this.profileUnsub = undefined;
+        }
         this.userProfile.set(null);
         this.isAdmin.set(false);
       }
@@ -51,17 +57,24 @@ export class FirebaseAuthService implements AuthService {
   }
 
   private fetchUserProfile(uid: string) {
+    if (this.profileUnsub) {
+      this.profileUnsub();
+      this.profileUnsub = undefined;
+    }
     if (!this.firestore) return;
     const userDoc = doc(this.firestore, `users/${uid}`);
 
-    const user$ = new Observable<any>((subscriber) => {
-      return onSnapshot(userDoc, (snapshot) =>
-        subscriber.next(snapshot.data()),
-      );
-    });
-
-    user$.subscribe((data) => {
-      this.userProfile.set(data as AppUser);
+    this.profileUnsub = onSnapshot(userDoc, (snapshot: any) => {
+      if (!snapshot) return;
+      const exists =
+        typeof snapshot.exists === 'function'
+          ? snapshot.exists()
+          : Boolean(snapshot.data?.());
+      if (exists) {
+        const data =
+          typeof snapshot.data === 'function' ? snapshot.data() : snapshot;
+        this.userProfile.set(data as AppUser);
+      }
     });
   }
 

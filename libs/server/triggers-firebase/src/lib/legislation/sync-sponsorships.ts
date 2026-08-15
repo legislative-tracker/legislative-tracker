@@ -128,17 +128,25 @@ export const syncBillSponsorshipsToLegislators = async (
     return { updatedCount: 0, matchedLegislators: [] };
   }
 
-  // Build maps of after & before sponsors by key
-  const afterMap = new Map<string, SponsorInfo>();
+  // Build indexed lookup maps for after & before sponsors
+  const afterById = new Map<string, SponsorInfo>();
+  const afterByLocation = new Map<string, SponsorInfo>();
   afterSponsors.forEach((s) => {
     const key = s.id || (s.name ? slugify(s.name) : '');
-    if (key) afterMap.set(key, s);
+    if (key) afterById.set(key, s);
+    if (s.chamber && s.district) {
+      afterByLocation.set(`${s.chamber.toUpperCase()}:${s.district}`, s);
+    }
   });
 
-  const beforeMap = new Map<string, SponsorInfo>();
+  const beforeById = new Map<string, SponsorInfo>();
+  const beforeByLocation = new Map<string, SponsorInfo>();
   beforeSponsors.forEach((s) => {
     const key = s.id || (s.name ? slugify(s.name) : '');
-    if (key) beforeMap.set(key, s);
+    if (key) beforeById.set(key, s);
+    if (s.chamber && s.district) {
+      beforeByLocation.set(`${s.chamber.toUpperCase()}:${s.district}`, s);
+    }
   });
 
   const bulkWriter = db.bulkWriter();
@@ -166,38 +174,19 @@ export const syncBillSponsorshipsToLegislators = async (
     const legSlug = slugify(legName);
     const legChamber = leg.chamber?.toUpperCase();
     const legDistrict = leg.district ? String(leg.district) : undefined;
+    const locationKey =
+      legChamber && legDistrict ? `${legChamber}:${legDistrict}` : undefined;
 
-    // Check matching against sponsor entries
-    let matchedAfter: SponsorInfo | undefined;
-    let matchedBefore: SponsorInfo | undefined;
+    // O(1) sponsor matching
+    const matchedAfter =
+      afterById.get(docId) ||
+      afterById.get(legSlug) ||
+      (locationKey ? afterByLocation.get(locationKey) : undefined);
 
-    afterMap.forEach((s, key) => {
-      if (
-        key === docId ||
-        key === legSlug ||
-        (s.name && slugify(s.name) === legSlug) ||
-        (s.chamber &&
-          s.district &&
-          legChamber === s.chamber.toUpperCase() &&
-          legDistrict === String(s.district))
-      ) {
-        matchedAfter = s;
-      }
-    });
-
-    beforeMap.forEach((s, key) => {
-      if (
-        key === docId ||
-        key === legSlug ||
-        (s.name && slugify(s.name) === legSlug) ||
-        (s.chamber &&
-          s.district &&
-          legChamber === s.chamber.toUpperCase() &&
-          legDistrict === String(s.district))
-      ) {
-        matchedBefore = s;
-      }
-    });
+    const matchedBefore =
+      beforeById.get(docId) ||
+      beforeById.get(legSlug) ||
+      (locationKey ? beforeByLocation.get(locationKey) : undefined);
 
     if (!matchedAfter && !matchedBefore) {
       return;

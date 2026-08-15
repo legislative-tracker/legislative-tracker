@@ -18,7 +18,7 @@ import { ColumnConfig } from '@legislative-tracker/shared/models';
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatTableModule, MatSortModule, RouterLink],
 })
 export class TableComponent<T> {

@@ -14,7 +14,7 @@ import { ImgFallbackDirective } from './img-fallback';
 @Component({
   standalone: true,
   imports: [ImgFallbackDirective],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <img id="default-img" src="broken-link.jpg" appFallback />
 

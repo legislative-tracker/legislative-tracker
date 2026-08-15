@@ -9,6 +9,15 @@ import {
 } from '@angular/router';
 
 import { stateGuard } from './state.guard';
+import { LegislaturePluginRegistry } from '@legislative-tracker/plugins-core';
+
+const mockNyPlugin = {
+  id: 'ny',
+  jurisdiction: 'US-NY',
+  name: 'New York State Legislature',
+  updateMembers: async () => [],
+  updateBills: async () => [],
+};
 
 describe('stateGuard', () => {
   // Helper to run the functional guard inside the Injection Context
@@ -19,6 +28,8 @@ describe('stateGuard', () => {
   let routerSpy: { createUrlTree: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
+    LegislaturePluginRegistry.register(mockNyPlugin as any);
+
     // Create the mock using vi.fn()
     routerSpy = {
       createUrlTree: vi.fn(),

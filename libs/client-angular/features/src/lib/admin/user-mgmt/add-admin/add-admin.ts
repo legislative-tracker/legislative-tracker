@@ -27,7 +27,7 @@ import { UserManagementService } from '@legislative-tracker/client-angular/core'
     MatSnackBarModule,
   ],
   templateUrl: './add-admin.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './add-admin.scss',
 })
 export class AddAdmin {

@@ -19,7 +19,7 @@ import { Legislation } from '@legislative-tracker/shared/models';
   selector: 'app-bill-detail',
   imports: [MatTabsModule, TableComponent, MatProgressSpinnerModule],
   templateUrl: './bill-detail.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./bill-detail.scss'],
 })
 export class BillDetail {

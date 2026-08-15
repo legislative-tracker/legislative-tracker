@@ -55,7 +55,7 @@ import { ConfigService } from '@legislative-tracker/client-angular/core';
     MatTooltipModule,
   ],
   templateUrl: './admin.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './admin.scss',
 })
 export class Admin {

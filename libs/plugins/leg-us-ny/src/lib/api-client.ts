@@ -14,7 +14,8 @@ export const fetchNYSenateAPI = async <T>(
   path: string,
   apiKey?: string,
 ): Promise<T> => {
-  const keyToUse = apiKey || process.env['PLUGIN_LEG_US_NY'];
+  const envKey = (globalThis as any).process?.env?.['PLUGIN_LEG_US_NY'];
+  const keyToUse = apiKey || envKey;
   const url = new URL(`https://legislation.nysenate.gov/api/3/${path}`);
   if (keyToUse) {
     url.searchParams.set('key', keyToUse);
