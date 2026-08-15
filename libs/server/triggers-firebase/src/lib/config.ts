@@ -18,10 +18,5 @@ export const dataAccessOpenStatesKey = defineSecret('DATA_ACCESS_OPENSTATES');
 export const dataAccessGoogleMapsKey = defineSecret('DATA_ACCESS_GOOGLE_MAPS');
 export const pluginLegUsNyKey = defineSecret('PLUGIN_LEG_US_NY');
 
-// Backward compatibility exports
-export const openStatesKey = dataAccessOpenStatesKey;
-export const googleMapsKey = dataAccessGoogleMapsKey;
-export const nySenateKey = pluginLegUsNyKey;
-
 // Set global options once
 setGlobalOptions({ maxInstances: 10 });

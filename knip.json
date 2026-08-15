@@ -2,8 +2,28 @@
   "$schema": "https://unpkg.com/knip@5/schemas/knip.json",
   "entry": [
     "apps/client-angular/src/main.ts",
+    "apps/client-angular/src/backend.providers.firebase.ts",
     "apps/server-firebase/src/index.ts",
+    "libs/**/src/index.ts",
     "scripts/**/*.js"
   ],
-  "project": ["apps/**/*.{ts,html}", "libs/**/*.{ts,html}", "scripts/**/*.js"]
+  "project": ["apps/**/*.{ts,html}", "libs/**/*.{ts,html}", "scripts/**/*.js"],
+  "ignoreDependencies": [
+    "@legislative-tracker/*",
+    "@angular/cli",
+    "@emnapi/core",
+    "@emnapi/runtime",
+    "@nx/devkit",
+    "@nx/web",
+    "@typescript-eslint/eslint-plugin",
+    "firebase-admin",
+    "firebase-functions",
+    "firebase-functions-test",
+    "graphql",
+    "image-size",
+    "typescript-eslint"
+  ],
+  "ignoreBinaries": ["firebase"],
+  "ignoreExportsUsedInFile": true,
+  "ignoreUnresolved": ["apps/server-firebase/src/index.ts"]
 }
