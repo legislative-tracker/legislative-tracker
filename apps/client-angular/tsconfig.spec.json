@@ -2,19 +2,17 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
-    "types": [],
+    "types": ["vitest/globals", "node"],
     "moduleResolution": "bundler"
   },
   "files": ["src/main.ts"],
-  "include": ["src/**/*.ts", "../../libs/client-angular/**/*.ts"],
-  "exclude": [
+  "include": [
+    "src/**/*.ts",
     "src/**/*.spec.ts",
-    "playwright.config.ts",
-    "e2e/**",
-    "../../libs/client-angular/**/playwright.config.ts",
-    "../../libs/client-angular/**/e2e/**",
+    "../../libs/client-angular/**/*.ts",
     "../../libs/client-angular/**/*.spec.ts"
   ],
+  "exclude": ["../../libs/client-angular/*-e2e/**"],
   "angularCompilerOptions": {
     "strictTemplates": false
   }

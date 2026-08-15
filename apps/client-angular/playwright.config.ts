@@ -1,8 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: './src',
-  outputDir: '../../dist/.playwright/apps/client-angular-e2e/results',
+  testDir: './e2e',
+  outputDir: '../../dist/.playwright/apps/client-angular/results',
   fullyParallel: true,
   forbidOnly: !!process.env['CI'],
   retries: process.env['CI'] ? 2 : 0,
@@ -10,7 +10,7 @@ export default defineConfig({
   reporter: [
     [
       'html',
-      { outputFolder: '../../dist/.playwright/apps/client-angular-e2e/report' },
+      { outputFolder: '../../dist/.playwright/apps/client-angular/report' },
     ],
     ['list'],
   ],
@@ -26,9 +26,11 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npx nx serve client-angular -c firebase',
+    command:
+      "node -e \"const { spawn } = require('child_process'); const env = { ...process.env }; Object.keys(env).forEach(k => k.startsWith('NX_') && delete env[k]); const child = spawn('npx', ['nx', 'serve', 'client-angular', '-c', 'firebase'], { env, stdio: 'inherit' }); child.on('exit', code => process.exit(code || 0));\"",
     url: 'http://localhost:4200',
     reuseExistingServer: true,
     timeout: 120 * 1000,
+    cwd: process.cwd(),
   },
 });

@@ -7,6 +7,7 @@ export default defineConfig({
     tsconfigPaths: true,
   },
   test: {
+    watch: false,
     globals: true,
     environment: 'node',
     include: [
@@ -14,6 +15,13 @@ export default defineConfig({
       'apps/server-firebase/src/**/*.test.ts',
       'libs/server/**/*.spec.ts',
       'libs/server-firebase/**/*.spec.ts',
+    ],
+    exclude: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/e2e/**',
+      'libs/server/*-e2e/**',
+      '**/*-e2e/**',
     ],
     passWithNoTests: true,
     coverage: {
