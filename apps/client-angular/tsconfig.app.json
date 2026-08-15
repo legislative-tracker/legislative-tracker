@@ -9,7 +9,10 @@
   "include": ["src/**/*.ts", "../../libs/client-angular/**/*.ts"],
   "exclude": [
     "src/**/*.spec.ts",
-    "../../libs/client-angular/*-e2e/**",
+    "playwright.config.ts",
+    "e2e/**",
+    "../../libs/client-angular/**/playwright.config.ts",
+    "../../libs/client-angular/**/e2e/**",
     "../../libs/client-angular/**/*.spec.ts"
   ],
   "angularCompilerOptions": {
