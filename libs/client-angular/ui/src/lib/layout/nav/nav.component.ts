@@ -19,6 +19,7 @@ import { map, shareReplay } from 'rxjs/operators';
 import {
   AuthService,
   ConfigService,
+  OfflineStorageService,
 } from '@legislative-tracker/client-angular/core';
 import { Footer } from '../footer/footer';
 
@@ -44,6 +45,9 @@ export class NavComponent {
   auth = inject(AuthService);
   private router = inject(Router);
   private breakpointObserver = inject(BreakpointObserver);
+
+  protected offlineStorage = inject(OfflineStorageService);
+  protected isOnline = this.offlineStorage.isOnline;
 
   // Load branding config
   protected configService = inject(ConfigService);

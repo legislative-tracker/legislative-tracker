@@ -7,6 +7,7 @@ export * from './lib/services/auth.service';
 export * from './lib/services/config.service';
 export * from './lib/services/feedback.service';
 export * from './lib/services/legislature.service';
+export * from './lib/services/offline-storage.service';
 export * from './lib/services/ui.service';
 export * from './lib/services/user-management.service';
 
