@@ -7,11 +7,7 @@
   "implicitDependencies": ["client-angular"],
   "targets": {
     "e2e": {
-      "executor": "@nx/playwright:playwright",
-      "outputs": ["{workspaceRoot}/dist/.playwright/apps/client-angular-e2e"],
-      "options": {
-        "config": "apps/client-angular-e2e/playwright.config.ts"
-      }
+      "outputs": ["{workspaceRoot}/dist/.playwright/apps/client-angular-e2e"]
     },
     "lint": {
       "executor": "@nx/eslint:lint",
