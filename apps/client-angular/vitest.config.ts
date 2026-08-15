@@ -9,7 +9,7 @@ export default defineConfig({
   },
   plugins: [
     angular({
-      tsconfig: path.resolve(import.meta.dirname, 'tsconfig.app.json'),
+      tsconfig: path.resolve(import.meta.dirname, 'tsconfig.spec.json'),
     }),
   ],
   test: {

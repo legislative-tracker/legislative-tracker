@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "types": ["vitest/globals", "node"],
+    "moduleResolution": "bundler"
+  },
+  "files": ["src/main.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.spec.ts",
+    "../../libs/client-angular/**/*.ts",
+    "../../libs/client-angular/**/*.spec.ts"
+  ],
+  "exclude": ["../../libs/client-angular/*-e2e/**"],
+  "angularCompilerOptions": {
+    "strictTemplates": false
+  }
+}
