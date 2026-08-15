@@ -18,7 +18,11 @@ export default [
             },
             {
               sourceTag: 'domain:client',
-              onlyDependOnLibsWithTags: ['domain:shared', 'domain:client'],
+              onlyDependOnLibsWithTags: [
+                'domain:shared',
+                'domain:client',
+                'domain:plugins',
+              ],
             },
             {
               sourceTag: 'domain:server',

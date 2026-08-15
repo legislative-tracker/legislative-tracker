@@ -5,10 +5,6 @@ import {
   isImageLink,
   isEmail,
 } from './helpers';
-import {
-  ImplementedStatesList,
-  ImplementedStatePairs,
-} from './implemented-states';
 import { Person } from '@jpstroud/opencivicdata-types';
 
 describe('Shared Utilities', () => {
@@ -96,15 +92,6 @@ describe('Shared Utilities', () => {
       expect(isEmail('invalid-email')).toBe(false);
       expect(isEmail('user@')).toBe(false);
       expect(isEmail(undefined)).toBe(false);
-    });
-  });
-
-  describe('Implemented States', () => {
-    it('contains NY in implemented states list and pairs', () => {
-      expect(ImplementedStatesList).toContain('ny');
-      expect(ImplementedStatePairs).toEqual([
-        { value: 'ny', name: 'New York (NY)' },
-      ]);
     });
   });
 });

@@ -18,8 +18,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   AuthService,
   LegislatureService,
-  ImplementedStatePairs,
 } from '@legislative-tracker/client-angular/core';
+import { LegislaturePluginRegistry } from '@legislative-tracker/plugins-core';
 
 interface SimpleBill {
   id: string;
@@ -40,7 +40,7 @@ interface SimpleBill {
     MatSnackBarModule,
   ],
   templateUrl: './remove-bill.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './remove-bill.scss',
 })
 export class RemoveBill {
@@ -56,7 +56,12 @@ export class RemoveBill {
   isLoadingBills = signal(false);
   isDeleting = signal(false);
 
-  states = ImplementedStatePairs;
+  get states() {
+    return LegislaturePluginRegistry.getAll().map((p) => ({
+      value: p.id,
+      name: `${p.name} (${p.id.toUpperCase()})`,
+    }));
+  }
 
   /**
    * Effect: Automatically fetches bills when the selectedState changes.

@@ -6,7 +6,7 @@ import { ConfigService } from '@legislative-tracker/client-angular/core';
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<router-outlet />',
 })
 export class App {

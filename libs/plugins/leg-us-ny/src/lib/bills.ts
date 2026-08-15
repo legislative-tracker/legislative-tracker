@@ -79,33 +79,46 @@ export const mapAPIBillToLegislation = (b: api.Bill): Legislation => {
   return legislation;
 };
 
+import { PluginConfig } from '@legislative-tracker/plugins-core';
+
 export const updateBills = async (
   billList: string[],
   apiKey?: string,
+  config?: PluginConfig,
 ): Promise<Legislation[]> => {
-  return await Promise.all(
-    billList.map(async (bill: string) => {
-      const billParts: string[] = bill.split('-');
-      try {
-        const res = await fetchNYSenateAPI<any>(
-          `bills/${billParts.pop()}/${billParts.pop()}`,
-          apiKey,
-        );
-        if (isSuccess<api.Bill>(res)) {
-          if (!isItemsResponse<api.Bill>(res.result)) {
-            return mapAPIBillToLegislation(res.result);
+  const batchSize =
+    typeof config?.['batchSize'] === 'number' ? config['batchSize'] : 10;
+  const results: Legislation[] = [];
+
+  for (let i = 0; i < billList.length; i += batchSize) {
+    const chunk = billList.slice(i, i + batchSize);
+    const chunkResults = await Promise.all(
+      chunk.map(async (bill: string) => {
+        const billParts: string[] = bill.split('-');
+        try {
+          const res = await fetchNYSenateAPI<any>(
+            `bills/${billParts.pop()}/${billParts.pop()}`,
+            apiKey,
+          );
+          if (isSuccess<api.Bill>(res)) {
+            if (!isItemsResponse<api.Bill>(res.result)) {
+              return mapAPIBillToLegislation(res.result);
+            } else {
+              throw new Error(
+                'Expected single bill, but received items response.',
+              );
+            }
           } else {
-            throw new Error(
-              'Expected single bill, but received items response.',
-            );
+            throw new Error('Fetch failed');
           }
-        } else {
-          throw new Error('Fetch failed');
+        } catch (error) {
+          console.error(`Error fetching bill ${bill}:`, error);
+          throw error;
         }
-      } catch (error) {
-        console.error(`Error fetching bill ${bill}:`, error);
-        throw error;
-      }
-    }),
-  );
+      }),
+    );
+    results.push(...chunkResults);
+  }
+
+  return results;
 };

@@ -33,7 +33,7 @@ vi.mock('firebase/functions', () => ({
   selector: 'app-address-form',
   template: '',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['formType'],
 })
 class MockAddressForm {}
@@ -42,7 +42,7 @@ class MockAddressForm {}
   selector: 'app-table',
   template: '',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['dataSource', 'columnSource', 'routeType', 'stateCd'],
 })
 class MockTableComponent {}

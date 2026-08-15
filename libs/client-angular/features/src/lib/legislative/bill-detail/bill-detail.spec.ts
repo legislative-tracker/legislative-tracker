@@ -18,7 +18,7 @@ import { TableComponent } from '@legislative-tracker/client-angular/ui';
   selector: 'app-table',
   template: '',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['dataSource', 'columnSource'],
 })
 class MockTableComponent {}

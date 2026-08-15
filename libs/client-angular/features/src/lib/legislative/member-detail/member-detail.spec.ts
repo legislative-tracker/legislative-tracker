@@ -27,7 +27,7 @@ import { Legislator } from '@legislative-tracker/shared/models';
   selector: 'app-table',
   template: '',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   inputs: ['dataSource', 'columnSource'],
 })
 class MockTableComponent {}

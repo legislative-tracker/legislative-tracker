@@ -25,7 +25,7 @@ import {
 @Component({
   selector: 'app-footer',
   template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
 })
 class MockFooter {}
