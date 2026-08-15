@@ -1,0 +1,48 @@
+name: Deploy to Firebase Production
+
+on:
+  workflow_run:
+    workflows: ['CI Pipeline']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Firebase Production
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Inject Production Config
+        run: echo "$TRACKER_CWAPOLITICAL_ORG_CONFIG" > apps/client-angular/public/assets/config.json
+        env:
+          TRACKER_CWAPOLITICAL_ORG_CONFIG: ${{ secrets.TRACKER_CWAPOLITICAL_ORG }}
+
+      - name: Build Monorepo Production Targets
+        run: |
+          npx nx build client-angular -c production
+          npx nx build server-firebase -c production
+
+      - name: Deploy to Firebase Production
+        run: |
+          echo "$GCP_SA_KEY" > /tmp/gcp-sa.json
+          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-sa.json
+          npx firebase-tools deploy --project tracker-cwapolitical-org
+          rm -f /tmp/gcp-sa.json
+        env:
+          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TRACKER_CWAPOLITICAL_ORG }}
