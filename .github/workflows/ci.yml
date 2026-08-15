@@ -40,7 +40,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Nx Affected E2E
-        run: npx nx affected -t e2e
+        run: npx nx affected -t e2e --parallel=1
 
       - name: Nx Affected Build
         run: npx nx affected -t build
