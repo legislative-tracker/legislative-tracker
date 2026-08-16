@@ -11,19 +11,23 @@
     <p>{{ bill()?.text }}</p>
   </div>
   <div class="info-panel-2">
-    <h2>Activity</h2>
-    <mat-list class="activity-list">
-      <mat-list-item>
-        <span matListItemTitle>{{ bill()?.first_action_date }}</span>
-        <span matListItemLine>Published</span>
-      </mat-list-item>
-      @for (action of billActions(); track action.id) {
-      <mat-list-item>
-        <span matListItemTitle>{{ action.date }}</span>
-        <span matListItemLine>{{ action.text }}</span>
-      </mat-list-item>
-      }
-    </mat-list>
+    <mat-expansion-panel [expanded]="false">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Activity</mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-list class="activity-list">
+        <mat-list-item>
+          <span matListItemTitle>{{ bill()?.first_action_date }}</span>
+          <span matListItemLine>Published</span>
+        </mat-list-item>
+        @for (action of billActions(); track action.id) {
+        <mat-list-item>
+          <span matListItemTitle>{{ action.date }}</span>
+          <span matListItemLine>{{ action.text }}</span>
+        </mat-list-item>
+        }
+      </mat-list>
+    </mat-expansion-panel>
   </div>
 </div>
 

@@ -9,6 +9,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 // App Imports
 import { LegislatureService } from '@legislative-tracker/client-angular/core';
@@ -23,6 +24,7 @@ import { Legislation } from '@legislative-tracker/shared/models';
     TableComponent,
     MatProgressSpinnerModule,
     MatListModule,
+    MatExpansionModule,
   ],
   templateUrl: './bill-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
