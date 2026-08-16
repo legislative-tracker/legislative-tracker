@@ -55,19 +55,20 @@ jobs:
       - name: Commit & Push Release Changes Directly
         if: steps.release.outputs.RELEASED == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TOKEN: ${{ secrets.ADMIN_PAT || secrets.GITHUB_TOKEN }}
         run: |
           git add package.json package-lock.json libs/client-angular/core/src/lib/version.ts docs/CHANGELOG.md || true
           git commit -m "chore(release): v${{ steps.release.outputs.VERSION }} [skip ci]"
-          git push origin HEAD:main
+          git push https://x-access-token:${RELEASE_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
 
       - name: Create Git Tag & GitHub Release
         if: steps.release.outputs.RELEASED == 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.ADMIN_PAT || secrets.GITHUB_TOKEN }}
+          RELEASE_TOKEN: ${{ secrets.ADMIN_PAT || secrets.GITHUB_TOKEN }}
         run: |
           if ! git rev-parse "v${{ steps.release.outputs.VERSION }}" >/dev/null 2>&1; then
             git tag -a "v${{ steps.release.outputs.VERSION }}" -m "v${{ steps.release.outputs.VERSION }}"
-            git push origin "v${{ steps.release.outputs.VERSION }}" || true
+            git push https://x-access-token:${RELEASE_TOKEN}@github.com/${{ github.repository }}.git "v${{ steps.release.outputs.VERSION }}" || true
           fi
           gh release create "v${{ steps.release.outputs.VERSION }}" --title "v${{ steps.release.outputs.VERSION }}" --generate-notes || true
