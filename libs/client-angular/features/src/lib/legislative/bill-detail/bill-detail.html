@@ -10,14 +10,12 @@
   </mat-card-header>
 </mat-card>
 <div class="info-panel">
-  <mat-card class="info-panel-1">
-    <mat-card-header>
-      <mat-card-title>Summary</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <p>{{ bill()?.text }}</p>
-    </mat-card-content>
-  </mat-card>
+  <mat-expansion-panel class="info-panel-1" [expanded]="false">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Summary</mat-panel-title>
+    </mat-expansion-panel-header>
+    <p>{{ bill()?.text }}</p>
+  </mat-expansion-panel>
   <div class="info-panel-2">
     <mat-expansion-panel #panel [expanded]="false">
       <mat-expansion-panel-header>
