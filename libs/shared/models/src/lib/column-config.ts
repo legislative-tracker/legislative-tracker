@@ -21,8 +21,8 @@ export const BILL_COLS: ColumnConfig<Legislation>[] = [
 export const MEMBER_COLS: ColumnConfig<Legislator>[] = [
   { key: 'family_name', label: 'Last Name' },
   { key: 'given_name', label: 'First Name' },
-  { key: 'party', label: 'Party' },
   { key: 'district', label: 'District' },
+  { key: 'party', label: 'Party' },
 ];
 
 export const COSPONSOR_COLS: ColumnConfig<Cosponsor>[] = [
@@ -33,6 +33,5 @@ export const COSPONSOR_COLS: ColumnConfig<Cosponsor>[] = [
 
 export const SPONSORSHIP_COLS: ColumnConfig<Sponsorship>[] = [
   { key: 'id', label: 'Bill Id' },
-  { key: 'version', label: 'Version' },
   { key: 'title', label: 'Title' },
 ];
