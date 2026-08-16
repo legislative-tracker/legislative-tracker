@@ -1,0 +1,21 @@
+name: Test Pipeline
+
+on:
+  workflow_call:
+
+jobs:
+  test:
+    name: Unit & E2E Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Environment
+        uses: ./.github/actions/setup-project
+
+      - name: Nx Affected Test
+        run: npx nx affected -t test
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Nx Affected E2E
+        run: npx nx affected -t e2e --parallel=1

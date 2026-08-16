@@ -1,14 +1,10 @@
 name: 'Lint PR Title'
 
 on:
-  pull_request_target:
-    types:
-      - opened
-      - edited
-      - synchronize
+  workflow_call:
 
 jobs:
-  main:
+  pr-title:
     name: Validate PR Title
     runs-on: ubuntu-latest
     steps:

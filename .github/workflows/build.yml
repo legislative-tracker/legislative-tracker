@@ -1,0 +1,16 @@
+name: Build Pipeline
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Monorepo Targets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Environment
+        uses: ./.github/actions/setup-project
+
+      - name: Nx Affected Build
+        run: npx nx affected -t build

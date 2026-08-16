@@ -1,8 +1,8 @@
 name: Release Pipeline
 
 on:
-  push:
-    branches: [main]
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -10,26 +10,15 @@ permissions:
 
 jobs:
   release:
+    name: Automatic Version & Release
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Environment
+        uses: ./.github/actions/setup-project
 
       - name: Fetch Git Tags
         run: git fetch --tags --force origin
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: 24
-          cache: 'npm'
-
-      - name: Install Dependencies
-        run: npm ci
 
       - name: Configure Git User
         run: |
@@ -57,22 +46,14 @@ jobs:
         if: steps.release.outputs.RELEASED == 'true'
         run: npx nx release changelog --group=app ${{ steps.release.outputs.VERSION }} --git-commit=false --git-tag=false
 
-      - name: Create Release Pull Request
+      - name: Commit & Push Release Changes Directly
         if: steps.release.outputs.RELEASED == 'true'
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'chore(release): v${{ steps.release.outputs.VERSION }} [skip ci]'
-          branch: 'release/v${{ steps.release.outputs.VERSION }}'
-          delete-branch: true
-          title: 'chore(release): v${{ steps.release.outputs.VERSION }}'
-          body: |
-            Automated release PR for version `v${{ steps.release.outputs.VERSION }}`.
-
-            This pull request updates `package.json`, `version.ts`, and `docs/CHANGELOG.md`.
-          labels: |
-            release
-            automated pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git add package.json package-lock.json libs/client-angular/core/src/lib/version.ts docs/CHANGELOG.md || true
+          git commit -m "chore(release): v${{ steps.release.outputs.VERSION }} [skip ci]"
+          git push origin HEAD:main
 
       - name: Create Git Tag & GitHub Release
         if: steps.release.outputs.RELEASED == 'true'
