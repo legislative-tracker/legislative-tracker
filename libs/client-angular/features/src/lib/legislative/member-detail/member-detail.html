@@ -5,7 +5,7 @@
 } @else if (member()) {
 <h1>{{ member()?.honorific_prefix }} {{ member()?.name }}</h1>
 
-<div class="row">
+<div class="member-details-container">
   <img
     [src]="$safeNavigationMigration(member()?.image)"
     alt="Headshot of {{ member()?.name }}"
@@ -13,7 +13,7 @@
     appFallback
   />
 
-  <mat-list>
+  <mat-list class="member-details">
     <mat-list-item>
       <mat-icon matListItemIcon>location_city</mat-icon>
       <span matListItemTitle>District {{ member()?.district }}</span>
@@ -29,6 +29,26 @@
       </span>
     </mat-list-item>
   </mat-list>
+  <mat-list>
+    @if (member()?.offices?.[0]?.address) {
+    <mat-list-item>
+      <mat-icon matListItemIcon>business</mat-icon>
+      <span matListItemTitle>{{ member()?.offices?.[0]?.address }}</span>
+    </mat-list-item>
+    } @if (member()?.offices?.[1]?.address) {
+    <mat-list-item>
+      <mat-icon matListItemIcon>location_on</mat-icon>
+      <span matListItemTitle
+        ><a
+          href="https://www.google.com/maps/search/?api=1&query={{ member()?.offices?.[1]?.address }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          >{{ member()?.offices?.[1]?.address }}</a
+        >
+      </span>
+    </mat-list-item>
+    }</mat-list
+  >
 </div>
 
 <mat-tab-group>
