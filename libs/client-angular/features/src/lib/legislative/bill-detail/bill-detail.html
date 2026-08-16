@@ -3,8 +3,12 @@
   <mat-spinner diameter="50"></mat-spinner>
 </div>
 } @else if (bill()) {
-<h1>{{ bill()?.id }}</h1>
-<p>{{ bill()?.title }}</p>
+<mat-card class="header">
+  <mat-card-header>
+    <mat-card-title>{{ bill()?.id }}</mat-card-title>
+    <mat-card-subtitle>{{ bill()?.title }}</mat-card-subtitle>
+  </mat-card-header>
+</mat-card>
 <div class="info-panel">
   <mat-card class="info-panel-1">
     <mat-card-header>

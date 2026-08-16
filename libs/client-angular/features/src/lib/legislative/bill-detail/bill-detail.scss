@@ -5,6 +5,16 @@
   align-items: center;
   padding: 3rem;
 }
+.header {
+  margin-bottom: 1.5rem;
+}
+
+mat-expansion-panel {
+  background-color: var(
+    --mat-card-container-color,
+    var(--mat-sys-surface-container-low)
+  );
+}
 
 .info-panel {
   display: flex;
