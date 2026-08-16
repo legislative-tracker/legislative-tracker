@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: production_cwa
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
       - name: Setup Environment
         uses: ./.github/actions/setup-project
 
