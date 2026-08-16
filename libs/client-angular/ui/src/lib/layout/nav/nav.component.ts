@@ -9,7 +9,7 @@ import {
 } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { Observable } from 'rxjs';
@@ -53,7 +53,16 @@ export class NavComponent {
   protected configService = inject(ConfigService);
   protected config = this.configService.config;
 
-  async handleLogout() {
+  onNavItemClick(drawer: MatSidenav) {
+    if (this.breakpointObserver.isMatched(Breakpoints.Handset)) {
+      drawer.close();
+    }
+  }
+
+  async handleLogout(drawer?: MatSidenav) {
+    if (drawer && this.breakpointObserver.isMatched(Breakpoints.Handset)) {
+      drawer.close();
+    }
     await this.auth.logout();
     this.router.navigate(['/login']);
   }
