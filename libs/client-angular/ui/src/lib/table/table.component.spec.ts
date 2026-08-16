@@ -73,7 +73,7 @@ describe('TableComponent', () => {
 
   it('should render mat-sort-header on table header cells', () => {
     const headers = fixture.debugElement.queryAll(
-      By.css('th[mat-header-cell]'),
+      By.css('th[mat-sort-header]'),
     );
     expect(headers.length).toBe(2);
     headers.forEach((header) => {
@@ -111,5 +111,116 @@ describe('TableComponent', () => {
 
     firstRow.nativeElement.click();
     expect(emitSpy).toHaveBeenCalledWith(mockData[0]);
+  });
+
+  it('should render filter header row when enableColumnSearch is true', () => {
+    const filterRow = fixture.debugElement.query(
+      By.css('tr.filter-header-row'),
+    );
+    expect(filterRow).toBeTruthy();
+  });
+
+  it('should filter rows by column input value', async () => {
+    const inputDebug = fixture.debugElement.query(
+      By.css('input[aria-label="Filter by Name"]'),
+    );
+    expect(inputDebug).toBeTruthy();
+
+    inputDebug.nativeElement.value = 'Alice';
+    inputDebug.nativeElement.dispatchEvent(new Event('input'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const rows = fixture.debugElement.queryAll(By.css('tr[mat-row]'));
+    expect(rows.length).toBe(1);
+    expect(component.matDataSource.filteredData.length).toBe(1);
+    expect(component.matDataSource.filteredData[0].name).toBe('Alice');
+  });
+
+  it('should filter rows by multiple columns simultaneously', async () => {
+    component.onFilterInput('name', {
+      target: { value: 'Alice' },
+    } as unknown as Event);
+    component.onFilterInput('role', {
+      target: { value: 'User' },
+    } as unknown as Event);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(component.matDataSource.filteredData.length).toBe(0);
+
+    component.onFilterInput('role', {
+      target: { value: 'Admin' },
+    } as unknown as Event);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(component.matDataSource.filteredData.length).toBe(1);
+  });
+
+  it('should clear individual column filter', async () => {
+    component.onFilterInput('name', {
+      target: { value: 'Alice' },
+    } as unknown as Event);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(component.matDataSource.filteredData.length).toBe(1);
+
+    component.clearColumnFilter('name');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(component.matDataSource.filteredData.length).toBe(2);
+  });
+
+  it('should clear all filters using clearAllFilters', async () => {
+    component.onFilterInput('name', {
+      target: { value: 'Alice' },
+    } as unknown as Event);
+    component.onFilterInput('role', {
+      target: { value: 'Admin' },
+    } as unknown as Event);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(component.hasActiveFilters()).toBe(true);
+
+    component.clearAllFilters();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(component.hasActiveFilters()).toBe(false);
+    expect(component.matDataSource.filteredData.length).toBe(2);
+  });
+
+  it('should hide filter header row when enableColumnSearch is false', async () => {
+    const freshFixture =
+      TestBed.createComponent<TableComponent<TestItem>>(TableComponent);
+    freshFixture.componentRef.setInput('dataSource', mockData);
+    freshFixture.componentRef.setInput('columnSource', mockColumns);
+    freshFixture.componentRef.setInput('stateCd', 'ny');
+    freshFixture.componentRef.setInput('routeType', 'bill');
+    freshFixture.componentRef.setInput('enableColumnSearch', false);
+
+    freshFixture.detectChanges();
+    await freshFixture.whenStable();
+
+    const filterRow = freshFixture.debugElement.query(
+      By.css('tr.filter-header-row'),
+    );
+    expect(filterRow).toBeNull();
+  });
+
+  it('should not emit rowClick when clicking on filter input', () => {
+    const emitSpy = vi.spyOn(component.rowClick, 'emit');
+    const inputDebug = fixture.debugElement.query(
+      By.css('input[aria-label="Filter by Name"]'),
+    );
+
+    if (inputDebug) {
+      inputDebug.nativeElement.click();
+    }
+    expect(emitSpy).not.toHaveBeenCalled();
   });
 });
