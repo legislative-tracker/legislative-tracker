@@ -42,9 +42,21 @@ export class BillDetail {
   billVersions = computed(() => {
     const b = this.bill();
     if (!b?.cosponsors) return [];
-    return Object.entries(b.cosponsors).map(([key, data]) => ({
-      id: key,
-      data: data,
+    return Object.entries(b.cosponsors)
+      .map(([key, data]) => ({
+        id: key,
+        data: data,
+      }))
+      .sort((a, b) => b.id.localeCompare(a.id, undefined, { numeric: true }));
+  });
+
+  billActions = computed(() => {
+    const b = this.bill();
+    if (!Array.isArray(b?.actions)) return [];
+    return b.actions.map((data: any, index: number) => ({
+      id: data.id ?? index,
+      date: data.date,
+      text: data.action ?? data.text ?? data.description,
     }));
   });
 }
