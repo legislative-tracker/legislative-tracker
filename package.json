@@ -1,6 +1,6 @@
 {
   "name": "@legislative-tracker/source",
-  "version": "0.11.6",
+  "version": "0.11.9",
   "description": "Nx Monorepo for Legislative Tracker PWA and Firebase Server",
   "license": "AGPL-3.0-only",
   "author": "jpelton-stroud",
@@ -116,11 +116,11 @@
     "@parcel/watcher@2.6.0": true,
     "esbuild@0.28.1": true,
     "less@4.5.1": true,
-    "lmdb@3.5.4": true,
     "msgpackr-extract@3.0.4": true,
     "nx@23.1.1": true,
     "protobufjs@7.6.5": true,
     "unrs-resolver@1.12.2": true,
-    "@swc/core@1.15.47": true
+    "@swc/core@1.15.47": true,
+    "lmdb@3.5.6": true
   }
 }

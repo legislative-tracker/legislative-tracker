@@ -46,23 +46,43 @@
     [opened]="(isHandset$ | async) === false"
   >
     <mat-nav-list>
-      <a mat-list-item routerLink="/" routerLinkActive="active">
+      <a
+        mat-list-item
+        routerLink="/"
+        routerLinkActive="active"
+        (click)="onNavItemClick(drawer)"
+      >
         <mat-icon matListItemIcon>home</mat-icon>
         <span matListItemTitle>Home</span>
       </a>
-      <a mat-list-item routerLink="/about" routerLinkActive="active">
+      <a
+        mat-list-item
+        routerLink="/about"
+        routerLinkActive="active"
+        (click)="onNavItemClick(drawer)"
+      >
         <mat-icon matListItemIcon>info</mat-icon>
         <span matListItemTitle>About</span>
       </a>
 
       @if (auth.isLoggedIn()) {
-        <a mat-list-item routerLink="/profile" routerLinkActive="active">
+        <a
+          mat-list-item
+          routerLink="/profile"
+          routerLinkActive="active"
+          (click)="onNavItemClick(drawer)"
+        >
           <mat-icon matListItemIcon>person</mat-icon>
           <span matListItemTitle>Profile</span>
         </a>
 
         @if (auth.isAdmin()) {
-          <a mat-list-item routerLink="/admin" routerLinkActive="active">
+          <a
+            mat-list-item
+            routerLink="/admin"
+            routerLinkActive="active"
+            (click)="onNavItemClick(drawer)"
+          >
             <mat-icon matListItemIcon>settings</mat-icon>
             <span matListItemTitle>Admin</span>
           </a>
@@ -70,7 +90,7 @@
 
         <div class="spacer"></div>
 
-        <a mat-list-item (click)="handleLogout()">
+        <a mat-list-item (click)="handleLogout(drawer)">
           <mat-icon matListItemIcon>logout</mat-icon>
           <span matListItemTitle color="warn">Log Out</span>
         </a>
@@ -78,7 +98,12 @@
       @if (!auth.isLoggedIn()) {
         <div class="spacer"></div>
 
-        <a mat-list-item routerLink="/login" routerLinkActive="active">
+        <a
+          mat-list-item
+          routerLink="/login"
+          routerLinkActive="active"
+          (click)="onNavItemClick(drawer)"
+        >
           <mat-icon matListItemIcon>login</mat-icon>
           <span matListItemTitle>Login</span>
         </a>

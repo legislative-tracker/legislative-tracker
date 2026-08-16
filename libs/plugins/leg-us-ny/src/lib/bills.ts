@@ -60,12 +60,12 @@ export const mapAPIBillToLegislation = (b: api.Bill): Legislation => {
     created_at: b.publishedDateTime,
     updated_at: now,
     openstates_url: '',
-    first_action_date: b.publishedDateTime,
+    first_action_date: b.publishedDateTime.substring(0, 10),
     latest_action_date: b.status.actionDate,
     latest_action_description: b.status.statusDesc,
     latest_passage_date: '',
 
-    actions: [],
+    actions: b.actions?.items ?? [],
     versions: [],
     documents: [],
 

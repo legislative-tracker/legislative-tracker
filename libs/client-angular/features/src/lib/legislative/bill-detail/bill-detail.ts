@@ -8,6 +8,10 @@ import {
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatListModule } from '@angular/material/list';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
 
 // App Imports
 import { LegislatureService } from '@legislative-tracker/client-angular/core';
@@ -17,7 +21,15 @@ import { Legislation } from '@legislative-tracker/shared/models';
 
 @Component({
   selector: 'app-bill-detail',
-  imports: [MatTabsModule, TableComponent, MatProgressSpinnerModule],
+  imports: [
+    MatTabsModule,
+    TableComponent,
+    MatProgressSpinnerModule,
+    MatListModule,
+    MatExpansionModule,
+    MatCardModule,
+    MatDividerModule,
+  ],
   templateUrl: './bill-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./bill-detail.scss'],
@@ -42,9 +54,33 @@ export class BillDetail {
   billVersions = computed(() => {
     const b = this.bill();
     if (!b?.cosponsors) return [];
-    return Object.entries(b.cosponsors).map(([key, data]) => ({
-      id: key,
-      data: data,
+    return Object.entries(b.cosponsors)
+      .map(([key, data]) => ({
+        id: key,
+        data: data,
+      }))
+      .sort((a, b) => b.id.localeCompare(a.id, undefined, { numeric: true }));
+  });
+
+  billActions = computed(() => {
+    const b = this.bill();
+    if (!Array.isArray(b?.actions)) return [];
+    return b.actions.map((data: any, index: number) => ({
+      id: data.id ?? index,
+      date: data.date,
+      text: data.action ?? data.text ?? data.description,
     }));
+  });
+
+  latestAction = computed(() => {
+    const actions = this.billActions();
+    if (actions.length > 0) {
+      return actions[actions.length - 1];
+    }
+    const b = this.bill();
+    if (b?.first_action_date) {
+      return { id: 'initial', date: b.first_action_date, text: 'Published' };
+    }
+    return undefined;
   });
 }

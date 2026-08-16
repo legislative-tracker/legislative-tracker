@@ -5,3 +5,36 @@
   align-items: center;
   padding: 3rem;
 }
+.header {
+  margin-bottom: 1.5rem;
+}
+
+mat-expansion-panel {
+  background-color: var(
+    --mat-card-container-color,
+    var(--mat-sys-surface-container-low)
+  );
+}
+
+.info-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: stretch;
+
+  .info-panel-1,
+  .info-panel-2 {
+    flex: 1;
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: flex-start;
+
+    .info-panel-1,
+    .info-panel-2 {
+      flex: 1 1 50%;
+    }
+  }
+}

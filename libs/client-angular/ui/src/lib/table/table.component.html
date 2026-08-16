@@ -1,4 +1,14 @@
 <div class="mat-elevation-z8">
+  @if (enableColumnSearch() && hasActiveFilters()) {
+    <div class="table-filter-toolbar">
+      <span class="active-filter-label">Filters active</span>
+      <button mat-button color="primary" (click)="clearAllFilters()">
+        <mat-icon>filter_list_off</mat-icon>
+        Clear All Filters
+      </button>
+    </div>
+  }
+
   <table
     mat-table
     matSort
@@ -15,9 +25,49 @@
           {{ element[col.key] }}
         </td>
       </ng-container>
+
+      @if (enableColumnSearch()) {
+        <ng-container [matColumnDef]="'filter-' + col.key">
+          <th mat-header-cell *matHeaderCellDef class="filter-header-cell">
+            <mat-form-field
+              appearance="outline"
+              class="column-filter-field"
+              subscriptSizing="dynamic"
+            >
+              <input
+                matInput
+                [placeholder]="'Filter ' + col.label + '...'"
+                [value]="filterValues()[col.key] || ''"
+                (input)="onFilterInput(col.key, $event)"
+                (click)="$event.stopPropagation()"
+                (keydown)="$event.stopPropagation()"
+                [attr.aria-label]="'Filter by ' + col.label"
+              />
+              @if (filterValues()[col.key]) {
+                <button
+                  mat-icon-button
+                  matSuffix
+                  type="button"
+                  (click)="clearColumnFilter(col.key); $event.stopPropagation()"
+                  [attr.aria-label]="'Clear filter for ' + col.label"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              }
+            </mat-form-field>
+          </th>
+        </ng-container>
+      }
     }
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+    @if (enableColumnSearch()) {
+      <tr
+        mat-header-row
+        *matHeaderRowDef="displayedFilterColumns()"
+        class="filter-header-row"
+      ></tr>
+    }
 
     <tr
       mat-row
