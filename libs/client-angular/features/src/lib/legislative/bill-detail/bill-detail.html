@@ -12,10 +12,18 @@
   </div>
   <div class="info-panel-2">
     <h2>Activity</h2>
-    <p>{{ bill()?.first_action_date }}: Published</p>
-    @for (action of billActions(); track action.id) {
-    <p>{{ action.date }}: {{ action.text }}</p>
-    }
+    <mat-list class="activity-list">
+      <mat-list-item>
+        <span matListItemTitle>{{ bill()?.first_action_date }}</span>
+        <span matListItemLine>Published</span>
+      </mat-list-item>
+      @for (action of billActions(); track action.id) {
+      <mat-list-item>
+        <span matListItemTitle>{{ action.date }}</span>
+        <span matListItemLine>{{ action.text }}</span>
+      </mat-list-item>
+      }
+    </mat-list>
   </div>
 </div>
 

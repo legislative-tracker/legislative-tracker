@@ -8,6 +8,7 @@ import {
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatListModule } from '@angular/material/list';
 
 // App Imports
 import { LegislatureService } from '@legislative-tracker/client-angular/core';
@@ -17,7 +18,12 @@ import { Legislation } from '@legislative-tracker/shared/models';
 
 @Component({
   selector: 'app-bill-detail',
-  imports: [MatTabsModule, TableComponent, MatProgressSpinnerModule],
+  imports: [
+    MatTabsModule,
+    TableComponent,
+    MatProgressSpinnerModule,
+    MatListModule,
+  ],
   templateUrl: './bill-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./bill-detail.scss'],
