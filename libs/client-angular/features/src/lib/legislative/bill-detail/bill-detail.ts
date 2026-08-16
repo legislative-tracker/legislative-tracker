@@ -67,4 +67,16 @@ export class BillDetail {
       text: data.action ?? data.text ?? data.description,
     }));
   });
+
+  latestAction = computed(() => {
+    const actions = this.billActions();
+    if (actions.length > 0) {
+      return actions[actions.length - 1];
+    }
+    const b = this.bill();
+    if (b?.first_action_date) {
+      return { id: 'initial', date: b.first_action_date, text: 'Published' };
+    }
+    return undefined;
+  });
 }
