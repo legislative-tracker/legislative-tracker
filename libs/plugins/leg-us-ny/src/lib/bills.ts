@@ -35,7 +35,7 @@ export const getCosponsors = (b: api.Bill): { [key: string]: Cosponsor[] } => {
         }),
       );
     }
-    cosponsorsByVersion[v === '' ? 'Original' : v] = cosponsors;
+    cosponsorsByVersion[v === '' ? '0' : v] = cosponsors;
   });
 
   return cosponsorsByVersion;
@@ -65,7 +65,7 @@ export const mapAPIBillToLegislation = (b: api.Bill): Legislation => {
     latest_action_description: b.status.statusDesc,
     latest_passage_date: '',
 
-    actions: [],
+    actions: b.actions.items,
     versions: [],
     documents: [],
 
