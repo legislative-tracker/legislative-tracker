@@ -1,3 +1,15 @@
+## 0.11.9 (2026-08-16)
+
+### 🩹 Fixes
+
+- **ci:** use explicit x-access-token authentication URL for release git push ([3f6698b](https://github.com/legislative-tracker/legislative-tracker/commit/3f6698b))
+- **ci:** support ADMIN_PAT token in release workflow for branch protection bypass ([57354d0](https://github.com/legislative-tracker/legislative-tracker/commit/57354d0))
+- **ci:** add actions/checkout before calling local setup action ([db0c5a4](https://github.com/legislative-tracker/legislative-tracker/commit/db0c5a4))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.8 (2026-08-15)
 
 ### 🩹 Fixes
