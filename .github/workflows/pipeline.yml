@@ -30,7 +30,7 @@ jobs:
   ci:
     name: Code Quality (Lint & Format)
     needs: changes
-    if: needs.changes.outputs.code == 'true'
+    if: needs.changes.outputs.code == 'true' && github.event_name == 'pull_request'
     uses: ./.github/workflows/ci.yml
 
   test:
