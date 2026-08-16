@@ -57,7 +57,7 @@ jobs:
         env:
           RELEASE_TOKEN: ${{ secrets.ADMIN_PAT || secrets.GITHUB_TOKEN }}
         run: |
-          git add package.json package-lock.json libs/client-angular/core/src/lib/version.ts docs/CHANGELOG.md || true
+          git add package.json package-lock.json apps/server-firebase/package.json libs/client-angular/core/src/lib/version.ts docs/CHANGELOG.md || true
           git commit -m "chore(release): v${{ steps.release.outputs.VERSION }} [skip ci]"
           git push https://x-access-token:${RELEASE_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
 
