@@ -6,10 +6,14 @@
 <h1>{{ bill()?.id }}</h1>
 <p>{{ bill()?.title }}</p>
 <div class="info-panel">
-  <div class="info-panel-1">
-    <h2>Summary</h2>
-    <p>{{ bill()?.text }}</p>
-  </div>
+  <mat-card class="info-panel-1">
+    <mat-card-header>
+      <mat-card-title>Summary</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>{{ bill()?.text }}</p>
+    </mat-card-content>
+  </mat-card>
   <div class="info-panel-2">
     <mat-expansion-panel #panel [expanded]="false">
       <mat-expansion-panel-header>
@@ -25,6 +29,7 @@
           <span matListItemLine>Published</span>
         </mat-list-item>
         @for (action of billActions(); track action.id) {
+        <mat-divider></mat-divider>
         <mat-list-item>
           <span matListItemTitle>{{ action.date }}</span>
           <span matListItemLine>{{ action.text }}</span>

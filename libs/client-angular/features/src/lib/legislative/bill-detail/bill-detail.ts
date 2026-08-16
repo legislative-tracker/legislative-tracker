@@ -10,6 +10,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
 
 // App Imports
 import { LegislatureService } from '@legislative-tracker/client-angular/core';
@@ -25,6 +27,8 @@ import { Legislation } from '@legislative-tracker/shared/models';
     MatProgressSpinnerModule,
     MatListModule,
     MatExpansionModule,
+    MatCardModule,
+    MatDividerModule,
   ],
   templateUrl: './bill-detail.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
