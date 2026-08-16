@@ -65,7 +65,7 @@ export const mapAPIBillToLegislation = (b: api.Bill): Legislation => {
     latest_action_description: b.status.statusDesc,
     latest_passage_date: '',
 
-    actions: [],
+    actions: b.actions?.items ?? [],
     versions: [],
     documents: [],
 
