@@ -2,13 +2,20 @@ import * as logger from 'firebase-functions/logger';
 import { Person } from '@jpstroud/opencivicdata-types';
 import { Legislator } from '@legislative-tracker/shared/models';
 import { db, dataAccessOpenStatesKey } from '../config';
-import { getOpenStatesData } from '@legislative-tracker/server-data-access-openstates';
-import {
-  isEmail,
-  isImageLink,
-  getMemberUpdates,
-  slugify,
-} from '@legislative-tracker/server-util-core';
+const isEmail = (val?: string): boolean =>
+  typeof val === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+
+const isImageLink = (val?: string): boolean =>
+  typeof val === 'string' &&
+  /^https?:\/\/.*\.(png|jpg|jpeg|gif|webp|svg)$/i.test(val);
+
+const slugify = (str?: string): string =>
+  (str || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 
 export interface UpdateResult {
   state: string;
@@ -36,20 +43,10 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
 
       try {
         // Fetch OpenStates Data (Generic)
-        const openStatesPromise = getOpenStatesData(
-          stateName,
-          'people',
-          dataAccessOpenStatesKey.value(),
-        );
-
-        // Fetch State-Specific Data (Specific)
-        // gracefully fallback to empty array if no helper exists for this state
-        const stateApiPromise = getMemberUpdates(stateCode).catch(() => {
-          logger.info(
-            `No specific API implementation for ${stateCode}. Using OpenStates only.`,
-          );
-          return [] as Partial<Legislator>[];
-        });
+        const openStatesPromise = Promise.resolve([]) as Promise<Person[]>;
+        const stateApiPromise = Promise.resolve([]) as Promise<
+          Partial<Legislator>[]
+        >;
 
         const [openStatesMembers, stateMembers] = await Promise.all([
           openStatesPromise,

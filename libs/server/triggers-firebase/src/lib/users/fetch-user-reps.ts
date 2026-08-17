@@ -6,7 +6,28 @@ import {
   dataAccessGoogleMapsKey,
 } from '../config';
 import { getGeocode } from '@legislative-tracker/server-data-access-google-maps';
-import { mapPersonToLegislator } from '@legislative-tracker/plugins-core';
+
+const mapPersonToLegislator = (person: any) => {
+  const currentRole = person.roles?.find((r: any) => !r.end_date);
+  const chamber =
+    currentRole?.org_classification === 'upper'
+      ? 'Senate'
+      : currentRole?.org_classification === 'lower'
+        ? 'Assembly'
+        : currentRole?.org_classification === 'legislature'
+          ? 'House'
+          : currentRole?.role || 'Legislator';
+
+  return {
+    id: person.id || person.name.replace(/\s+/g, '-'),
+    name: person.name,
+    chamber,
+    district: currentRole?.district || '',
+    party: person.party?.[0]?.name || '',
+    email: person.email || '',
+    image: person.image || '',
+  };
+};
 
 const isSuccess = <T>(res: unknown): res is { results: T[] } => {
   return Array.isArray((res as { results: T[] })?.results);

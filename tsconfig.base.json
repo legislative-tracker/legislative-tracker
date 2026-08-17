@@ -24,29 +24,15 @@
       "@legislative-tracker/client-angular/ui": [
         "./libs/client-angular/ui/src/index.ts"
       ],
-      "@legislative-tracker/plugins-core": ["./libs/plugins/core/src/index.ts"],
-      "@legislative-tracker/plugins-leg-us-ny": [
-        "./libs/plugins/leg-us-ny/src/index.ts"
-      ],
       "@legislative-tracker/server-data-access-google-maps": [
         "./libs/server/data-access-google-maps/src/index.ts"
-      ],
-      "@legislative-tracker/server-data-access-openstates": [
-        "./libs/server/data-access-openstates/src/index.ts"
       ],
       "@legislative-tracker/server-triggers-firebase": [
         "./libs/server/triggers-firebase/src/index.ts"
       ],
-      "@legislative-tracker/server-util-core": [
-        "./libs/server/util-core/src/index.ts"
-      ],
-      "@legislative-tracker/shared/api-types": [
-        "./libs/shared/api-types/src/index.ts"
-      ],
       "@legislative-tracker/shared/models": [
         "./libs/shared/models/src/index.ts"
-      ],
-      "@legislative-tracker/shared/util": ["./libs/shared/util/src/index.ts"]
+      ]
     },
     "strict": false,
     "noUncheckedSideEffectImports": false

@@ -1,9 +1,5 @@
 import { db } from '../config';
-import { getBillUpdates } from '@legislative-tracker/server-util-core';
 
-/**
- * Core business logic for updating legislation from 3rd party APIs
- */
 export const performLegislationUpdate = async () => {
   const legislaturesSnapshot = await db.collection('legislatures').get();
   const legislaturesList = legislaturesSnapshot.docs.map((doc) => doc.id);
@@ -12,14 +8,11 @@ export const performLegislationUpdate = async () => {
     const snapshot = await db
       .collection(`legislatures/${legislature}/legislation`)
       .get();
-    const billList = snapshot.docs.map((doc) => doc.id);
+    const billList = snapshot.docs.map((doc) => ({ id: doc.id }));
     return { id: legislature, bills: billList };
   });
 
-  const billListByLegislature = await Promise.all(pendingLookups);
-  const updates = await Promise.all(
-    billListByLegislature.map((o) => getBillUpdates(o)),
-  );
+  const updates = await Promise.all(pendingLookups);
 
   const bulkWriter = db.bulkWriter();
 

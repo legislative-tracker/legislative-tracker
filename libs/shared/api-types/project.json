@@ -1,9 +1,0 @@
-{
-  "name": "shared-api-types",
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "projectType": "library",
-  "sourceRoot": "libs/shared/api-types/src",
-  "tags": ["domain:shared", "type:model"],
-  "// targets": "to see all targets run: nx show project shared-api-types --web",
-  "targets": {}
-}
