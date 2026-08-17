@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { getBill, DEFAULT_BILL_INCLUDES } from './get-bill';
+import { getBillByOcdId } from './get-bill-by-ocd-id';
+import { DEFAULT_BILL_INCLUDES } from './constants';
 
-describe('getBill', () => {
+describe('getBillByOcdId', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
@@ -62,7 +63,7 @@ describe('getBill', () => {
     });
     vi.stubGlobal('fetch', mockFetch);
 
-    const bill = await getBill('ocd-bill/12345', 'test-api-key');
+    const bill = await getBillByOcdId('ocd-bill/12345', 'test-api-key');
 
     expect(bill).toEqual(mockBill);
     expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -91,7 +92,7 @@ describe('getBill', () => {
     vi.stubGlobal('fetch', mockFetch);
 
     const customIncludes = ['sponsorships', 'actions'];
-    const bill = await getBill(
+    const bill = await getBillByOcdId(
       'ocd-bill/67890',
       'test-api-key',
       customIncludes,
@@ -113,7 +114,7 @@ describe('getBill', () => {
     );
 
     await expect(
-      getBill('ocd-bill/non-existent', 'test-api-key'),
+      getBillByOcdId('ocd-bill/non-existent', 'test-api-key'),
     ).rejects.toThrow('OpenStates API error (404): Not Found');
   });
 
@@ -127,7 +128,7 @@ describe('getBill', () => {
     );
 
     await expect(
-      getBill('ocd-bill/invalid-format', 'test-api-key'),
+      getBillByOcdId('ocd-bill/invalid-format', 'test-api-key'),
     ).rejects.toThrow('Invalid OpenStates API response format');
   });
 });

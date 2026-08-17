@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { addBill } from './add-bill';
-import { DEFAULT_BILL_INCLUDES } from './get-bill';
+import { getBillByStateId } from './get-bill-by-state-id';
+import { DEFAULT_BILL_INCLUDES } from './constants';
 
-describe('addBill', () => {
+describe('getBillByStateId', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
@@ -40,7 +40,7 @@ describe('addBill', () => {
     });
     vi.stubGlobal('fetch', mockFetch);
 
-    const bill = await addBill('ny', '2025', 'HB 100', 'test-api-key');
+    const bill = await getBillByStateId('ny', '2025', 'HB 100', 'test-api-key');
 
     expect(bill).toEqual(mockBill);
     expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -69,7 +69,7 @@ describe('addBill', () => {
     vi.stubGlobal('fetch', mockFetch);
 
     const customIncludes = ['sponsorships', 'actions'];
-    const bill = await addBill(
+    const bill = await getBillByStateId(
       'ny',
       '2025',
       'SB 200',
@@ -83,16 +83,16 @@ describe('addBill', () => {
   });
 
   it('should throw an error if any required parameter is missing or empty', async () => {
-    await expect(addBill('', '2025', 'HB 100', 'key')).rejects.toThrow(
+    await expect(getBillByStateId('', '2025', 'HB 100', 'key')).rejects.toThrow(
       'State/jurisdiction is required',
     );
-    await expect(addBill('ny', '  ', 'HB 100', 'key')).rejects.toThrow(
+    await expect(getBillByStateId('ny', '  ', 'HB 100', 'key')).rejects.toThrow(
       'Session is required',
     );
-    await expect(addBill('ny', '2025', '', 'key')).rejects.toThrow(
+    await expect(getBillByStateId('ny', '2025', '', 'key')).rejects.toThrow(
       'Bill ID is required',
     );
-    await expect(addBill('ny', '2025', 'HB 100', '')).rejects.toThrow(
+    await expect(getBillByStateId('ny', '2025', 'HB 100', '')).rejects.toThrow(
       'API key is required',
     );
   });
@@ -108,7 +108,7 @@ describe('addBill', () => {
     );
 
     await expect(
-      addBill('ny', '2025', 'HB 999', 'test-api-key'),
+      getBillByStateId('ny', '2025', 'HB 999', 'test-api-key'),
     ).rejects.toThrow('OpenStates API error (404): Not Found');
   });
 
@@ -122,7 +122,7 @@ describe('addBill', () => {
     );
 
     await expect(
-      addBill('ny', '2025', 'HB 100', 'test-api-key'),
+      getBillByStateId('ny', '2025', 'HB 100', 'test-api-key'),
     ).rejects.toThrow('Invalid OpenStates API response format');
   });
 });

@@ -1,5 +1,5 @@
 import { OpenStatesBill } from '@legislative-tracker/shared/models';
-import { DEFAULT_BILL_INCLUDES } from './get-bill-by-ocd-id';
+import { DEFAULT_BILL_INCLUDES } from './constants';
 
 export async function getBillByStateId(
   state: string,
