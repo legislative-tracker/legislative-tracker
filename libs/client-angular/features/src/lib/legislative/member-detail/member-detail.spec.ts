@@ -56,6 +56,11 @@ describe('MemberDetail', () => {
       { id: 'BILL-1', title: 'Clean Energy Act', version: '' },
       { id: 'BILL-2', title: 'Road Safety Act', version: 'A' },
     ],
+    other_identifiers: [
+      { scheme: 'twitter', identifier: 'janedoe' },
+      { scheme: 'facebook', identifier: 'janedoe.official' },
+      { scheme: 'unknown', identifier: 'ignored' },
+    ],
   };
 
   // Mock Service
@@ -120,7 +125,25 @@ describe('MemberDetail', () => {
     expect(sponsorships[0].title).toBe('Clean Energy Act');
   });
 
-  it('should default sponsorships to empty array if member is undefined', () => {
+  it('should compute socialLinks correctly from other_identifiers', () => {
+    const socialLinks = component.socialLinks();
+
+    expect(socialLinks.length).toBe(2);
+    expect(socialLinks[0]).toEqual({
+      platform: 'twitter',
+      username: 'janedoe',
+      url: 'https://x.com/janedoe',
+      icon: 'fa-brands fa-x-twitter',
+    });
+    expect(socialLinks[1]).toEqual({
+      platform: 'facebook',
+      username: 'janedoe.official',
+      url: 'https://facebook.com/janedoe.official',
+      icon: 'fa-brands fa-facebook',
+    });
+  });
+
+  it('should default sponsorships and socialLinks to empty array if member is undefined', () => {
     // Simulate a scenario where service returns null/undefined
     mockLegislatureService.getMemberById.mockReturnValueOnce(of(null));
 
@@ -130,6 +153,7 @@ describe('MemberDetail', () => {
 
     expect(component.member()).toBeFalsy();
     expect(component.sponsorships()).toEqual([]);
+    expect(component.socialLinks()).toEqual([]);
   });
 
   it('should refetch data when inputs change', () => {

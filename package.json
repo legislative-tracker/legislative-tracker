@@ -1,6 +1,6 @@
 {
   "name": "@legislative-tracker/source",
-  "version": "0.11.9",
+  "version": "0.11.10",
   "description": "Nx Monorepo for Legislative Tracker PWA and Firebase Server",
   "license": "AGPL-3.0-only",
   "author": "jpelton-stroud",
@@ -41,6 +41,7 @@
     "@angular/platform-browser": "22.1.2",
     "@angular/router": "22.1.2",
     "@angular/service-worker": "22.1.2",
+    "@fortawesome/fontawesome-free": "^7.3.1",
     "@material/material-color-utilities": "^0.4.0",
     "firebase": "^12.17.1",
     "firebase-admin": "^13.6.0",

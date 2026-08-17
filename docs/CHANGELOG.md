@@ -1,3 +1,17 @@
+## 0.11.10 (2026-08-17)
+
+### 🚀 Features
+
+- **client-angular:** extract social media handles and render with FontAwesome Brands icons ([59bfb2a](https://github.com/legislative-tracker/legislative-tracker/commit/59bfb2a))
+
+### 🩹 Fixes
+
+- **release:** sync server-firebase package.json in release workflow ([385977e](https://github.com/legislative-tracker/legislative-tracker/commit/385977e))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.9 (2026-08-16)
 
 ### 🩹 Fixes
