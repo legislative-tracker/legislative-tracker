@@ -1,0 +1,9 @@
+{
+  "name": "plugin-leg-us-ny",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/plugins/leg-us-ny/src",
+  "projectType": "library",
+  "tags": ["domain:plugins", "type:plugin"],
+  "// targets": "to see all targets run: nx show project plugin-leg-us-ny --web",
+  "targets": {}
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@legislative-tracker/plugins-leg-us-ny",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "dependencies": {}
+}

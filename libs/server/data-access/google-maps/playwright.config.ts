@@ -3,13 +3,13 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: './e2e',
   outputDir:
-    '../../../dist/.playwright/libs/server/data-access-google-maps/results',
+    '../../../../dist/.playwright/libs/server/data-access-google-maps/results',
   reporter: [
     [
       'html',
       {
         outputFolder:
-          '../../../dist/.playwright/libs/server/data-access-google-maps/report',
+          '../../../../dist/.playwright/libs/server/data-access-google-maps/report',
       },
     ],
   ],
