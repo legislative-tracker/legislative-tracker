@@ -30,4 +30,18 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
+
+  a[mat-icon-button] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      font-size: 1.25rem;
+    }
+  }
 }
