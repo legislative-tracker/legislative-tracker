@@ -29,7 +29,7 @@
       </span>
     </mat-list-item>
   </mat-list>
-  <mat-list>
+  <mat-list class="member-details-addresses">
     @if (member()?.offices?.[0]?.address) {
     <mat-list-item>
       <mat-icon matListItemIcon>business</mat-icon>
@@ -47,8 +47,23 @@
         >
       </span>
     </mat-list-item>
-    }</mat-list
-  >
+    } @if (socialLinks().length) {
+    <div class="social-links-row">
+      @for (link of socialLinks(); track link.platform) {
+      <a
+        mat-icon-button
+        [href]="link.url"
+        target="_blank"
+        rel="noopener noreferrer"
+        [attr.aria-label]="link.platform"
+        [title]="link.platform + ': ' + link.username"
+      >
+        <i [class]="link.icon"></i>
+      </a>
+      }
+    </div>
+    }
+  </mat-list>
 </div>
 
 <mat-tab-group>
