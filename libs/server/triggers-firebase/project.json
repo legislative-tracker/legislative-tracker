@@ -1,5 +1,5 @@
 {
-  "name": "triggers-firebase",
+  "name": "server-triggers-firebase",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/server/triggers-firebase/src",
   "projectType": "library",

@@ -1,5 +1,5 @@
 {
-  "name": "util-core",
+  "name": "server-util-core",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/server/util-core/src",
   "projectType": "library",

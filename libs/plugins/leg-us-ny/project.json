@@ -1,5 +1,5 @@
 {
-  "name": "leg-us-ny",
+  "name": "plugin-leg-us-ny",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/plugins/leg-us-ny/src",
   "projectType": "library",
