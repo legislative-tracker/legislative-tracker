@@ -41,16 +41,8 @@ export interface OpenStatesPerson {
   updated_at?: string;
   openstates_url?: string;
   other_identifiers?: OpenStatesOtherIdentifier[];
+  other_names?: { name: string; note?: string }[];
   links?: OpenStatesLink[];
+  sources?: OpenStatesLink[];
   offices?: OpenStatesOffice[];
-}
-
-export interface OpenStatesPeopleResponse {
-  results: OpenStatesPerson[];
-  pagination: {
-    per_page: number;
-    page: number;
-    max_page: number;
-    total_items: number;
-  };
 }

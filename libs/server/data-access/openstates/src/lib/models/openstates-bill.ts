@@ -96,13 +96,3 @@ export interface OpenStatesBill {
   versions?: OpenStatesVersionOrDocument[];
   documents?: OpenStatesVersionOrDocument[];
 }
-
-export interface OpenStatesBillsResponse {
-  results: OpenStatesBill[];
-  pagination: {
-    per_page: number;
-    page: number;
-    max_page: number;
-    total_items: number;
-  };
-}
