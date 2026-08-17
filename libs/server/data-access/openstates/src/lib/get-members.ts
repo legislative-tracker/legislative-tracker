@@ -1,5 +1,7 @@
-import { OpenStatesPerson } from './models/openstates-people';
-import { OpenStatesResponse } from './models/openstates-shared';
+import {
+  OpenStatesPerson,
+  OpenStatesResponse,
+} from '@legislative-tracker/shared/models';
 
 export async function getMembers(
   state: string,

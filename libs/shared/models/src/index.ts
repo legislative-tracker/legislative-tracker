@@ -4,3 +4,6 @@ export * from './lib/column-config';
 export * from './lib/feedback';
 export * from './lib/runtime-config';
 export * from './lib/user';
+export * from './lib/openstates-shared';
+export * from './lib/openstates-person';
+export * from './lib/openstates-bill';

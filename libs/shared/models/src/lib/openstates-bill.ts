@@ -1,13 +1,10 @@
 import {
+  OpenStatesCurrentRole,
   OpenStatesJurisdiction,
+  OpenStatesLink,
+  OpenStatesOrganization,
   OpenStatesOtherIdentifier,
 } from './openstates-shared';
-
-export interface OpenStatesOrganization {
-  id: string;
-  name: string;
-  classification: string;
-}
 
 export interface OpenStatesRelatedBill {
   identifier: string;
@@ -20,18 +17,11 @@ export interface OpenStatesAbstract {
   note?: string;
 }
 
-export interface OpenStatesPersonRole {
-  title: string;
-  org_classification: string;
-  district: string;
-  division_id: string;
-}
-
 export interface OpenStatesSponsorPerson {
   id: string;
   name: string;
   party?: string;
-  current_role?: OpenStatesPersonRole;
+  current_role?: OpenStatesCurrentRole;
 }
 
 export interface OpenStatesSponsorship {
@@ -70,11 +60,6 @@ export interface OpenStatesVersionOrDocument {
   links: OpenStatesDocumentMedia[];
 }
 
-export interface OpenStatesSource {
-  url: string;
-  note?: string;
-}
-
 export interface OpenStatesVoteCount {
   option: string;
   value: number;
@@ -95,7 +80,7 @@ export interface OpenStatesVote {
   organization?: OpenStatesOrganization;
   counts?: OpenStatesVoteCount[];
   votes?: OpenStatesPersonVote[];
-  sources?: OpenStatesSource[];
+  sources?: OpenStatesLink[];
 }
 
 export interface OpenStatesBill {
@@ -121,7 +106,7 @@ export interface OpenStatesBill {
   other_identifiers?: OpenStatesOtherIdentifier[];
   sponsorships?: OpenStatesSponsorship[];
   actions?: OpenStatesAction[];
-  sources?: OpenStatesSource[];
+  sources?: OpenStatesLink[];
   versions?: OpenStatesVersionOrDocument[];
   documents?: OpenStatesVersionOrDocument[];
   votes?: OpenStatesVote[];

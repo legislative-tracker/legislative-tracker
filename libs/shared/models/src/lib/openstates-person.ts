@@ -1,19 +1,9 @@
 import {
+  OpenStatesCurrentRole,
   OpenStatesJurisdiction,
+  OpenStatesLink,
   OpenStatesOtherIdentifier,
 } from './openstates-shared';
-
-export interface OpenStatesCurrentRole {
-  title: string;
-  org_classification: string;
-  district: string;
-  division_id: string;
-}
-
-export interface OpenStatesLink {
-  url: string;
-  note?: string;
-}
 
 export interface OpenStatesOffice {
   name: string;

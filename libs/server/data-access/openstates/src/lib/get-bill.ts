@@ -1,4 +1,4 @@
-import { OpenStatesBill } from './models/openstates-bill';
+import { OpenStatesBill } from '@legislative-tracker/shared/models';
 
 export const DEFAULT_BILL_INCLUDES = [
   'sponsorships',
