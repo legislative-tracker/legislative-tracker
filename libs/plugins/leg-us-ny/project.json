@@ -4,6 +4,13 @@
   "sourceRoot": "libs/plugins/leg-us-ny/src",
   "projectType": "library",
   "tags": ["domain:plugins", "type:plugin"],
-  "// targets": "to see all targets run: nx show project plugin-leg-us-ny --web",
-  "targets": {}
+  "targets": {
+    "publish": {
+      "command": "npm publish --access public",
+      "options": {
+        "cwd": "dist/libs/plugins/leg-us-ny"
+      },
+      "dependsOn": ["build"]
+    }
+  }
 }

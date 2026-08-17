@@ -1,11 +1,28 @@
 {
   "name": "@legislative-tracker/plugins-leg-us-ny",
-  "version": "0.0.1",
-  "private": true,
+  "version": "0.1.0",
+  "description": "New York State Legislative Plugin for Legislative Tracker",
+  "license": "AGPL-3.0-only",
+  "author": "jpelton-stroud",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jpelton-stroud/legislative-tracker.git",
+    "directory": "libs/plugins/leg-us-ny"
+  },
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "default": "./index.js"
+    }
+  },
   "dependencies": {
     "@legislative-tracker/plugins-core": "*"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
