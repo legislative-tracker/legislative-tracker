@@ -13,7 +13,7 @@ export const DEFAULT_BILL_INCLUDES = [
   'related_bills',
 ];
 
-export async function getBill(
+export async function getBillByOcdId(
   billId: string,
   apiKey: string,
   includes: string[] = DEFAULT_BILL_INCLUDES,

@@ -47,6 +47,7 @@ export default [
                 'type:util',
                 'type:core',
                 'type:plugin',
+                'type:data-access',
               ],
             },
             {
