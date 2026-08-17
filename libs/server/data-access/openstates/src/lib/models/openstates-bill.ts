@@ -70,6 +70,34 @@ export interface OpenStatesVersionOrDocument {
   links: OpenStatesDocumentMedia[];
 }
 
+export interface OpenStatesSource {
+  url: string;
+  note?: string;
+}
+
+export interface OpenStatesVoteCount {
+  option: string;
+  value: number;
+}
+
+export interface OpenStatesPersonVote {
+  option: string;
+  voter_name: string;
+  voter_id?: string | null;
+}
+
+export interface OpenStatesVote {
+  id: string;
+  motion_text: string;
+  motion_classification: string[];
+  start_date: string;
+  result: string;
+  organization?: OpenStatesOrganization;
+  counts?: OpenStatesVoteCount[];
+  votes?: OpenStatesPersonVote[];
+  sources?: OpenStatesSource[];
+}
+
 export interface OpenStatesBill {
   id: string;
   session: string;
@@ -93,6 +121,8 @@ export interface OpenStatesBill {
   other_identifiers?: OpenStatesOtherIdentifier[];
   sponsorships?: OpenStatesSponsorship[];
   actions?: OpenStatesAction[];
+  sources?: OpenStatesSource[];
   versions?: OpenStatesVersionOrDocument[];
   documents?: OpenStatesVersionOrDocument[];
+  votes?: OpenStatesVote[];
 }
