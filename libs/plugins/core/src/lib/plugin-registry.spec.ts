@@ -24,11 +24,15 @@ describe('Plugin Registry', () => {
           upper: 'Senate',
           lower: 'Assembly',
         },
+        get currentSession() {
+          return mockPlugin.calculateCurrentSession();
+        },
       },
       capabilities: {
         hasApi: true,
       },
     },
+    calculateCurrentSession: (date?: Date) => '2025-2026',
     getMembers: async () => [{ id: 'm1', name: 'Jane Doe' }],
     getBills: async () => [{ id: 'b1', title: 'Test Bill' }],
     syncJurisdiction: async () => ({
@@ -64,11 +68,13 @@ describe('Plugin Registry', () => {
             upper: 'Senate',
             lower: 'Assembly',
           },
+          currentSession: '2025-2026',
         },
         capabilities: {
           hasApi: false,
         },
       },
+      calculateCurrentSession: (date?: Date) => '2025-2026',
       initialize: async () => {
         initialized = true;
       },
@@ -113,11 +119,13 @@ describe('Plugin Registry', () => {
             upper: 'Senate',
             lower: 'Assembly',
           },
+          currentSession: '2025-2026',
         },
         capabilities: {
           hasApi: true,
         },
       },
+      calculateCurrentSession: (date?: Date) => '2025-2026',
     };
 
     await registerPlugin(mockPlugin);
@@ -155,6 +163,9 @@ describe('Plugin Registry', () => {
     await registerPlugin(mockPlugin);
     const plugin = getPlugin('leg-us-ny');
 
+    expect(plugin?.calculateCurrentSession).toBeDefined();
+    expect(plugin?.calculateCurrentSession()).toBe('2025-2026');
+    expect(plugin?.metadata.jurisdiction.currentSession).toBe('2025-2026');
     expect(plugin?.getMembers).toBeDefined();
     expect(plugin?.getBills).toBeDefined();
     expect(plugin?.syncJurisdiction).toBeDefined();

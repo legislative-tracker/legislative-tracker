@@ -35,6 +35,11 @@ export interface JurisdictionMetadata {
    * Legislative chamber names.
    */
   chambers: ChamberInfo;
+
+  /**
+   * Current legislative session identifier (can be a static string or dynamic getter).
+   */
+  readonly currentSession: string;
 }
 
 export interface PluginCapabilities {
@@ -113,6 +118,11 @@ export interface SyncResult {
 
 export interface LegislativePlugin<TMember = unknown, TBill = unknown> {
   readonly metadata: PluginMetadata;
+
+  /**
+   * Calculates the current legislative session identifier for a given date (or current date if omitted).
+   */
+  calculateCurrentSession(date?: Date): string;
 
   /**
    * Optional asynchronous initialization hook executed when the plugin is registered.
