@@ -1,5 +1,5 @@
 {
-  "name": "core",
+  "name": "plugin-core",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/plugins/core/src",
   "projectType": "library",
