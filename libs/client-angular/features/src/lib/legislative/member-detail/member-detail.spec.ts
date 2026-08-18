@@ -5,6 +5,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { Title } from '@angular/platform-browser';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
@@ -111,6 +112,11 @@ describe('MemberDetail', () => {
     expect(component.district()).toBe('123');
     expect(memberData?.party).toBe('Democratic');
     expect(component.titleOrPrefix()).toBe('Senator');
+  });
+
+  it('should update the page title to <name> | Legislative Tracker', () => {
+    const titleService = TestBed.inject(Title);
+    expect(titleService.getTitle()).toBe('Jane Doe | Legislative Tracker');
   });
 
   it('should compute sponsorships correctly', () => {

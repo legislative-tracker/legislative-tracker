@@ -58,6 +58,8 @@ export const BILL_COLS: ColumnConfig<Legislation>[] = getBillCols();
 
 export const COSPONSOR_COLS: ColumnConfig<any>[] = [
   { key: 'name', label: 'Name' },
+  { key: 'party', label: 'Party' },
+  { key: 'district', label: 'District' },
 ];
 
 export const SPONSORSHIP_COLS: ColumnConfig<any>[] = [

@@ -77,7 +77,19 @@ export class BillDetail {
       return Object.entries((b as any).cosponsors)
         .map(([key, data]) => ({
           id: key,
-          data: data as any[],
+          data: (data as any[]).map((item) => {
+            const rawId = item.id ?? item.person?.id ?? item.name;
+            const cleanId = rawId
+              ? String(rawId).replace(/^ocd-person[\/:=]/, '')
+              : '';
+            return {
+              ...item,
+              id: cleanId,
+              party: item.party ?? item.person?.party ?? '',
+              district:
+                item.district ?? item.person?.current_role?.district ?? '',
+            };
+          }),
         }))
         .sort((a, b) => b.id.localeCompare(a.id, undefined, { numeric: true }));
     }
@@ -87,13 +99,22 @@ export class BillDetail {
       return [
         {
           id: 'Sponsors & Cosponsors',
-          data: b.sponsorships.map((s) => ({
-            id: s.person?.id ?? s.id ?? s.name,
-            name: s.name,
-            primary: s.primary,
-            classification: s.classification,
-            entity_type: s.entity_type,
-          })),
+          data: b.sponsorships.map((s) => {
+            const rawId = s.person?.id ?? s.id ?? s.name;
+            const cleanId = rawId
+              ? String(rawId).replace(/^ocd-person[\/:=]/, '')
+              : '';
+            return {
+              id: cleanId,
+              name: s.name,
+              primary: s.primary,
+              classification: s.classification,
+              entity_type: s.entity_type,
+              party: s.person?.party ?? (s as any).party ?? '',
+              district:
+                s.person?.current_role?.district ?? (s as any).district ?? '',
+            };
+          }),
         },
       ];
     }

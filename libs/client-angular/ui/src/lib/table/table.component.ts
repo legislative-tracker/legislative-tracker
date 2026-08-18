@@ -40,7 +40,9 @@ export class TableComponent<T> {
   dataSource = input.required<T[]>();
   columnSource = input.required<ColumnConfig<T>[]>();
   stateCd = input.required<string>(); // Passed from parent or route
-  routeType = input.required<'bill' | 'member' | 'legislation'>();
+  routeType = input.required<
+    'bill' | 'member' | 'legislation' | 'ocd-person'
+  >();
   chamber = input<'SENATE' | 'ASSEMBLY'>();
   defaultSortKeyInput = input<string | undefined>(undefined, {
     alias: 'defaultSortKey',
@@ -127,5 +129,10 @@ export class TableComponent<T> {
 
   onRowClick(row: T) {
     this.rowClick.emit(row);
+  }
+
+  cleanId(rawId?: string): string {
+    if (!rawId) return '';
+    return String(rawId).replace(/^ocd-(person|bill)[\/:=]/, '');
   }
 }

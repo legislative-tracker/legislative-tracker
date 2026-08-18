@@ -3,8 +3,10 @@ import {
   input,
   inject,
   computed,
+  effect,
   ChangeDetectionStrategy,
 } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatListModule } from '@angular/material/list';
@@ -79,7 +81,19 @@ export class MemberDetail {
   id = input.required<string>(); // The Member ID
 
   private legislatureService = inject(LegislatureService);
+  private titleService = inject(Title);
   sponsorshipCols = SPONSORSHIP_COLS;
+
+  constructor() {
+    effect(() => {
+      const m = this.member();
+      if (m?.name) {
+        this.titleService.setTitle(`${m.name} | Legislative Tracker`);
+      } else {
+        this.titleService.setTitle('Member | Legislative Tracker');
+      }
+    });
+  }
 
   memberResource = rxResource({
     params: () => ({ state: this.stateCd(), id: this.id() }),
