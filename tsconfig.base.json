@@ -21,6 +21,9 @@
       "@legislative-tracker/client-angular/features": [
         "./libs/client-angular/features/src/index.ts"
       ],
+      "@legislative-tracker/client-angular/features/*": [
+        "./libs/client-angular/features/src/lib/*"
+      ],
       "@legislative-tracker/client-angular/ui": [
         "./libs/client-angular/ui/src/index.ts"
       ],
