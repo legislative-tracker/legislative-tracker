@@ -17,9 +17,11 @@ describe('MockLegislatureService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should return mock bills for state', async () => {
-    const bills = await firstValueFrom(service.getBillsByState('NY'));
-    expect(bills.length).toBeGreaterThan(0);
+  it('should return mock legislation for state', async () => {
+    const legislation = await firstValueFrom(
+      service.getLegislationByState('NY'),
+    );
+    expect(legislation.length).toBeGreaterThan(0);
   });
 
   it('should return mock members for state', async () => {

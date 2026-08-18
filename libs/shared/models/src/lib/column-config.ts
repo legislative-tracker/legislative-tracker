@@ -1,5 +1,6 @@
 import { OpenStatesPerson, PersonSponsorship } from './openstates-person';
 import { OpenStatesBill } from './openstates-bill';
+import { Legislation } from './legislation';
 
 export interface ColumnConfig<T> {
   key: keyof T & string;
@@ -15,9 +16,10 @@ export const MEMBER_COLS: ColumnConfig<OpenStatesPerson>[] = [
 
 export const LEGISLATOR_COLS = MEMBER_COLS;
 
-export const BILL_COLS: ColumnConfig<OpenStatesBill>[] = [
-  { key: 'id', label: 'Bill Number' },
-  { key: 'title', label: 'Title' },
+export const BILL_COLS: ColumnConfig<Legislation>[] = [
+  { key: 'name', label: 'Title' },
+  { key: 'upperBillId', label: 'Upper Chamber Bill ID' },
+  { key: 'lowerBillId', label: 'Lower Chamber Bill ID' },
 ];
 
 export const COSPONSOR_COLS: ColumnConfig<any>[] = [

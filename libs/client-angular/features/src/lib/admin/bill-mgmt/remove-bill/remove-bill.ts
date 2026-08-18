@@ -84,11 +84,16 @@ export class RemoveBill {
     this.isLoadingBills.set(true);
     this.selectedBillId.set('');
 
-    this.legislature.getBillsByState(state).subscribe({
+    this.legislature.getLegislationByState(state).subscribe({
       next: (billsData) => {
         const bills = (billsData || []).map((doc: any) => ({
           id: doc.id,
-          number: doc.identifier || doc.id || 'Unknown',
+          number:
+            doc.identifier ||
+            doc.upperBillId ||
+            doc.lowerBillId ||
+            doc.id ||
+            'Unknown',
           title: doc.title || doc.name || 'No Title',
         })) as SimpleBill[];
 

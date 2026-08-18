@@ -2,18 +2,20 @@ import {
   OpenStatesPerson,
   OpenStatesResponse,
 } from '@legislative-tracker/shared/models';
+import { normalizeJurisdictionForOpenStates } from './utils';
 
 export async function getMembers(
   state: string,
   apiKey: string,
 ): Promise<OpenStatesPerson[]> {
+  const cleanState = normalizeJurisdictionForOpenStates(state);
   const allPeople: OpenStatesPerson[] = [];
   let page = 1;
   let maxPage = 1;
 
   do {
     const url = new URL('https://v3.openstates.org/people');
-    url.searchParams.set('jurisdiction', state);
+    url.searchParams.set('jurisdiction', cleanState);
     url.searchParams.set('apikey', apiKey);
     url.searchParams.set('per_page', '50');
     url.searchParams.set('page', page.toString());

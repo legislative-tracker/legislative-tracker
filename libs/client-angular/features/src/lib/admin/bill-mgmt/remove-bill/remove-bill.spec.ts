@@ -23,7 +23,7 @@ describe('RemoveBill', () => {
   };
 
   const mockLegislatureService = {
-    getBillsByState: vi.fn().mockReturnValue(of([])),
+    getLegislationByState: vi.fn().mockReturnValue(of([])),
     removeBill: vi.fn(),
   };
   const mockSnackBar = {
@@ -31,7 +31,7 @@ describe('RemoveBill', () => {
   };
 
   beforeEach(async () => {
-    mockLegislatureService.getBillsByState.mockReturnValue(of([]));
+    mockLegislatureService.getLegislationByState.mockReturnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [RemoveBill],
@@ -71,14 +71,16 @@ describe('RemoveBill', () => {
         { id: 'BILL-1', title: 'Test Bill' } as any,
         { id: 'BILL-2', title: 'Other Bill' } as any,
       ];
-      mockLegislatureService.getBillsByState.mockReturnValue(of(mockBillsData));
+      mockLegislatureService.getLegislationByState.mockReturnValue(
+        of(mockBillsData),
+      );
 
       component.selectedState.set('us-ny');
       fixture.detectChanges();
 
       await TestBed.flushEffects();
 
-      expect(mockLegislatureService.getBillsByState).toHaveBeenCalledWith(
+      expect(mockLegislatureService.getLegislationByState).toHaveBeenCalledWith(
         'us-ny',
       );
       expect(component.availableBills().length).toBe(2);
@@ -87,7 +89,7 @@ describe('RemoveBill', () => {
     });
 
     it('should handle errors when fetching bills fails', async () => {
-      mockLegislatureService.getBillsByState.mockReturnValue(
+      mockLegislatureService.getLegislationByState.mockReturnValue(
         throwError(() => new Error('Service Error')),
       );
 

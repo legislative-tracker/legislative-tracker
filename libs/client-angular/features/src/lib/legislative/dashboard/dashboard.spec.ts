@@ -55,7 +55,7 @@ describe('Dashboard', () => {
   ];
 
   const mockLegislatureService = {
-    getBillsByState: vi.fn().mockReturnValue(of(mockBills)),
+    getLegislationByState: vi.fn().mockReturnValue(of(mockBills)),
     getMembersByState: vi.fn().mockReturnValue(of(mockMembers)),
   };
 
@@ -87,7 +87,9 @@ describe('Dashboard', () => {
 
   describe('Initialization (Default Tab: Bills)', () => {
     it('should fetch bills immediately on load', () => {
-      expect(mockLegislatureService.getBillsByState).toHaveBeenCalledWith('ny');
+      expect(mockLegislatureService.getLegislationByState).toHaveBeenCalledWith(
+        'ny',
+      );
       expect(component.bills()).toEqual(mockBills);
     });
 
@@ -135,25 +137,29 @@ describe('Dashboard', () => {
     });
 
     it('should stop fetching bills when switching away from Bills tab', async () => {
-      mockLegislatureService.getBillsByState.mockClear();
+      mockLegislatureService.getLegislationByState.mockClear();
 
       component.onTabChange(1);
       fixture.detectChanges();
       await fixture.whenStable();
 
-      expect(mockLegislatureService.getBillsByState).not.toHaveBeenCalled();
+      expect(
+        mockLegislatureService.getLegislationByState,
+      ).not.toHaveBeenCalled();
       expect(component.bills()).toEqual([]);
     });
   });
 
   describe('State Changes', () => {
     it('should refetch bills when stateCd input changes', () => {
-      mockLegislatureService.getBillsByState.mockClear();
+      mockLegislatureService.getLegislationByState.mockClear();
 
       fixture.componentRef.setInput('stateCd', 'ca');
       fixture.detectChanges();
 
-      expect(mockLegislatureService.getBillsByState).toHaveBeenCalledWith('ca');
+      expect(mockLegislatureService.getLegislationByState).toHaveBeenCalledWith(
+        'ca',
+      );
     });
   });
 });

@@ -1,5 +1,6 @@
 import { OpenStatesBill } from '@legislative-tracker/shared/models';
 import { DEFAULT_BILL_INCLUDES } from './constants';
+import { normalizeJurisdictionForOpenStates } from './utils';
 
 export async function getBillByStateId(
   state: string,
@@ -21,7 +22,7 @@ export async function getBillByStateId(
     throw new Error('API key is required');
   }
 
-  const cleanState = state.trim();
+  const cleanState = normalizeJurisdictionForOpenStates(state);
   const cleanSession = session.trim();
   const cleanBillId = billId.trim();
 

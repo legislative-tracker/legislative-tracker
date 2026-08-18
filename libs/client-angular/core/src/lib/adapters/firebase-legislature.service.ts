@@ -54,27 +54,27 @@ export class FirebaseLegislatureService extends LegislatureService {
     };
   };
 
-  getBillsByState(stateCode: string): Observable<OpenStatesBill[]> {
-    return new Observable<OpenStatesBill[]>((subscriber) => {
+  getLegislationByState(stateCode: string): Observable<Legislation[]> {
+    return new Observable<Legislation[]>((subscriber) => {
       if (!this.firestore) {
         subscriber.next([]);
         return;
       }
-      const billsRef = collection(
+      const legislationRef = collection(
         this.firestore,
-        this.getPaths(stateCode).ocdBills,
+        this.getPaths(stateCode).bills,
       );
       return onSnapshot(
-        billsRef,
+        legislationRef,
         (snapshot) => {
           const list = snapshot.docs.map((d) => ({
             id: d.id,
             ...d.data(),
-          })) as OpenStatesBill[];
+          })) as Legislation[];
           subscriber.next(list);
         },
         (error) => {
-          console.error(`Error fetching bills for ${stateCode}:`, error);
+          console.error(`Error fetching legislation for ${stateCode}:`, error);
           subscriber.error(error);
         },
       );

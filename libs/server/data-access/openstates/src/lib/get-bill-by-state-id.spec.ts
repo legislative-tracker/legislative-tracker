@@ -55,6 +55,27 @@ describe('getBillByStateId', () => {
     );
   });
 
+  it('should normalize us-ny state parameter to ny when constructing API URL', async () => {
+    const mockBill = {
+      id: 'ocd-bill/12345',
+      identifier: 'S9271',
+      title: 'Broadband Act',
+    };
+
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => mockBill,
+    });
+    vi.stubGlobal('fetch', mockFetch);
+
+    await getBillByStateId('us-ny', '2025-2026', 'S9271', 'test-api-key');
+
+    const callUrl = new URL(mockFetch.mock.calls[0][0]);
+    expect(callUrl.origin + callUrl.pathname).toBe(
+      'https://v3.openstates.org/bills/ny/2025-2026/S9271',
+    );
+  });
+
   it('should allow custom includes', async () => {
     const mockBill = {
       id: 'ocd-bill/67890',

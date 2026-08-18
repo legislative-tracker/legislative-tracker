@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import {
+  Legislation,
   OpenStatesBill,
   OpenStatesPerson,
 } from '@legislative-tracker/shared/models';
@@ -8,6 +9,33 @@ import {
   LegislatureService,
   AddBillsParams,
 } from '../services/legislature.service';
+
+const MOCK_LEGISLATION: Legislation[] = [
+  {
+    id: 'mock-leg-1',
+    name: 'Clean Energy Infrastructure Act',
+    description: 'Clean energy infrastructure regulations',
+    upperBillId: 'S1234',
+    lowerBillId: 'A5678',
+    stateBillIds: { upper: 'S1234', lower: 'A5678' },
+    ocdBillIds: {
+      upper: 'ocd-bill/mock-bill-1',
+      lower: 'ocd-bill/mock-bill-2',
+    },
+  },
+  {
+    id: 'mock-leg-2',
+    name: 'Digital Privacy Protection Amendment',
+    description: 'Digital privacy protection measures',
+    upperBillId: 'S5678',
+    lowerBillId: 'A1234',
+    stateBillIds: { upper: 'S5678', lower: 'A1234' },
+    ocdBillIds: {
+      upper: 'ocd-bill/mock-bill-3',
+      lower: 'ocd-bill/mock-bill-4',
+    },
+  },
+];
 
 const MOCK_BILLS: OpenStatesBill[] = [
   {
@@ -61,11 +89,12 @@ const MOCK_MEMBERS: OpenStatesPerson[] = [
 
 @Injectable()
 export class MockLegislatureService extends LegislatureService {
+  private legislation = [...MOCK_LEGISLATION];
   private bills = [...MOCK_BILLS];
   private members = [...MOCK_MEMBERS];
 
-  getBillsByState(stateCode: string): Observable<OpenStatesBill[]> {
-    return of(this.bills);
+  getLegislationByState(stateCode: string): Observable<Legislation[]> {
+    return of(this.legislation);
   }
 
   getMembersByState(stateCode: string): Observable<OpenStatesPerson[]> {

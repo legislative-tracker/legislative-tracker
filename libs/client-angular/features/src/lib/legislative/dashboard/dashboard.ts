@@ -19,6 +19,7 @@ import { TableComponent } from '@legislative-tracker/client-angular/ui';
 import {
   BILL_COLS,
   MEMBER_COLS,
+  Legislation,
   OpenStatesBill,
   OpenStatesPerson,
 } from '@legislative-tracker/shared/models';
@@ -62,11 +63,11 @@ export class Dashboard {
 
   // --- Resources ---
 
-  billsResource = rxResource<OpenStatesBill[], string | null>({
+  billsResource = rxResource<Legislation[], string | null>({
     params: () => this.billsRequest(),
     stream: ({ params: stateCode }) => {
       if (!stateCode) return of([]);
-      return this.legislatureService.getBillsByState(stateCode);
+      return this.legislatureService.getLegislationByState(stateCode);
     },
   });
 

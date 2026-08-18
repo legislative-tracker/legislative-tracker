@@ -15,9 +15,7 @@ export interface AddBillsParams {
 
 @Injectable()
 export abstract class LegislatureService {
-  abstract getBillsByState(
-    stateCode: string,
-  ): Observable<OpenStatesBill[] | Legislation[]>;
+  abstract getLegislationByState(stateCode: string): Observable<Legislation[]>;
   abstract getMembersByState(stateCode: string): Observable<OpenStatesPerson[]>;
   abstract getBillById(
     stateCode: string,
