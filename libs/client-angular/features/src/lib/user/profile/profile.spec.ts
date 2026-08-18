@@ -106,10 +106,11 @@ describe('Profile', () => {
     expect(component.user()?.email).toBe('test@example.com');
   });
 
-  it('should set legislatorCols to name, party, and district columns', () => {
+  it('should set legislatorCols to name, party, chamber, and district columns', () => {
     expect(component.legislatorCols).toEqual([
       { key: 'name', label: 'Name' },
       { key: 'party', label: 'Party' },
+      { key: 'chamber', label: 'Chamber' },
       { key: 'district', label: 'District' },
     ]);
   });
