@@ -52,6 +52,13 @@ export const addBills = onCall(
 
     const apiKey = dataAccessOpenStatesKey.value();
 
+    const stateBillIds: { upper?: string; lower?: string } = {};
+    const ocdBillIds: { upper?: string; lower?: string } = {};
+    let upperBillId: string | undefined;
+    let lowerBillId: string | undefined;
+    let primaryDocId: string | undefined;
+    let fallbackDescription: string | undefined;
+
     for (const billId of billIds) {
       if (!billId || typeof billId !== 'string' || !billId.trim()) {
         continue;
@@ -86,44 +93,55 @@ export const addBills = onCall(
           { merge: true },
         );
 
-        // 2. Upsert Legislation document into legislation subcollection
+        // 2. Accumulate chamber data for single Legislation document
         const chamber =
           billData.from_organization?.classification?.toLowerCase() || '';
 
-        const isUpper = chamber.includes('upper') ? true : false;
-
-        const stateBillIds: { upper?: string; lower?: string } = {};
-        const ocdBillIds: { upper?: string; lower?: string } = {};
+        const isUpper = chamber.includes('upper');
 
         if (isUpper) {
           stateBillIds.upper = billData.identifier;
           ocdBillIds.upper = billData.id;
+          upperBillId = billData.identifier;
         } else {
           stateBillIds.lower = billData.identifier;
           ocdBillIds.lower = billData.id;
+          lowerBillId = billData.identifier;
         }
 
-        const legislationData: Legislation = {
-          name: name.trim(),
-          ...(description && description.trim()
-            ? { description: description.trim() }
-            : billData.title
-              ? { description: billData.title }
-              : {}),
-          stateBillIds,
-          ocdBillIds,
-        };
-
-        const legislationDocRef = legislationCollectionRef.doc(docId);
-        await legislationDocRef.set(legislationData, { merge: true });
+        if (!primaryDocId) {
+          primaryDocId = docId;
+        }
+        if (!fallbackDescription && billData.title) {
+          fallbackDescription = billData.title;
+        }
 
         added.push(cleanBillId);
-        logger.info(`Successfully added bill ${cleanBillId} (${docId})`);
+        logger.info(`Successfully processed bill ${cleanBillId} (${docId})`);
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : 'Unknown error';
         logger.warn(`Failed to add bill ${cleanBillId}: ${errorMsg}`);
         failed.push({ billId: cleanBillId, error: errorMsg });
       }
+    }
+
+    // 3. Upsert single Legislation document into legislation subcollection
+    if (added.length > 0 && primaryDocId) {
+      const legislationData: Legislation = {
+        name: name.trim(),
+        ...(description && description.trim()
+          ? { description: description.trim() }
+          : fallbackDescription
+            ? { description: fallbackDescription }
+            : {}),
+        ...(upperBillId ? { upperBillId } : {}),
+        ...(lowerBillId ? { lowerBillId } : {}),
+        stateBillIds,
+        ocdBillIds,
+      };
+
+      const legislationDocRef = legislationCollectionRef.doc(primaryDocId);
+      await legislationDocRef.set(legislationData, { merge: true });
     }
 
     return {
