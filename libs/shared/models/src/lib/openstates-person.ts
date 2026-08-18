@@ -5,6 +5,12 @@ import {
   OpenStatesOtherIdentifier,
 } from './openstates-shared';
 
+export interface PersonSponsorship {
+  billName: string;
+  stateBillId: string;
+  ocdBillId: string;
+}
+
 export interface OpenStatesOffice {
   name: string;
   fax?: string;
@@ -35,4 +41,5 @@ export interface OpenStatesPerson {
   links?: OpenStatesLink[];
   sources?: OpenStatesLink[];
   offices?: OpenStatesOffice[];
+  sponsorships?: PersonSponsorship[];
 }

@@ -1,21 +1,21 @@
 import { onDocumentWritten } from 'firebase-functions/v2/firestore';
 import * as logger from 'firebase-functions/logger';
 import { db } from '../config';
-import { Legislation } from '@legislative-tracker/shared/models';
+import { OpenStatesBill } from '@legislative-tracker/shared/models';
 import { syncBillSponsorshipsToLegislators } from './sync-sponsorships';
 
 /**
- * Firestore Trigger: Automatically updates legislator sponsorships whenever a bill document changes.
+ * Firestore Trigger: Automatically updates legislator sponsorships whenever an ocd-bill document changes.
  */
 export const onBillWritten = onDocumentWritten(
-  'legislatures/{stateId}/legislation/{billId}',
+  'legislatures/{stateId}/ocd-bill/{billId}',
   async (event) => {
     const { stateId, billId } = event.params;
     const beforeBill = event.data?.before?.exists
-      ? (event.data.before.data() as Legislation)
+      ? (event.data.before.data() as OpenStatesBill)
       : null;
     const afterBill = event.data?.after?.exists
-      ? (event.data.after.data() as Legislation)
+      ? (event.data.after.data() as OpenStatesBill)
       : null;
 
     logger.info(
