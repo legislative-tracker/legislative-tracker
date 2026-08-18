@@ -19,8 +19,6 @@ export const MEMBER_COLS: ColumnConfig<OpenStatesPerson>[] = [
   { key: 'party', label: 'Party' },
 ];
 
-export const LEGISLATOR_COLS = MEMBER_COLS;
-
 export const USER_REPS_COLS: ColumnConfig<any>[] = [
   { key: 'name', label: 'Name' },
   { key: 'party', label: 'Party' },
