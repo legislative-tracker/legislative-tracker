@@ -49,8 +49,8 @@ export function getBillCols(
 
   return [
     { key: 'name', label: 'Title' },
-    { key: 'upperBillId', label: `${upperLabel} Bill ID` },
-    { key: 'lowerBillId', label: `${lowerLabel} Bill ID` },
+    { key: 'upperBillId', label: `${upperLabel} Bill` },
+    { key: 'lowerBillId', label: `${lowerLabel} Bill` },
   ];
 }
 

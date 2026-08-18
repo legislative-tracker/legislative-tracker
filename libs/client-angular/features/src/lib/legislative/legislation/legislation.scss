@@ -1,0 +1,28 @@
+.legislation-container {
+  padding: 1rem;
+  position: relative;
+  min-height: 200px;
+}
+
+.loading-shade {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.error-container {
+  padding: 1rem;
+  color: var(--mat-sys-error, #ba1a1a);
+}
+
+.legislation-card {
+  margin-top: 1rem;
+
+  .chamber-info {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}

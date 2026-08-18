@@ -1,0 +1,29 @@
+<div class="legislation-container">
+  @if (isLoading()) {
+  <div class="loading-shade">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+  } @else if (error()) {
+  <div class="error-container">
+    <p>Unable to load legislation details.</p>
+  </div>
+  } @else if (legislation(); as item) {
+  <mat-card class="legislation-card">
+    <mat-card-header>
+      <mat-card-title>{{ item.name }}</mat-card-title>
+      @if (item.description) {
+      <mat-card-subtitle>{{ item.description }}</mat-card-subtitle>
+      }
+    </mat-card-header>
+    <mat-card-content>
+      <div class="chamber-info">
+        @if (item.upperBillId) {
+        <p><strong>Upper Chamber:</strong> {{ item.upperBillId }}</p>
+        } @if (item.lowerBillId) {
+        <p><strong>Lower Chamber:</strong> {{ item.lowerBillId }}</p>
+        }
+      </div>
+    </mat-card-content>
+  </mat-card>
+  }
+</div>
