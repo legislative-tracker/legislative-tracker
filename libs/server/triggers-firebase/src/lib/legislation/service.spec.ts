@@ -11,16 +11,21 @@ vi.mock('../config', () => {
       collection: vi.fn(),
       bulkWriter: vi.fn().mockReturnValue(mockBulkWriter),
     },
+    dataAccessOpenStatesKey: {
+      value: vi.fn().mockReturnValue('test-api-key'),
+    },
   };
 });
 
 vi.mock('@legislative-tracker/server-util-core', () => ({
-  getBillUpdates: vi
+  updateBills: vi
     .fn()
-    .mockImplementation(async (item: { id: string; bills: string[] }) => ({
-      id: item.id,
-      bills: item.bills.map((id) => ({ id, title: 'Updated Title' })),
-    })),
+    .mockImplementation(async (options: { ocdIds: string[] }) =>
+      options.ocdIds.map((id) => ({
+        id,
+        title: 'Updated Bill Title',
+      })),
+    ),
 }));
 
 describe('performLegislationUpdate', () => {
@@ -36,29 +41,38 @@ describe('performLegislationUpdate', () => {
       if (path === 'legislatures') {
         return {
           get: vi.fn().mockResolvedValue({
-            docs: [{ id: 'ny' }],
+            docs: [{ id: 'NY', data: () => ({ name: 'New York' }) }],
           }),
         };
       }
-      if (path === 'legislatures/ny/legislation') {
+      if (path === 'legislatures/NY/ocd-bill') {
         return {
           get: vi.fn().mockResolvedValue({
-            docs: [{ id: 'S100' }, { id: 'A200' }],
+            docs: [
+              {
+                id: 'ocd-bill_1111',
+                data: () => ({ id: 'ocd-bill/1111' }),
+              },
+              {
+                id: 'ocd-bill_2222',
+                data: () => ({ id: 'ocd-bill/2222' }),
+              },
+            ],
           }),
           doc: vi.fn().mockImplementation((id: string) => ({
             id,
-            path: `legislatures/ny/legislation/${id}`,
+            path: `legislatures/NY/ocd-bill/${id}`,
           })),
         };
       }
       return { get: vi.fn().mockResolvedValue({ docs: [] }) };
     });
 
-    const updates = await performLegislationUpdate();
+    const results = await performLegislationUpdate();
 
-    expect(updates.length).toBe(1);
-    expect(updates[0].id).toBe('ny');
-    expect(updates[0].bills).toHaveLength(2);
+    expect(results.length).toBe(1);
+    expect(results[0].state).toBe('NY');
+    expect(results[0].matched).toBe(2);
     expect(mockBulkWriter.set).toHaveBeenCalledTimes(2);
     expect(mockBulkWriter.close).toHaveBeenCalledTimes(1);
   });
