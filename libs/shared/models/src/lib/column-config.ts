@@ -21,6 +21,12 @@ export const MEMBER_COLS: ColumnConfig<OpenStatesPerson>[] = [
 
 export const LEGISLATOR_COLS = MEMBER_COLS;
 
+export const USER_REPS_COLS: ColumnConfig<any>[] = [
+  { key: 'name', label: 'Name' },
+  { key: 'party', label: 'Party' },
+  { key: 'district', label: 'District' },
+];
+
 export function getBillCols(
   chambersOrPlugin?:
     | ChamberInfo
