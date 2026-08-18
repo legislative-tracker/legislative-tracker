@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { fetchUserReps } from './fetch-user-reps';
 
 // Mock dependencies before importing handler
 vi.mock('../config', () => ({
@@ -18,7 +19,21 @@ describe('fetchUserReps', () => {
     vi.clearAllMocks();
   });
 
-  it('should pass basic module structure check', () => {
-    expect(true).toBe(true);
+  it('should throw error if address is missing', async () => {
+    await expect(
+      (fetchUserReps as any).run({
+        data: {},
+        auth: { uid: 'user123' },
+      }),
+    ).rejects.toThrow('Address required.');
+  });
+
+  it('should throw error if user is unauthenticated', async () => {
+    await expect(
+      (fetchUserReps as any).run({
+        data: { address: '123 Main St' },
+        auth: null,
+      }),
+    ).rejects.toThrow('User ID required.');
   });
 });
