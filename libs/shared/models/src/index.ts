@@ -7,3 +7,4 @@ export * from './lib/user';
 export * from './lib/openstates-shared';
 export * from './lib/openstates-person';
 export * from './lib/openstates-bill';
+export * from './lib/legislation';
