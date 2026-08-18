@@ -106,6 +106,14 @@ describe('Profile', () => {
     expect(component.user()?.email).toBe('test@example.com');
   });
 
+  it('should set legislatorCols to name, party, and district columns', () => {
+    expect(component.legislatorCols).toEqual([
+      { key: 'name', label: 'Name' },
+      { key: 'party', label: 'Party' },
+      { key: 'district', label: 'District' },
+    ]);
+  });
+
   describe('searchAddress', () => {
     it('should construct address string and call cloud function successfully', async () => {
       mockCallableFunction.mockResolvedValue({ data: { success: true } });

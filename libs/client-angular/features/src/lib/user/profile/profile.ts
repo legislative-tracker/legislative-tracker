@@ -12,7 +12,10 @@ import {
   AddressForm,
   TableComponent,
 } from '@legislative-tracker/client-angular/ui';
-import { MEMBER_COLS, SearchAddress } from '@legislative-tracker/shared/models';
+import {
+  USER_REPS_COLS,
+  SearchAddress,
+} from '@legislative-tracker/shared/models';
 
 @Component({
   selector: 'app-profile',
@@ -33,7 +36,7 @@ export class Profile {
   private functions = inject(FIREBASE_FUNCTIONS, { optional: true });
 
   user = this.auth.userProfile;
-  legislatorCols = MEMBER_COLS;
+  legislatorCols = USER_REPS_COLS;
 
   searchAddress = async (e: SearchAddress) => {
     let addressStr = e.address;
