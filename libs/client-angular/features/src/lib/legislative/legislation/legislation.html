@@ -8,22 +8,37 @@
     <p>Unable to load legislation details.</p>
   </div>
   } @else if (legislation(); as item) {
-  <mat-card class="legislation-card">
+  <mat-card class="header-card">
     <mat-card-header>
       <mat-card-title>{{ item.name }}</mat-card-title>
       @if (item.description) {
       <mat-card-subtitle>{{ item.description }}</mat-card-subtitle>
       }
     </mat-card-header>
-    <mat-card-content>
-      <div class="chamber-info">
-        @if (item.upperBillId) {
-        <p><strong>Upper Chamber:</strong> {{ item.upperBillId }}</p>
-        } @if (item.lowerBillId) {
-        <p><strong>Lower Chamber:</strong> {{ item.lowerBillId }}</p>
-        }
-      </div>
-    </mat-card-content>
   </mat-card>
+
+  <mat-tab-group
+    class="chamber-tabs"
+    mat-stretch-tabs="false"
+    animationDuration="0ms"
+  >
+    @if (upperBillId(); as upperId) {
+    <mat-tab
+      [label]="chamberNames().upper + (upperBillDisplayId() ? ' (' + upperBillDisplayId() + ')' : '')"
+    >
+      <div class="tab-content">
+        <app-bill-detail [stateCd]="stateCd()" [id]="upperId"></app-bill-detail>
+      </div>
+    </mat-tab>
+    } @if (lowerBillId(); as lowerId) {
+    <mat-tab
+      [label]="chamberNames().lower + (lowerBillDisplayId() ? ' (' + lowerBillDisplayId() + ')' : '')"
+    >
+      <div class="tab-content">
+        <app-bill-detail [stateCd]="stateCd()" [id]="lowerId"></app-bill-detail>
+      </div>
+    </mat-tab>
+    }
+  </mat-tab-group>
   }
 </div>

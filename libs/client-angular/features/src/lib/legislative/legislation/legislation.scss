@@ -16,13 +16,14 @@
   color: var(--mat-sys-error, #ba1a1a);
 }
 
-.legislation-card {
+.header-card {
+  margin-bottom: 1.5rem;
+}
+
+.chamber-tabs {
   margin-top: 1rem;
 
-  .chamber-info {
-    margin-top: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  .tab-content {
+    padding-top: 1rem;
   }
 }

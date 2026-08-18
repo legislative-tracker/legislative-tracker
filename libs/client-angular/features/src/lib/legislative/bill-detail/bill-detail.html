@@ -3,26 +3,25 @@
   <mat-spinner diameter="50"></mat-spinner>
 </div>
 } @else if (bill()) {
-<mat-card class="header">
-  <mat-card-header>
-    <mat-card-title>{{ bill()?.identifier ?? bill()?.id }}</mat-card-title>
-    <mat-card-subtitle>{{ bill()?.title }}</mat-card-subtitle>
-  </mat-card-header>
-</mat-card>
 <div class="info-panel">
-  <mat-expansion-panel class="info-panel-1" [expanded]="false">
-    <mat-expansion-panel-header>
-      <mat-panel-title>Summary</mat-panel-title>
-    </mat-expansion-panel-header>
-    <p>{{ summaryText() }}</p>
-  </mat-expansion-panel>
+  <div class="info-panel-1">
+    <mat-expansion-panel [expanded]="false">
+      <mat-expansion-panel-header>
+        <mat-panel-title>Summary</mat-panel-title>
+      </mat-expansion-panel-header>
+      <p>{{ summaryText() }}</p>
+    </mat-expansion-panel>
+  </div>
   <div class="info-panel-2">
     <mat-expansion-panel #panel [expanded]="false">
       <mat-expansion-panel-header>
         <mat-panel-title>Activity</mat-panel-title>
         <mat-panel-description>
-          @if (!panel.expanded && latestAction()) { {{ latestAction()?.date }}:
-          {{ latestAction()?.text }} }
+          @if (!panel.expanded && latestAction(); as act) {
+          <span class="action-preview-text"
+            >{{ act.date }}: {{ act.text }}</span
+          >
+          }
         </mat-panel-description>
       </mat-expansion-panel-header>
       <mat-list class="activity-list">
@@ -43,7 +42,6 @@
   </div>
 </div>
 
-<h2>Cosponsors</h2>
 <mat-tab-group>
   @for (version of billVersions(); track version.id) {
   <mat-tab [label]="version.id">

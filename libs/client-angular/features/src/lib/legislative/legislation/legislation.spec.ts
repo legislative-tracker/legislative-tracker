@@ -22,6 +22,15 @@ describe('Legislation', () => {
 
   const mockLegislatureService = {
     getLegislationByState: vi.fn().mockReturnValue(of(mockLegislationList)),
+    getBillById: vi.fn().mockReturnValue(
+      of({
+        id: 'S100',
+        title: 'Clean Energy Act - Senate Version',
+        identifier: 'S100',
+        sponsorships: [],
+        actions: [],
+      }),
+    ),
   };
 
   beforeEach(async () => {
@@ -35,7 +44,7 @@ describe('Legislation', () => {
 
     fixture = TestBed.createComponent(Legislation);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('stateCd', 'ny');
+    fixture.componentRef.setInput('stateCd', 'us-ny');
     fixture.componentRef.setInput('id', 'leg-1');
     fixture.detectChanges();
   });
@@ -46,5 +55,10 @@ describe('Legislation', () => {
 
   it('should resolve legislation details', () => {
     expect(component.legislation()).toEqual(mockLegislationList[0]);
+  });
+
+  it('should compute upper and lower chamber bill IDs', () => {
+    expect(component.upperBillId()).toBe('S100');
+    expect(component.lowerBillId()).toBe('A200');
   });
 });
