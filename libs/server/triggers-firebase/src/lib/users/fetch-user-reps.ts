@@ -1,20 +1,13 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { Person } from '@jpstroud/opencivicdata-types';
 import { getJurisdictionCode } from '@legislative-tracker/server-util-core';
+import { UserRepresentative } from '@legislative-tracker/shared/models';
 import {
   db,
   dataAccessOpenStatesKey,
   dataAccessGoogleMapsKey,
 } from '../config';
 import { getGeocode } from '@legislative-tracker/server-data-access-google-maps';
-
-export interface UserRepresentative {
-  name: string;
-  chamber: string;
-  party: string;
-  district: string;
-  ocdId: string;
-}
 
 const cleanPersonId = (rawId?: string): string => {
   if (!rawId) return '';

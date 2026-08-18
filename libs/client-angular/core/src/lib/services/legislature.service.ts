@@ -4,23 +4,11 @@ import {
   Legislation,
   OpenStatesBill,
   OpenStatesPerson,
+  AddBillsParams,
+  UpdateBillParams,
 } from '@legislative-tracker/shared/models';
 
-export interface AddBillsParams {
-  state: string;
-  name: string;
-  description?: string;
-  billIds: string[];
-}
-
-export interface UpdateBillParams {
-  state: string;
-  id: string;
-  name?: string;
-  description?: string;
-  upperBillId?: string;
-  lowerBillId?: string;
-}
+export { AddBillsParams, UpdateBillParams };
 
 @Injectable()
 export abstract class LegislatureService {

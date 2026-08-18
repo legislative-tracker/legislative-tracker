@@ -6,6 +6,14 @@ export interface TimestampLike {
   toDate?: () => Date;
 }
 
+export interface UserRepresentative {
+  name: string;
+  chamber: string;
+  party: string;
+  district: string;
+  ocdId: string;
+}
+
 export interface AppUser {
   displayName: string;
   email: string;
@@ -21,8 +29,8 @@ export interface AppUser {
     };
   };
   legislators?: {
-    federal?: OpenStatesPerson[];
-    state?: OpenStatesPerson[];
+    federal?: (OpenStatesPerson | UserRepresentative)[];
+    state?: (OpenStatesPerson | UserRepresentative)[];
   };
   favorites?: string[];
 }
