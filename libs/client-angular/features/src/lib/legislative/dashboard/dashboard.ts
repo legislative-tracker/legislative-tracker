@@ -14,10 +14,12 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 // App Imports
+import { getPlugin, getAllPlugins } from '@legislative-tracker/plugins-core';
 import { LegislatureService } from '@legislative-tracker/client-angular/core';
 import { TableComponent } from '@legislative-tracker/client-angular/ui';
 import {
   BILL_COLS,
+  getBillCols,
   MEMBER_COLS,
   Legislation,
   OpenStatesBill,
@@ -44,7 +46,24 @@ export class Dashboard {
   selectedTabIndex = signal<DashboardTab>(DashboardTab.Bills);
 
   Tab = DashboardTab;
-  billCols = BILL_COLS;
+  billCols = computed(() => {
+    const code = this.stateCd().toLowerCase();
+    const plugins = getAllPlugins();
+    const plugin =
+      getPlugin(code) ||
+      plugins.find((p) => {
+        const jCode = p.metadata.jurisdiction?.code?.toLowerCase();
+        const pId = p.metadata.id?.toLowerCase();
+        return (
+          jCode === code ||
+          pId === code ||
+          jCode?.replace(/^us-/, '') === code.replace(/^us-/, '')
+        );
+      }) ||
+      (plugins.length === 1 ? plugins[0] : undefined);
+
+    return getBillCols(plugin);
+  });
   memberCols = MEMBER_COLS;
 
   // --- Request Signals (Triggers) ---
