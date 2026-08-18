@@ -19,7 +19,7 @@ import {
   AuthService,
   LegislatureService,
 } from '@legislative-tracker/client-angular/core';
-import { LegislaturePluginRegistry } from '@legislative-tracker/plugins-core';
+import { getAllPlugins } from '@legislative-tracker/plugins-core';
 
 interface SimpleBill {
   id: string;
@@ -51,21 +51,24 @@ export class RemoveBill {
 
   selectedState = signal<string>('');
   selectedBillId = signal<string>('');
+  selectedChamber = signal<'all' | 'upper' | 'lower'>('all');
 
   availableBills = signal<SimpleBill[]>([]);
   isLoadingBills = signal(false);
   isDeleting = signal(false);
 
   get states() {
-    return LegislaturePluginRegistry.getAll().map((p) => ({
-      value: p.id,
-      name: `${p.name} (${p.id.toUpperCase()})`,
-    }));
+    return getAllPlugins().map((p) => {
+      const jurisdiction = p.metadata.jurisdiction;
+      const code = jurisdiction?.code || p.metadata.id;
+      const name = jurisdiction?.name || p.metadata.name;
+      return {
+        value: code,
+        name: `${name} (${code.toUpperCase()})`,
+      };
+    });
   }
 
-  /**
-   * Effect: Automatically fetches bills when the selectedState changes.
-   */
   constructor() {
     effect(() => {
       const state = this.selectedState();
@@ -79,14 +82,14 @@ export class RemoveBill {
 
   fetchBillsForState(state: string) {
     this.isLoadingBills.set(true);
-    this.selectedBillId.set(''); // Reset selected bill
+    this.selectedBillId.set('');
 
     this.legislature.getBillsByState(state).subscribe({
       next: (billsData) => {
-        const bills = billsData.map((doc) => ({
+        const bills = (billsData || []).map((doc: any) => ({
           id: doc.id,
-          number: doc.id || 'Unknown',
-          title: doc.title || 'No Title',
+          number: doc.identifier || doc.id || 'Unknown',
+          title: doc.title || doc.name || 'No Title',
         })) as SimpleBill[];
 
         this.availableBills.set(bills);
@@ -103,13 +106,15 @@ export class RemoveBill {
   async onDelete() {
     const state = this.selectedState();
     const billId = this.selectedBillId();
+    const chamberChoice = this.selectedChamber();
 
     if (!state || !billId) return;
 
-    // Confirm Intent
     if (
       !confirm(
-        `ARE YOU SURE?\n\nThis will permanently delete bill ${billId} from the database.`,
+        `ARE YOU SURE?\n\nThis will remove bill ${billId} from ${state.toUpperCase()}${
+          chamberChoice !== 'all' ? ` (${chamberChoice} chamber)` : ''
+        }.`,
       )
     ) {
       return;
@@ -118,15 +123,14 @@ export class RemoveBill {
     this.isDeleting.set(true);
 
     try {
-      // Call the Cloud Function via LegislatureService
-      await this.legislature.removeBill(state, billId);
+      const chamberArg = chamberChoice !== 'all' ? chamberChoice : undefined;
+      await this.legislature.removeBill(state, billId, chamberArg);
 
-      this.snackBar.open('Bill deleted successfully.', 'Close', {
+      this.snackBar.open('Bill removed successfully.', 'Close', {
         duration: 3000,
         panelClass: ['success-snackbar'],
       });
 
-      // Refresh list
       this.fetchBillsForState(state);
     } catch (error: any) {
       this.snackBar.open(error.message || 'Deletion failed.', 'Close', {

@@ -1,47 +1,61 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Legislation, Legislator } from '@legislative-tracker/shared/models';
-import { LegislatureService } from '../services/legislature.service';
+import {
+  OpenStatesBill,
+  OpenStatesPerson,
+} from '@legislative-tracker/shared/models';
+import {
+  LegislatureService,
+  AddBillsParams,
+} from '../services/legislature.service';
 
-const MOCK_BILLS: Legislation[] = [
+const MOCK_BILLS: OpenStatesBill[] = [
   {
-    id: 'mock-bill-1',
+    id: 'ocd-bill/mock-bill-1',
+    identifier: 'S1234',
     session: '2025-2026',
     title: 'Clean Energy Infrastructure Act',
-    text: 'An act establishing funding and incentives for renewable energy installation across public facilities.',
-    classification: 'bill',
     updated_at: '2025-02-01',
+    classification: ['bill'],
   },
   {
-    id: 'mock-bill-2',
+    id: 'ocd-bill/mock-bill-2',
+    identifier: 'A5678',
     session: '2025-2026',
     title: 'Digital Privacy Protection Amendment',
-    text: 'Provides consumer privacy protection and data handling standard requirements for technology companies.',
-    classification: 'bill',
     updated_at: '2025-01-15',
+    classification: ['bill'],
   },
 ];
 
-const MOCK_MEMBERS: Legislator[] = [
+const MOCK_MEMBERS: OpenStatesPerson[] = [
   {
-    id: 'mock-mem-1',
+    id: 'ocd-person/mock-mem-1',
     name: 'Jane Doe',
-    district: '42',
-    chamber: 'SENATE',
+    given_name: 'Jane',
+    family_name: 'Doe',
     party: 'Democrat',
     email: 'jdoe@nysenate.gov',
     image: '',
-    offices: [],
+    current_role: {
+      title: 'Senator',
+      org_classification: 'upper',
+      district: '42',
+    },
   },
   {
-    id: 'mock-mem-2',
+    id: 'ocd-person/mock-mem-2',
     name: 'John Smith',
-    district: '15',
-    chamber: 'ASSEMBLY',
+    given_name: 'John',
+    family_name: 'Smith',
     party: 'Republican',
     email: 'jsmith@nyassembly.gov',
     image: '',
-    offices: [],
+    current_role: {
+      title: 'Assembly Member',
+      org_classification: 'lower',
+      district: '15',
+    },
   },
 ];
 
@@ -50,36 +64,57 @@ export class MockLegislatureService extends LegislatureService {
   private bills = [...MOCK_BILLS];
   private members = [...MOCK_MEMBERS];
 
-  getBillsByState(stateCode: string): Observable<Legislation[]> {
+  getBillsByState(stateCode: string): Observable<OpenStatesBill[]> {
     return of(this.bills);
   }
 
-  getMembersByState(stateCode: string): Observable<Legislator[]> {
+  getMembersByState(stateCode: string): Observable<OpenStatesPerson[]> {
     return of(this.members);
   }
 
-  getBillById(stateCode: string, id: string): Observable<Legislation> {
+  getBillById(
+    stateCode: string,
+    id: string,
+  ): Observable<OpenStatesBill | undefined> {
     const bill =
-      this.bills.find((b) => b.id.toLowerCase() === id.toLowerCase()) ??
-      this.bills[0];
+      this.bills.find(
+        (b) =>
+          b.id.toLowerCase() === id.toLowerCase() ||
+          b.identifier?.toLowerCase() === id.toLowerCase(),
+      ) ?? this.bills[0];
     return of(bill);
   }
 
-  getMemberById(stateCode: string, id: string): Observable<Legislator> {
+  getMemberById(
+    stateCode: string,
+    id: string,
+  ): Observable<OpenStatesPerson | undefined> {
     const member =
       this.members.find((m) => m.id.toLowerCase() === id.toLowerCase()) ??
       this.members[0];
     return of(member);
   }
 
-  async addBill(state: string, billData: Legislation): Promise<unknown> {
-    const newBill = { ...billData, id: `mock-bill-${Date.now()}` };
-    this.bills.push(newBill);
-    return Promise.resolve({ data: newBill });
+  async addBills(params: AddBillsParams): Promise<unknown> {
+    const newBills = params.billIds.map((bId, idx) => ({
+      id: `ocd-bill/mock-${bId}-${idx}`,
+      identifier: bId,
+      session: '2025-2026',
+      title: params.name,
+      updated_at: new Date().toISOString(),
+    }));
+    this.bills.push(...newBills);
+    return Promise.resolve({ data: { added: params.billIds, failed: [] } });
   }
 
-  async removeBill(state: string, billId: string): Promise<unknown> {
-    this.bills = this.bills.filter((b) => b.id !== billId);
+  async removeBill(
+    state: string,
+    billId: string,
+    chamber?: 'upper' | 'lower',
+  ): Promise<unknown> {
+    this.bills = this.bills.filter(
+      (b) => b.id !== billId && b.identifier !== billId,
+    );
     return Promise.resolve({ data: { success: true } });
   }
 }

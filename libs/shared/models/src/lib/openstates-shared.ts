@@ -1,13 +1,13 @@
 export interface OpenStatesJurisdiction {
   id: string;
   name: string;
-  classification: string;
+  classification?: string;
 }
 
 export interface OpenStatesOrganization {
   id: string;
   name: string;
-  classification: string;
+  classification?: string;
 }
 
 export interface OpenStatesOtherIdentifier {
@@ -19,7 +19,7 @@ export interface OpenStatesCurrentRole {
   title: string;
   org_classification: string;
   district: string;
-  division_id: string;
+  division_id?: string;
 }
 
 export interface OpenStatesLink {

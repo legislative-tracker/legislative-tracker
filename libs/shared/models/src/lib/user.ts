@@ -1,4 +1,4 @@
-import { Legislator } from './legislature';
+import { OpenStatesPerson } from './openstates-person';
 
 export interface TimestampLike {
   seconds: number;
@@ -21,8 +21,8 @@ export interface AppUser {
     };
   };
   legislators?: {
-    federal?: Legislator[];
-    state?: Legislator[];
+    federal?: OpenStatesPerson[];
+    state?: OpenStatesPerson[];
   };
   favorites?: string[];
 }

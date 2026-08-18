@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 // Target Component
 import { RemoveBill } from './remove-bill';
@@ -17,7 +17,6 @@ describe('RemoveBill', () => {
   let component: RemoveBill;
   let fixture: ComponentFixture<RemoveBill>;
 
-  // Mock Services
   const mockAuthService = {
     isAdmin: vi.fn().mockReturnValue(true),
     userProfile: vi.fn().mockReturnValue({ displayName: 'Admin User' }),
@@ -32,7 +31,6 @@ describe('RemoveBill', () => {
   };
 
   beforeEach(async () => {
-    vi.clearAllMocks();
     mockLegislatureService.getBillsByState.mockReturnValue(of([]));
 
     await TestBed.configureTestingModule({
@@ -52,6 +50,7 @@ describe('RemoveBill', () => {
     fixture = TestBed.createComponent(RemoveBill);
     component = fixture.componentInstance;
 
+    vi.clearAllMocks();
     vi.spyOn(window, 'confirm');
     vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -74,12 +73,14 @@ describe('RemoveBill', () => {
       ];
       mockLegislatureService.getBillsByState.mockReturnValue(of(mockBillsData));
 
-      component.selectedState.set('ny');
+      component.selectedState.set('us-ny');
       fixture.detectChanges();
 
       await TestBed.flushEffects();
 
-      expect(mockLegislatureService.getBillsByState).toHaveBeenCalledWith('ny');
+      expect(mockLegislatureService.getBillsByState).toHaveBeenCalledWith(
+        'us-ny',
+      );
       expect(component.availableBills().length).toBe(2);
       expect(component.availableBills()[0].title).toBe('Test Bill');
       expect(component.isLoadingBills()).toBe(false);
@@ -90,7 +91,7 @@ describe('RemoveBill', () => {
         throwError(() => new Error('Service Error')),
       );
 
-      component.selectedState.set('ca');
+      component.selectedState.set('us-ca');
       fixture.detectChanges();
 
       await TestBed.flushEffects();
@@ -107,7 +108,7 @@ describe('RemoveBill', () => {
 
   describe('onDelete', () => {
     beforeEach(() => {
-      component.selectedState.set('ny');
+      component.selectedState.set('us-ny');
       component.selectedBillId.set('BILL-123');
     });
 
@@ -129,17 +130,18 @@ describe('RemoveBill', () => {
       await component.onDelete();
 
       expect(mockLegislatureService.removeBill).toHaveBeenCalledWith(
-        'ny',
+        'us-ny',
         'BILL-123',
+        undefined,
       );
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(
-        'Bill deleted successfully.',
+        'Bill removed successfully.',
         'Close',
         expect.objectContaining({ panelClass: ['success-snackbar'] }),
       );
 
-      expect(fetchSpy).toHaveBeenCalledWith('ny');
+      expect(fetchSpy).toHaveBeenCalledWith('us-ny');
       expect(component.isDeleting()).toBe(false);
     });
 

@@ -3,7 +3,7 @@
   <mat-spinner diameter="50"></mat-spinner>
 </div>
 } @else if (member()) {
-<h1>{{ member()?.honorific_prefix }} {{ member()?.name }}</h1>
+<h1>{{ titleOrPrefix() }} {{ member()?.name }}</h1>
 
 <div class="member-details-container">
   <img
@@ -14,20 +14,24 @@
   />
 
   <mat-list class="member-details">
+    @if (district()) {
     <mat-list-item>
       <mat-icon matListItemIcon>location_city</mat-icon>
-      <span matListItemTitle>District {{ member()?.district }}</span>
+      <span matListItemTitle>District {{ district() }}</span>
     </mat-list-item>
+    } @if (member()?.party) {
     <mat-list-item>
       <mat-icon matListItemIcon>ballot</mat-icon>
       <span matListItemTitle>{{ member()?.party }} Party</span>
     </mat-list-item>
+    } @if (member()?.email) {
     <mat-list-item>
       <mat-icon matListItemIcon>email</mat-icon>
       <span matListItemTitle
         ><a href="mailto:{{ member()?.email }}">{{ member()?.email }}</a>
       </span>
     </mat-list-item>
+    }
   </mat-list>
   <mat-list class="member-details-addresses">
     @if (member()?.offices?.[0]?.address) {

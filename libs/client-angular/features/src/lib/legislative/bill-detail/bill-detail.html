@@ -5,7 +5,7 @@
 } @else if (bill()) {
 <mat-card class="header">
   <mat-card-header>
-    <mat-card-title>{{ bill()?.id }}</mat-card-title>
+    <mat-card-title>{{ bill()?.identifier ?? bill()?.id }}</mat-card-title>
     <mat-card-subtitle>{{ bill()?.title }}</mat-card-subtitle>
   </mat-card-header>
 </mat-card>
@@ -14,7 +14,7 @@
     <mat-expansion-panel-header>
       <mat-panel-title>Summary</mat-panel-title>
     </mat-expansion-panel-header>
-    <p>{{ bill()?.text }}</p>
+    <p>{{ summaryText() }}</p>
   </mat-expansion-panel>
   <div class="info-panel-2">
     <mat-expansion-panel #panel [expanded]="false">
@@ -26,11 +26,12 @@
         </mat-panel-description>
       </mat-expansion-panel-header>
       <mat-list class="activity-list">
+        @if (bill()?.first_action_date) {
         <mat-list-item>
           <span matListItemTitle>{{ bill()?.first_action_date }}</span>
           <span matListItemLine>Published</span>
         </mat-list-item>
-        @for (action of billActions(); track action.id) {
+        } @for (action of billActions(); track action.id) {
         <mat-divider></mat-divider>
         <mat-list-item>
           <span matListItemTitle>{{ action.date }}</span>

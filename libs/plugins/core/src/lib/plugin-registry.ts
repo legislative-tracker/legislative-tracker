@@ -70,3 +70,12 @@ export function unregisterPlugin(id: string): boolean {
 export function clearRegistry(): void {
   registry.clear();
 }
+
+export const LegislaturePluginRegistry = {
+  register: registerPlugin,
+  get: getPlugin,
+  has: hasPlugin,
+  getAll: getAllPlugins,
+  unregister: unregisterPlugin,
+  clear: clearRegistry,
+};

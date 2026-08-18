@@ -1,7 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 
 // Target Component
@@ -11,9 +11,7 @@ import { BillDetail } from './bill-detail';
 import { LegislatureService } from '@legislative-tracker/client-angular/core';
 import { TableComponent } from '@legislative-tracker/client-angular/ui';
 
-// -------------------------------------------------------------------------
-// Stub Child Components
-// -------------------------------------------------------------------------
+// Stub Child Component
 @Component({
   selector: 'app-table',
   template: '',
@@ -30,10 +28,9 @@ describe('BillDetail', () => {
   // Mock Data
   const mockBillData = {
     id: 'BILL-123',
+    identifier: 'S 123',
     title: 'Clean Water Act',
-    description: 'A bill to ensure clean water.',
     session: '2024',
-    // Structure matches logic: Object.entries(cosponsors)
     cosponsors: {
       'AMENDED-A': [{ name: 'Rep. Smith', id: '1' }],
       ORIGINAL: [
@@ -43,20 +40,18 @@ describe('BillDetail', () => {
     },
   };
 
-  // Mock Service
   const mockLegislatureService = {
     getBillById: vi.fn().mockReturnValue(of(mockBillData)),
   };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BillDetail], // Standalone
+      imports: [BillDetail],
       providers: [
-        provideNoopAnimations(), // Prevent MatTabs animation errors
+        provideNoopAnimations(),
         { provide: LegislatureService, useValue: mockLegislatureService },
       ],
     })
-      // Override TableComponent with Stub
       .overrideComponent(BillDetail, {
         remove: { imports: [TableComponent] },
         add: { imports: [MockTableComponent] },
@@ -66,7 +61,6 @@ describe('BillDetail', () => {
     fixture = TestBed.createComponent(BillDetail);
     component = fixture.componentInstance;
 
-    // Initialize Required Inputs
     fixture.componentRef.setInput('stateCd', 'ny');
     fixture.componentRef.setInput('id', 'BILL-123');
 
@@ -78,7 +72,6 @@ describe('BillDetail', () => {
   });
 
   it('should fetch bill details with correct params on init', async () => {
-    // rxResource triggers immediately, but we wait for stability to be safe
     await fixture.whenStable();
 
     expect(mockLegislatureService.getBillById).toHaveBeenCalledWith(
@@ -91,18 +84,15 @@ describe('BillDetail', () => {
   });
 
   it('should transform cosponsors object into billVersions array', async () => {
-    await fixture.whenStable(); // Wait for data to settle
+    await fixture.whenStable();
 
     const versions = component.billVersions();
 
-    // Logic: Object.entries -> map to { id, data }
     expect(versions.length).toBe(2);
 
-    // Verify first version (Order depends on JS object iteration, usually insertion order for string keys,
-    // but specific assertion is safer by finding)
     const originalVer = versions.find((v) => v.id === 'ORIGINAL');
     expect(originalVer).toBeDefined();
-    expect(originalVer?.data.length).toBe(2); // Rep. Doe, Rep. Jones
+    expect(originalVer?.data.length).toBe(2);
 
     const amendedVer = versions.find((v) => v.id === 'AMENDED-A');
     expect(amendedVer).toBeDefined();
@@ -110,21 +100,18 @@ describe('BillDetail', () => {
   });
 
   it('should handle missing cosponsors gracefully', async () => {
-    // Mock service returning bill with NO cosponsors
     mockLegislatureService.getBillById.mockReturnValueOnce(
       of({
         id: 'BILL-999',
         title: 'Empty Bill',
-        cosponsors: null, // or undefined
+        cosponsors: null,
       }),
     );
 
-    // Change Input ID to trigger refetch
     fixture.componentRef.setInput('id', 'BILL-999');
     fixture.detectChanges();
     await fixture.whenStable();
 
-    // Verify transformation handles null safely
     const versions = component.billVersions();
     expect(versions).toEqual([]);
   });
@@ -132,7 +119,6 @@ describe('BillDetail', () => {
   it('should refetch data when inputs change', async () => {
     mockLegislatureService.getBillById.mockClear();
 
-    // Change State and ID
     fixture.componentRef.setInput('stateCd', 'ca');
     fixture.componentRef.setInput('id', 'BILL-456');
     fixture.detectChanges();

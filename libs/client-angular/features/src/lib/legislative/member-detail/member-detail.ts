@@ -19,7 +19,7 @@ import {
 } from '@legislative-tracker/client-angular/ui';
 import {
   SPONSORSHIP_COLS,
-  Legislator,
+  OpenStatesPerson,
 } from '@legislative-tracker/shared/models';
 
 export interface SocialMediaLink {
@@ -88,10 +88,20 @@ export class MemberDetail {
   });
 
   member = computed(
-    () => this.memberResource.value() as Legislator | undefined,
+    () => this.memberResource.value() as OpenStatesPerson | undefined,
   );
 
   sponsorships = computed(() => this.member()?.sponsorships ?? []);
+
+  district = computed(() => {
+    const m = this.member();
+    return m?.current_role?.district ?? (m as any)?.district ?? '';
+  });
+
+  titleOrPrefix = computed(() => {
+    const m = this.member();
+    return m?.current_role?.title ?? (m as any)?.honorific_prefix ?? '';
+  });
 
   socialLinks = computed<SocialMediaLink[]>(() => {
     const identifiers = this.member()?.other_identifiers ?? [];

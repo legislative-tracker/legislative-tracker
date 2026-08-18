@@ -1,5 +1,3 @@
-import { TestBed } from '@angular/core/testing';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
 import {
   CanActivateFn,
   Router,
@@ -7,30 +5,40 @@ import {
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
 } from '@angular/router';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 
 import { stateGuard } from './state.guard';
 import { LegislaturePluginRegistry } from '@legislative-tracker/plugins-core';
 
 const mockNyPlugin = {
-  id: 'ny',
-  jurisdiction: 'US-NY',
-  name: 'New York State Legislature',
-  updateMembers: async () => [],
-  updateBills: async () => [],
+  metadata: {
+    id: 'ny',
+    name: 'New York State Legislature',
+    version: '1.0.0',
+    jurisdiction: {
+      id: 'ocd-jurisdiction/country:us/state:ny/government',
+      code: 'us-ny',
+      name: 'New York',
+      isBicameral: true,
+      chambers: { upper: 'Senate', lower: 'Assembly' },
+      currentSession: '2025-2026',
+    },
+    capabilities: { hasApi: true },
+  },
+  calculateCurrentSession: () => '2025-2026',
 };
 
 describe('stateGuard', () => {
-  // Helper to run the functional guard inside the Injection Context
   const executeGuard: CanActivateFn = (...guardParameters) =>
     TestBed.runInInjectionContext(() => stateGuard(...guardParameters));
 
-  // Define a mock Router interface for TS typing
   let routerSpy: { createUrlTree: ReturnType<typeof vi.fn> };
 
-  beforeEach(() => {
-    LegislaturePluginRegistry.register(mockNyPlugin as any);
+  beforeEach(async () => {
+    LegislaturePluginRegistry.clear();
+    await LegislaturePluginRegistry.register(mockNyPlugin as any);
 
-    // Create the mock using vi.fn()
     routerSpy = {
       createUrlTree: vi.fn(),
     };
@@ -72,13 +80,11 @@ describe('stateGuard', () => {
     } as unknown as ActivatedRouteSnapshot;
     const state = {} as RouterStateSnapshot;
 
-    // Mock the return value of createUrlTree
     const dummyUrlTree = {} as UrlTree;
     routerSpy.createUrlTree.mockReturnValue(dummyUrlTree);
 
     const result = executeGuard(route, state);
 
-    // Verify the call and result
     expect(routerSpy.createUrlTree).toHaveBeenCalledWith(['/404']);
     expect(result).toBe(dummyUrlTree);
   });

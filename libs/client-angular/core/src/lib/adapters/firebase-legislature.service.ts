@@ -10,8 +10,15 @@ import {
 } from 'firebase/firestore';
 import { Functions, httpsCallable } from 'firebase/functions';
 import { Observable } from 'rxjs';
-import { Legislation, Legislator } from '@legislative-tracker/shared/models';
-import { LegislatureService } from '../services/legislature.service';
+import {
+  Legislation,
+  OpenStatesBill,
+  OpenStatesPerson,
+} from '@legislative-tracker/shared/models';
+import {
+  LegislatureService,
+  AddBillsParams,
+} from '../services/legislature.service';
 import { FIREBASE_FIRESTORE, FIREBASE_FUNCTIONS } from '../firebase-tokens';
 
 @Injectable()
@@ -19,22 +26,43 @@ export class FirebaseLegislatureService extends LegislatureService {
   private firestore = inject<Firestore>(FIREBASE_FIRESTORE, { optional: true });
   private functions = inject<Functions>(FIREBASE_FUNCTIONS, { optional: true });
 
-  private getPaths = (stateCd: string): { bills: string; members: string } => {
+  private resolveJurisdictionCode(state: string): string {
+    if (!state) return '';
+    const s = state.trim().toLowerCase();
+    if (s.startsWith('us-')) return s;
+    if (s.length === 2) return `us-${s}`;
+    return s;
+  }
+
+  private cleanDocId(id: string, prefix: string): string {
+    if (!id) return '';
+    let clean = id.trim();
+    if (clean.startsWith(`${prefix}/`)) {
+      clean = clean.substring(prefix.length + 1);
+    } else if (clean.startsWith(`${prefix}:`)) {
+      clean = clean.substring(prefix.length + 1);
+    }
+    return clean;
+  }
+
+  private getPaths = (stateCd: string) => {
+    const code = this.resolveJurisdictionCode(stateCd);
     return {
-      bills: `legislatures/${stateCd}/legislation`,
-      members: `legislatures/${stateCd}/legislators`,
+      bills: `legislatures/${code}/legislation`,
+      ocdBills: `legislatures/${code}/ocd-bill`,
+      members: `legislatures/${code}/ocd-person`,
     };
   };
 
-  getBillsByState(stateCode: string): Observable<Legislation[]> {
-    return new Observable<Legislation[]>((subscriber) => {
+  getBillsByState(stateCode: string): Observable<OpenStatesBill[]> {
+    return new Observable<OpenStatesBill[]>((subscriber) => {
       if (!this.firestore) {
         subscriber.next([]);
         return;
       }
       const billsRef = collection(
         this.firestore,
-        this.getPaths(stateCode).bills,
+        this.getPaths(stateCode).ocdBills,
       );
       return onSnapshot(
         billsRef,
@@ -42,7 +70,7 @@ export class FirebaseLegislatureService extends LegislatureService {
           const list = snapshot.docs.map((d) => ({
             id: d.id,
             ...d.data(),
-          })) as Legislation[];
+          })) as OpenStatesBill[];
           subscriber.next(list);
         },
         (error) => {
@@ -53,8 +81,8 @@ export class FirebaseLegislatureService extends LegislatureService {
     });
   }
 
-  getMembersByState(stateCode: string): Observable<Legislator[]> {
-    return new Observable<Legislator[]>((subscriber) => {
+  getMembersByState(stateCode: string): Observable<OpenStatesPerson[]> {
+    return new Observable<OpenStatesPerson[]>((subscriber) => {
       if (!this.firestore) {
         subscriber.next([]);
         return;
@@ -69,7 +97,7 @@ export class FirebaseLegislatureService extends LegislatureService {
           const list = snapshot.docs.map((d) => ({
             id: d.id,
             ...d.data(),
-          })) as Legislator[];
+          })) as OpenStatesPerson[];
           subscriber.next(list);
         },
         (error) => {
@@ -80,14 +108,18 @@ export class FirebaseLegislatureService extends LegislatureService {
     });
   }
 
-  getBillById(stateCode: string, id: string): Observable<Legislation> {
-    return new Observable<Legislation>((subscriber) => {
+  getBillById(
+    stateCode: string,
+    id: string,
+  ): Observable<OpenStatesBill | undefined> {
+    return new Observable<OpenStatesBill | undefined>((subscriber) => {
       if (!this.firestore) {
-        subscriber.next(undefined as any);
+        subscriber.next(undefined);
         return;
       }
-      const billsPath = this.getPaths(stateCode).bills;
-      const billRef = doc(this.firestore, `${billsPath}/${id}`);
+      const ocdBillsPath = this.getPaths(stateCode).ocdBills;
+      const cleanId = this.cleanDocId(id, 'ocd-bill');
+      const billRef = doc(this.firestore, `${ocdBillsPath}/${cleanId}`);
 
       let fallbackUnsub: (() => void) | undefined;
 
@@ -102,10 +134,10 @@ export class FirebaseLegislatureService extends LegislatureService {
             subscriber.next({
               id: snapshot.id,
               ...snapshot.data(),
-            } as Legislation);
+            } as OpenStatesBill);
           } else {
-            const printNo = id.split('-')[0].toUpperCase();
-            const billsRef = collection(this.firestore!, billsPath);
+            const printNo = cleanId.split('-')[0].toUpperCase();
+            const billsRef = collection(this.firestore!, ocdBillsPath);
             if (fallbackUnsub) fallbackUnsub();
 
             const fallbackQuery = query(
@@ -119,23 +151,24 @@ export class FirebaseLegislatureService extends LegislatureService {
               (collectionSnap) => {
                 const match = collectionSnap.docs.find(
                   (d) =>
+                    d.id.toUpperCase() === cleanId.toUpperCase() ||
                     d.id.toUpperCase() === id.toUpperCase() ||
                     d.id.toUpperCase().startsWith(`${printNo}-`) ||
-                    (d.data() as Legislation).identifier?.toUpperCase() ===
+                    (d.data() as OpenStatesBill).identifier?.toUpperCase() ===
                       printNo,
                 );
                 if (match) {
                   subscriber.next({
                     id: match.id,
                     ...match.data(),
-                  } as Legislation);
+                  } as OpenStatesBill);
                 } else {
-                  subscriber.next(undefined as any);
+                  subscriber.next(undefined);
                 }
               },
               (err) => {
                 console.error(`Error in bill fallback query for ${id}:`, err);
-                subscriber.next(undefined as any);
+                subscriber.next(undefined);
               },
             );
           }
@@ -153,17 +186,18 @@ export class FirebaseLegislatureService extends LegislatureService {
     });
   }
 
-  getMemberById(stateCode: string, id: string): Observable<Legislator> {
-    return new Observable<Legislator>((subscriber) => {
+  getMemberById(
+    stateCode: string,
+    id: string,
+  ): Observable<OpenStatesPerson | undefined> {
+    return new Observable<OpenStatesPerson | undefined>((subscriber) => {
       if (!this.firestore) {
-        subscriber.next(undefined as any);
+        subscriber.next(undefined);
         return;
       }
       const membersPath = this.getPaths(stateCode).members;
-      const memberRef = doc(
-        this.firestore,
-        `${membersPath}/${id.toLowerCase()}`,
-      );
+      const cleanId = this.cleanDocId(id, 'ocd-person');
+      const memberRef = doc(this.firestore, `${membersPath}/${cleanId}`);
 
       let fallbackUnsub: (() => void) | undefined;
 
@@ -178,14 +212,14 @@ export class FirebaseLegislatureService extends LegislatureService {
             subscriber.next({
               id: snapshot.id,
               ...snapshot.data(),
-            } as Legislator);
+            } as OpenStatesPerson);
           } else {
             const membersRef = collection(this.firestore!, membersPath);
             if (fallbackUnsub) fallbackUnsub();
 
             const fallbackQuery = query(
               membersRef,
-              where('id', '==', id.toLowerCase()),
+              where('id', 'in', [id, cleanId, `ocd-person/${cleanId}`]),
               limit(10),
             );
 
@@ -194,21 +228,22 @@ export class FirebaseLegislatureService extends LegislatureService {
               (collectionSnap) => {
                 const match = collectionSnap.docs.find(
                   (d) =>
+                    d.id === cleanId ||
                     d.id.toLowerCase() === id.toLowerCase() ||
-                    d.id.toLowerCase().includes(id.toLowerCase()),
+                    d.id.toLowerCase().includes(cleanId.toLowerCase()),
                 );
                 if (match) {
                   subscriber.next({
                     id: match.id,
                     ...match.data(),
-                  } as Legislator);
+                  } as OpenStatesPerson);
                 } else {
-                  subscriber.next(undefined as any);
+                  subscriber.next(undefined);
                 }
               },
               (err) => {
                 console.error(`Error in member fallback query for ${id}:`, err);
-                subscriber.next(undefined as any);
+                subscriber.next(undefined);
               },
             );
           }
@@ -226,27 +261,32 @@ export class FirebaseLegislatureService extends LegislatureService {
     });
   }
 
-  async addBill(state: string, billData: Legislation) {
+  async addBills(params: AddBillsParams) {
     if (!this.functions) throw new Error('Firebase Functions not provided');
-    const addBillFn = httpsCallable(this.functions, 'legislation-addBill');
+    const addBillsFn = httpsCallable(this.functions, 'legislation-addBills');
     try {
-      const result = await addBillFn({ state, bill: billData });
-      console.log('Bill created:', result.data);
+      const result = await addBillsFn({
+        state: params.state,
+        name: params.name,
+        description: params.description,
+        billIds: params.billIds,
+      });
+      console.log('Bills created:', result.data);
       return result;
     } catch (error) {
-      console.error('Failed to create bill:', error);
+      console.error('Failed to create bills:', error);
       throw error;
     }
   }
 
-  async removeBill(state: string, billId: string) {
+  async removeBill(state: string, billId: string, chamber?: 'upper' | 'lower') {
     if (!this.functions) throw new Error('Firebase Functions not provided');
     const removeBillFn = httpsCallable(
       this.functions,
       'legislation-removeBill',
     );
     try {
-      const result = await removeBillFn({ state, billId });
+      const result = await removeBillFn({ state, billId, chamber });
       console.log('Bill removed:', result.data);
       return result;
     } catch (error) {

@@ -40,12 +40,12 @@ export interface OpenStatesRelatedEntity {
 
 export interface OpenStatesAction {
   id: string;
-  organization: OpenStatesOrganization;
+  organization?: OpenStatesOrganization;
   description: string;
   date: string;
-  classification: string[];
-  order: number;
-  related_entities: OpenStatesRelatedEntity[];
+  classification?: string[];
+  order?: number;
+  related_entities?: OpenStatesRelatedEntity[];
 }
 
 export interface OpenStatesDocumentMedia {
@@ -74,7 +74,7 @@ export interface OpenStatesPersonVote {
 export interface OpenStatesVote {
   id: string;
   motion_text: string;
-  motion_classification: string[];
+  motion_classification?: string[];
   start_date: string;
   result: string;
   organization?: OpenStatesOrganization;
@@ -86,16 +86,16 @@ export interface OpenStatesVote {
 export interface OpenStatesBill {
   id: string;
   session: string;
-  jurisdiction: OpenStatesJurisdiction;
-  from_organization: OpenStatesOrganization;
+  jurisdiction?: OpenStatesJurisdiction;
+  from_organization?: OpenStatesOrganization;
   identifier: string;
   title: string;
-  classification: string[];
-  subject: string[];
+  classification?: string[];
+  subject?: string[];
   extras?: Record<string, unknown>;
-  created_at: string;
-  updated_at: string;
-  openstates_url: string;
+  created_at?: string;
+  updated_at?: string;
+  openstates_url?: string;
   first_action_date?: string;
   latest_action_date?: string;
   latest_action_description?: string;

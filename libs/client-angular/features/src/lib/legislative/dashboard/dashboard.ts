@@ -19,8 +19,8 @@ import { TableComponent } from '@legislative-tracker/client-angular/ui';
 import {
   BILL_COLS,
   MEMBER_COLS,
-  Legislation,
-  Legislator,
+  OpenStatesBill,
+  OpenStatesPerson,
 } from '@legislative-tracker/shared/models';
 
 enum DashboardTab {
@@ -48,12 +48,10 @@ export class Dashboard {
 
   // --- Request Signals (Triggers) ---
 
-  // Computes the active state for bills, or null if inactive
   private billsRequest = computed(() =>
     this.selectedTabIndex() === DashboardTab.Bills ? this.stateCd() : null,
   );
 
-  // Computes the active state for members, or null if inactive
   private membersRequest = computed(() =>
     [DashboardTab.Senate, DashboardTab.Assembly].includes(
       this.selectedTabIndex(),
@@ -64,7 +62,7 @@ export class Dashboard {
 
   // --- Resources ---
 
-  billsResource = rxResource<Legislation[], string | null>({
+  billsResource = rxResource<OpenStatesBill[], string | null>({
     params: () => this.billsRequest(),
     stream: ({ params: stateCode }) => {
       if (!stateCode) return of([]);
@@ -72,7 +70,7 @@ export class Dashboard {
     },
   });
 
-  membersResource = rxResource<Legislator[], string | null>({
+  membersResource = rxResource<OpenStatesPerson[], string | null>({
     params: () => this.membersRequest(),
     stream: ({ params: stateCode }) => {
       if (!stateCode) return of([]);
@@ -92,10 +90,23 @@ export class Dashboard {
   );
 
   senateMembers = computed(() =>
-    this.members().filter((m) => m.chamber === 'SENATE'),
+    this.members().filter((m) => {
+      const org =
+        m.current_role?.org_classification?.toLowerCase() ??
+        (m as any).chamber?.toLowerCase() ??
+        '';
+      return org === 'upper' || org === 'senate';
+    }),
   );
+
   assemblyMembers = computed(() =>
-    this.members().filter((m) => m.chamber === 'ASSEMBLY'),
+    this.members().filter((m) => {
+      const org =
+        m.current_role?.org_classification?.toLowerCase() ??
+        (m as any).chamber?.toLowerCase() ??
+        '';
+      return org === 'lower' || org === 'assembly' || org === 'house';
+    }),
   );
 
   onTabChange(index: number) {
