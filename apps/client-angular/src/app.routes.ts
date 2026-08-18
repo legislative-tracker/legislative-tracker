@@ -13,7 +13,7 @@ export const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'ny',
+        redirectTo: 'us-ny',
       },
       // --- Public Static Pages ---
       {
