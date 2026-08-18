@@ -4,6 +4,7 @@ import {
   OpenStatesPerson,
   PersonSponsorship,
 } from '@legislative-tracker/shared/models';
+import { getJurisdictionCode } from '@legislative-tracker/server-util-core';
 import { formatDocId } from '../helpers';
 
 export interface SponsorInfo {
@@ -60,8 +61,9 @@ export const syncBillSponsorshipsToLegislators = async (
     return { updatedCount: 0, matchedLegislators: [] };
   }
 
+  const stateKey = getJurisdictionCode(stateId);
   const peopleSnapshot = await db
-    .collection(`legislatures/${stateId}/ocd-person`)
+    .collection(`legislatures/${stateKey}/ocd-person`)
     .get();
 
   if (peopleSnapshot.empty) {

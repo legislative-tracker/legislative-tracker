@@ -18,6 +18,7 @@ vi.mock('../config', () => {
 });
 
 vi.mock('@legislative-tracker/server-util-core', () => ({
+  getJurisdictionCode: vi.fn().mockImplementation((state: string) => state),
   updateBills: vi
     .fn()
     .mockImplementation(async (options: { ocdIds: string[] }) =>

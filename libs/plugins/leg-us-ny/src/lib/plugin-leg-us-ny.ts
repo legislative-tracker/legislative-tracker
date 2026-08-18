@@ -1,6 +1,7 @@
 import {
   LegislativePlugin,
   PluginMetadata,
+  registerPlugin,
 } from '@legislative-tracker/plugins-core';
 
 export class LegUsNyPlugin implements LegislativePlugin {
@@ -48,3 +49,6 @@ export class LegUsNyPlugin implements LegislativePlugin {
 }
 
 export const legUsNyPlugin = new LegUsNyPlugin();
+registerPlugin(legUsNyPlugin).catch(() => {
+  // Ignored if already registered
+});

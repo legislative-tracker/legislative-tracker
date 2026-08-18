@@ -4,7 +4,10 @@ import {
   OpenStatesBill,
   Legislation,
 } from '@legislative-tracker/shared/models';
-import { getNewBill } from '@legislative-tracker/server-util-core';
+import {
+  getNewBill,
+  getJurisdictionCode,
+} from '@legislative-tracker/server-util-core';
 import { db, dataAccessOpenStatesKey } from '../config';
 import { formatDocId } from '../helpers';
 
@@ -36,11 +39,12 @@ export const addBills = onCall(
       );
     }
 
+    const stateKey = getJurisdictionCode(state);
     const ocdBillCollectionRef = db.collection(
-      `legislatures/${state}/ocd-bill`,
+      `legislatures/${stateKey}/ocd-bill`,
     );
     const legislationCollectionRef = db.collection(
-      `legislatures/${state}/legislation`,
+      `legislatures/${stateKey}/legislation`,
     );
 
     const added: string[] = [];

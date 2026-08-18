@@ -1,5 +1,6 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { Legislation } from '@legislative-tracker/shared/models';
+import { getJurisdictionCode } from '@legislative-tracker/server-util-core';
 import { db } from '../config';
 import { formatDocId } from '../helpers';
 
@@ -19,7 +20,7 @@ export const removeBill = onCall(async (request) => {
     throw new HttpsError('invalid-argument', 'State and billId are required.');
   }
 
-  const cleanState = state.trim();
+  const stateKey = getJurisdictionCode(state);
   const cleanBillId = billId.trim();
   const cleanChamber =
     typeof chamber === 'string'
@@ -27,7 +28,7 @@ export const removeBill = onCall(async (request) => {
       : undefined;
 
   const legislationRef = db
-    .collection(`legislatures/${cleanState}/legislation`)
+    .collection(`legislatures/${stateKey}/legislation`)
     .doc(cleanBillId);
 
   const legislationSnap = await legislationRef.get();
@@ -36,7 +37,7 @@ export const removeBill = onCall(async (request) => {
     // Fallback: check if billId corresponds directly to an ocd-bill document ID
     const ocdDocId = formatDocId(cleanBillId);
     const ocdBillRef = db
-      .collection(`legislatures/${cleanState}/ocd-bill`)
+      .collection(`legislatures/${stateKey}/ocd-bill`)
       .doc(ocdDocId);
 
     const ocdSnap = await ocdBillRef.get();
@@ -65,7 +66,7 @@ export const removeBill = onCall(async (request) => {
     if (ocdId) {
       const ocdDocId = formatDocId(ocdId);
       const ocdBillRef = db
-        .collection(`legislatures/${cleanState}/ocd-bill`)
+        .collection(`legislatures/${stateKey}/ocd-bill`)
         .doc(ocdDocId);
       await ocdBillRef.delete();
     }

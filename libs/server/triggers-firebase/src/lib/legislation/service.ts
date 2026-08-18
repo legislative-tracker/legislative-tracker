@@ -1,6 +1,9 @@
 import * as logger from 'firebase-functions/logger';
 import { OpenStatesBill } from '@legislative-tracker/shared/models';
-import { updateBills } from '@legislative-tracker/server-util-core';
+import {
+  updateBills,
+  getJurisdictionCode,
+} from '@legislative-tracker/server-util-core';
 import { db, dataAccessOpenStatesKey } from '../config';
 import { formatDocId, UpdateResult } from '../helpers';
 
@@ -12,7 +15,7 @@ export const performLegislationUpdate = async (): Promise<UpdateResult[]> => {
     const legislaturesSnapshot = await db.collection('legislatures').get();
 
     const updatePromises = legislaturesSnapshot.docs.map(async (doc) => {
-      const stateCode = doc.id;
+      const stateCode = getJurisdictionCode(doc.id);
       const stateData = doc.data();
       const stateName = stateData['name'] as string | undefined;
 

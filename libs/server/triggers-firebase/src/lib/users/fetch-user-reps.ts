@@ -1,5 +1,6 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { Person } from '@jpstroud/opencivicdata-types';
+import { getJurisdictionCode } from '@legislative-tracker/server-util-core';
 import {
   db,
   dataAccessOpenStatesKey,
@@ -86,10 +87,11 @@ export const fetchUserReps = onCall(
           },
         };
 
-        const stateCode: string = districts.federal
+        const rawStateCode: string = districts.federal
           ?.split('-')[0]
           .toLowerCase() as string;
-        const path = `legislatures/${stateCode}/legislators`;
+        const stateKey = getJurisdictionCode(rawStateCode);
+        const path = `legislatures/${stateKey}/ocd-person`;
 
         const assemblySnapshot = await db
           .collection(path)
