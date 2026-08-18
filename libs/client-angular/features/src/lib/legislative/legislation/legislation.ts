@@ -3,8 +3,10 @@ import {
   input,
   inject,
   computed,
+  effect,
   ChangeDetectionStrategy,
 } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -28,6 +30,18 @@ export class Legislation {
   id = input.required<string>();
 
   private legislatureService = inject(LegislatureService);
+  private titleService = inject(Title);
+
+  constructor() {
+    effect(() => {
+      const leg = this.legislation();
+      if (leg?.name) {
+        this.titleService.setTitle(`${leg.name} | Legislative Tracker`);
+      } else {
+        this.titleService.setTitle('Legislation | Legislative Tracker');
+      }
+    });
+  }
 
   legislationResource = rxResource({
     params: () => ({ state: this.stateCd(), id: this.id() }),

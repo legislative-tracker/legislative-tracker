@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { Title } from '@angular/platform-browser';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of } from 'rxjs';
 
@@ -60,5 +61,12 @@ describe('Legislation', () => {
   it('should compute upper and lower chamber bill IDs', () => {
     expect(component.upperBillId()).toBe('S100');
     expect(component.lowerBillId()).toBe('A200');
+  });
+
+  it('should update page title to <name> | Legislative Tracker', () => {
+    const titleService = TestBed.inject(Title);
+    expect(titleService.getTitle()).toBe(
+      'Clean Energy Act | Legislative Tracker',
+    );
   });
 });
