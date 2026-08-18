@@ -68,7 +68,11 @@ describe('RemoveBill', () => {
   describe('Fetching Bills', () => {
     it('should fetch bills when selectedState changes', async () => {
       const mockBillsData = [
-        { id: 'BILL-1', title: 'Test Bill' } as any,
+        {
+          id: 'BILL-1',
+          name: 'Test Bill',
+          stateBillIds: { upper: 'S1234', lower: 'A5678' },
+        } as any,
         { id: 'BILL-2', title: 'Other Bill' } as any,
       ];
       mockLegislatureService.getLegislationByState.mockReturnValue(
@@ -84,6 +88,7 @@ describe('RemoveBill', () => {
         'us-ny',
       );
       expect(component.availableBills().length).toBe(2);
+      expect(component.availableBills()[0].number).toBe('S1234 / A5678');
       expect(component.availableBills()[0].title).toBe('Test Bill');
       expect(component.isLoadingBills()).toBe(false);
     });
@@ -123,7 +128,7 @@ describe('RemoveBill', () => {
       expect(mockLegislatureService.removeBill).not.toHaveBeenCalled();
     });
 
-    it('should delete bill and refresh list on success', async () => {
+    it('should delete bill with all chambers by default and refresh list on success', async () => {
       vi.mocked(window.confirm).mockReturnValue(true);
       mockLegislatureService.removeBill.mockResolvedValue({ success: true });
 
@@ -145,6 +150,20 @@ describe('RemoveBill', () => {
 
       expect(fetchSpy).toHaveBeenCalledWith('us-ny');
       expect(component.isDeleting()).toBe(false);
+    });
+
+    it('should delete specified chamber when selectedChamber is upper', async () => {
+      vi.mocked(window.confirm).mockReturnValue(true);
+      mockLegislatureService.removeBill.mockResolvedValue({ success: true });
+
+      component.selectedChamber.set('upper');
+      await component.onDelete();
+
+      expect(mockLegislatureService.removeBill).toHaveBeenCalledWith(
+        'us-ny',
+        'BILL-123',
+        'upper',
+      );
     });
 
     it('should show error if deletion fails', async () => {
