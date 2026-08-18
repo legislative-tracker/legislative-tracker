@@ -30,6 +30,12 @@ export const ADMIN_ROUTES: Routes = [
       import('./bill-mgmt/add-bill/add-bill').then((m) => m.AddBill),
   },
   {
+    path: 'editBill',
+    title: 'Edit Bill | Legislative Tracker',
+    loadComponent: () =>
+      import('./bill-mgmt/edit-bill/edit-bill').then((m) => m.EditBill),
+  },
+  {
     path: 'removeBill',
     title: 'Remove Bill | Legislative Tracker',
     loadComponent: () =>

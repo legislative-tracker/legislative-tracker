@@ -7,6 +7,7 @@ import {
   query,
   where,
   limit,
+  setDoc,
 } from 'firebase/firestore';
 import { Functions, httpsCallable } from 'firebase/functions';
 import { Observable } from 'rxjs';
@@ -18,6 +19,7 @@ import {
 import {
   LegislatureService,
   AddBillsParams,
+  UpdateBillParams,
 } from '../services/legislature.service';
 import { FIREBASE_FIRESTORE, FIREBASE_FUNCTIONS } from '../firebase-tokens';
 
@@ -291,6 +293,41 @@ export class FirebaseLegislatureService extends LegislatureService {
       return result;
     } catch (error) {
       console.error('Failed to remove bill:', error);
+      throw error;
+    }
+  }
+
+  async updateBill(params: UpdateBillParams) {
+    if (!this.firestore) throw new Error('Firestore not provided');
+    const code = this.resolveJurisdictionCode(params.state);
+    const billRef = doc(
+      this.firestore,
+      `legislatures/${code}/legislation/${params.id}`,
+    );
+
+    const payload: Record<string, unknown> = {};
+    if (params.name !== undefined) payload['name'] = params.name;
+    if (params.description !== undefined)
+      payload['description'] = params.description;
+
+    const stateBillIds: Record<string, string> = {};
+    if (params.upperBillId !== undefined) {
+      payload['upperBillId'] = params.upperBillId;
+      if (params.upperBillId) stateBillIds['upper'] = params.upperBillId;
+    }
+    if (params.lowerBillId !== undefined) {
+      payload['lowerBillId'] = params.lowerBillId;
+      if (params.lowerBillId) stateBillIds['lower'] = params.lowerBillId;
+    }
+    if (Object.keys(stateBillIds).length > 0) {
+      payload['stateBillIds'] = stateBillIds;
+    }
+
+    try {
+      await setDoc(billRef, payload, { merge: true });
+      return { success: true };
+    } catch (error) {
+      console.error('Failed to update bill:', error);
       throw error;
     }
   }

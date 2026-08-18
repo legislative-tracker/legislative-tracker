@@ -8,6 +8,7 @@ import {
 import {
   LegislatureService,
   AddBillsParams,
+  UpdateBillParams,
 } from '../services/legislature.service';
 
 const MOCK_LEGISLATION: Legislation[] = [
@@ -144,6 +145,26 @@ export class MockLegislatureService extends LegislatureService {
     this.bills = this.bills.filter(
       (b) => b.id !== billId && b.identifier !== billId,
     );
+    return Promise.resolve({ data: { success: true } });
+  }
+
+  async updateBill(params: UpdateBillParams): Promise<unknown> {
+    const item = this.legislation.find((l) => l.id === params.id);
+    if (item) {
+      if (params.name !== undefined) item.name = params.name;
+      if (params.description !== undefined)
+        item.description = params.description;
+      const stateBillIds = { ...item.stateBillIds };
+      if (params.upperBillId !== undefined) {
+        item.upperBillId = params.upperBillId;
+        stateBillIds.upper = params.upperBillId;
+      }
+      if (params.lowerBillId !== undefined) {
+        item.lowerBillId = params.lowerBillId;
+        stateBillIds.lower = params.lowerBillId;
+      }
+      item.stateBillIds = stateBillIds;
+    }
     return Promise.resolve({ data: { success: true } });
   }
 }

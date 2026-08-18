@@ -13,6 +13,15 @@ export interface AddBillsParams {
   billIds: string[];
 }
 
+export interface UpdateBillParams {
+  state: string;
+  id: string;
+  name?: string;
+  description?: string;
+  upperBillId?: string;
+  lowerBillId?: string;
+}
+
 @Injectable()
 export abstract class LegislatureService {
   abstract getLegislationByState(stateCode: string): Observable<Legislation[]>;
@@ -32,4 +41,5 @@ export abstract class LegislatureService {
     billId: string,
     chamber?: 'upper' | 'lower',
   ): Promise<unknown>;
+  abstract updateBill(params: UpdateBillParams): Promise<unknown>;
 }
