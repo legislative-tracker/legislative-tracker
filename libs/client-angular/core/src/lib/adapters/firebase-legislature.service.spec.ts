@@ -8,6 +8,7 @@ const mockHttpsCallable = vi.fn();
 
 vi.mock('firebase/firestore', () => ({
   doc: vi.fn().mockReturnValue({}),
+  setDoc: vi.fn().mockResolvedValue(undefined),
   onSnapshot: vi.fn().mockReturnValue(vi.fn()),
   collection: vi.fn(),
   query: vi.fn(),
@@ -101,5 +102,23 @@ describe('FirebaseLegislatureService', () => {
       chamber: 'upper',
     });
     expect(result).toEqual({ data: { success: true } });
+  });
+
+  it('should call updateBill function with correct parameters on updateBill', async () => {
+    const mockCallable = vi.fn().mockResolvedValue({ data: { success: true } });
+    mockHttpsCallable.mockReturnValue(mockCallable);
+
+    const updateParams = {
+      state: 'us-ny',
+      id: 'LEG-100',
+      name: 'Updated Title',
+      description: 'Updated Description',
+      upperBillId: 'S101',
+      lowerBillId: 'A201',
+    };
+
+    const result = await service.updateBill(updateParams);
+
+    expect(result).toEqual({ success: true });
   });
 });
