@@ -2,19 +2,7 @@ import * as logger from 'firebase-functions/logger';
 import { OpenStatesBill } from '@legislative-tracker/shared/models';
 import { updateBills } from '@legislative-tracker/server-util-core';
 import { db, dataAccessOpenStatesKey } from '../config';
-
-export interface UpdateResult {
-  state: string;
-  matched?: number;
-  warnings?: string[];
-  error?: string;
-}
-
-/**
- * Strips the 'ocd-person/' or 'ocd-bill/' prefix from an OCD ID for use as a Firestore document ID.
- */
-const formatDocId = (ocdId: string): string =>
-  ocdId.replace(/^(ocd-person|ocd-bill)\//, '');
+import { formatDocId, UpdateResult } from '../helpers';
 
 export const performLegislationUpdate = async (): Promise<UpdateResult[]> => {
   const bulkWriter = db.bulkWriter();
