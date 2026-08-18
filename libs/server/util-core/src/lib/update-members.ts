@@ -1,6 +1,6 @@
 import { getMembers } from '@legislative-tracker/server-data-access-openstates';
 import { OpenStatesPerson } from '@legislative-tracker/shared/models';
-import { findPluginForState } from './get-new-bill';
+import { findPluginForState } from './find-plugin-for-state';
 
 export interface UpdateMembersOptions {
   state: string;

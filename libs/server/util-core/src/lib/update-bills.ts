@@ -1,6 +1,6 @@
 import { getBillByOcdId } from '@legislative-tracker/server-data-access-openstates';
 import { OpenStatesBill } from '@legislative-tracker/shared/models';
-import { findPluginForState } from './get-new-bill';
+import { findPluginForState } from './find-plugin-for-state';
 
 export interface UpdateBillsOptions {
   ocdIds: string[];
