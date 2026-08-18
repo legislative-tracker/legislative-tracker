@@ -24,6 +24,7 @@ export const LEGISLATOR_COLS = MEMBER_COLS;
 export const USER_REPS_COLS: ColumnConfig<any>[] = [
   { key: 'name', label: 'Name' },
   { key: 'party', label: 'Party' },
+  { key: 'chamber', label: 'Chamber' },
   { key: 'district', label: 'District' },
 ];
 
