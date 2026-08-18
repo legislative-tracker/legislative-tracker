@@ -10,6 +10,7 @@ import { getGeocode } from '@legislative-tracker/server-data-access-google-maps'
 
 export interface UserRepresentative {
   name: string;
+  chamber: string;
   party: string;
   district: string;
   ocdId: string;
@@ -18,6 +19,15 @@ export interface UserRepresentative {
 const cleanPersonId = (rawId?: string): string => {
   if (!rawId) return '';
   return String(rawId).replace(/^ocd-person[\/:=]/, '');
+};
+
+const deriveChamber = (person: any, currentRole: any): string => {
+  if (person.chamber) return person.chamber;
+  const org = currentRole?.org_classification;
+  if (org === 'upper') return 'Senate';
+  if (org === 'lower') return 'Assembly';
+  if (org === 'legislature') return 'House';
+  return currentRole?.role || '';
 };
 
 const mapToUserRepresentative = (person: any): UserRepresentative => {
@@ -32,6 +42,7 @@ const mapToUserRepresentative = (person: any): UserRepresentative => {
 
   return {
     name: person.name || '',
+    chamber: deriveChamber(person, currentRole),
     party,
     district,
     ocdId: cleanPersonId(rawId),
