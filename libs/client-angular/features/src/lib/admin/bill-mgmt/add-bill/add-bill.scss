@@ -9,4 +9,8 @@
 .row {
   display: flex;
   gap: 1rem;
+
+  > mat-form-field {
+    flex: 1;
+  }
 }

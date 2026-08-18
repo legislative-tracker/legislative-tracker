@@ -10,48 +10,48 @@
 
     <mat-card-content>
       <form (submit)="onSubmit(); $event.preventDefault()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>State Legislature</mat-label>
+          <mat-select
+            [ngModel]="state()"
+            (ngModelChange)="onStateChange($event)"
+            name="state"
+            required
+            [disabled]="isLoading()"
+          >
+            @for (st of implementedStates; track st.value) {
+            <mat-option [value]="st.value">{{ st.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Legislation Title / Tracking Name</mat-label>
+          <input
+            matInput
+            [ngModel]="name()"
+            (ngModelChange)="name.set($event)"
+            name="name"
+            placeholder="e.g. Clean Energy Infrastructure Act"
+            required
+            [disabled]="isLoading()"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description (Optional)</mat-label>
+          <textarea
+            matInput
+            [ngModel]="description()"
+            (ngModelChange)="description.set($event)"
+            name="description"
+            rows="2"
+            [disabled]="isLoading()"
+          ></textarea>
+        </mat-form-field>
+
+        @if (state()) { @if (isBicameral()) {
         <div class="row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>State Legislature</mat-label>
-            <mat-select
-              [ngModel]="state()"
-              (ngModelChange)="onStateChange($event)"
-              name="state"
-              required
-              [disabled]="isLoading()"
-            >
-              @for (st of implementedStates; track st.value) {
-              <mat-option [value]="st.value">{{ st.name }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Legislation Title / Tracking Name</mat-label>
-            <input
-              matInput
-              [ngModel]="name()"
-              (ngModelChange)="name.set($event)"
-              name="name"
-              placeholder="e.g. Clean Energy Infrastructure Act"
-              required
-              [disabled]="isLoading()"
-            />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Description (Optional)</mat-label>
-            <textarea
-              matInput
-              [ngModel]="description()"
-              (ngModelChange)="description.set($event)"
-              name="description"
-              rows="2"
-              [disabled]="isLoading()"
-            ></textarea>
-          </mat-form-field>
-
-          @if (state()) { @if (isBicameral()) {
           <mat-form-field appearance="outline" class="full-width">
             <mat-label
               >{{ chambers().upper || 'Upper Chamber (Senate)' }} Bill
@@ -81,21 +81,21 @@
               [disabled]="isLoading()"
             />
           </mat-form-field>
-          } @else {
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Bill ID</mat-label>
-            <input
-              matInput
-              [ngModel]="singleBillId()"
-              (ngModelChange)="singleBillId.set($event)"
-              name="singleBillId"
-              placeholder="e.g., LB123"
-              required
-              [disabled]="isLoading()"
-            />
-          </mat-form-field>
-          } }
         </div>
+        } @else {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Bill ID</mat-label>
+          <input
+            matInput
+            [ngModel]="singleBillId()"
+            (ngModelChange)="singleBillId.set($event)"
+            name="singleBillId"
+            placeholder="e.g., LB123"
+            required
+            [disabled]="isLoading()"
+          />
+        </mat-form-field>
+        } }
 
         <button
           mat-raised-button
