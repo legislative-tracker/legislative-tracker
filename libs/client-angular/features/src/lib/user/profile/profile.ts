@@ -2,6 +2,7 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
 
 import {
@@ -26,6 +27,7 @@ import {
     AddressForm,
     MatTabsModule,
     TableComponent,
+    MatSnackBarModule,
   ],
   templateUrl: './profile.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,6 +36,7 @@ import {
 export class Profile {
   private auth = inject(AuthService);
   private functions = inject(FIREBASE_FUNCTIONS, { optional: true });
+  private snackBar = inject(MatSnackBar);
 
   user = this.auth.userProfile;
   legislatorCols = USER_REPS_COLS;
@@ -51,10 +54,22 @@ export class Profile {
         this.functions,
         'users-fetchUserReps',
       );
-      const result = await fetchUserReps({ address: addressStr });
-      alert('Success!');
-    } catch (error) {
-      alert(error);
+      await fetchUserReps({ address: addressStr });
+      this.snackBar.open(
+        'Representatives search completed successfully!',
+        'Close',
+        {
+          duration: 3000,
+          panelClass: ['success-snackbar'],
+        },
+      );
+    } catch (error: any) {
+      const errorMsg =
+        error instanceof Error ? error.message : 'Address search failed.';
+      this.snackBar.open(errorMsg, 'Close', {
+        duration: 5000,
+        panelClass: ['error-snackbar'],
+      });
     }
   };
 }
