@@ -1,3 +1,13 @@
+## 0.11.16 (2026-08-22)
+
+### 🩹 Fixes
+
+- **release:** use rebuild-changelog script for automated release changelogs ([b173332](https://github.com/legislative-tracker/legislative-tracker/commit/b173332))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.15 (2026-08-22)
 
 ### 🩹 Fixes
