@@ -34,7 +34,7 @@
     "export": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "firebase emulators:export ./emulator_data --force"
+        "command": "firebase emulators:export ./emulator_data --project demo-legislative-tracker --force"
       }
     },
     "test": {
