@@ -20,6 +20,9 @@ vi.mock('firebase/firestore', () => ({
 const mockSignInWithPopup = vi.fn();
 const mockSignOut = vi.fn();
 const mockGoogleAuthProvider = vi.fn();
+const mockFacebookAuthProvider = vi.fn();
+const mockOAuthProvider = vi.fn();
+const mockAddScope = vi.fn();
 const mockOnAuthStateChanged = vi.fn();
 
 vi.mock('firebase/auth', () => ({
@@ -27,6 +30,24 @@ vi.mock('firebase/auth', () => ({
   GoogleAuthProvider: class {
     constructor() {
       mockGoogleAuthProvider();
+    }
+  },
+  FacebookAuthProvider: class {
+    constructor() {
+      mockFacebookAuthProvider();
+    }
+    addScope(scope: string) {
+      mockAddScope(scope);
+    }
+  },
+  OAuthProvider: class {
+    providerId: string;
+    constructor(providerId: string) {
+      this.providerId = providerId;
+      mockOAuthProvider(providerId);
+    }
+    addScope(scope: string) {
+      mockAddScope(scope);
     }
   },
   signInWithPopup: (...args: any[]) => mockSignInWithPopup(...args),
@@ -138,8 +159,8 @@ describe('FirebaseAuthService', () => {
     });
   });
 
-  describe('loginWithGoogle', () => {
-    it('should sign in via popup and save user to Firestore', async () => {
+  describe('loginWithProvider', () => {
+    it('should sign in via Google popup and save user to Firestore', async () => {
       const mockCredential = {
         user: {
           uid: '123',
@@ -151,7 +172,7 @@ describe('FirebaseAuthService', () => {
       };
       mockSignInWithPopup.mockResolvedValue(mockCredential);
 
-      await service.loginWithGoogle();
+      await service.loginWithProvider('google');
 
       expect(mockGoogleAuthProvider).toHaveBeenCalled();
       expect(mockSignInWithPopup).toHaveBeenCalled();
@@ -167,6 +188,77 @@ describe('FirebaseAuthService', () => {
         }),
         { merge: true },
       );
+    });
+
+    it('should sign in via Apple popup with proper scopes', async () => {
+      const mockCredential = {
+        user: {
+          uid: 'apple-123',
+          email: 'apple@example.com',
+          displayName: null,
+          photoURL: null,
+        },
+      };
+      mockSignInWithPopup.mockResolvedValue(mockCredential);
+
+      await service.loginWithProvider('apple');
+
+      expect(mockOAuthProvider).toHaveBeenCalledWith('apple.com');
+      expect(mockAddScope).toHaveBeenCalledWith('email');
+      expect(mockAddScope).toHaveBeenCalledWith('name');
+      expect(mockSignInWithPopup).toHaveBeenCalled();
+      expect(mockDoc).toHaveBeenCalledWith(mockFirestore, 'users/apple-123');
+
+      // Verifies null displayName is omitted from merge payload
+      expect(mockSetDoc).toHaveBeenCalledWith(
+        expect.anything(),
+        {
+          uid: 'apple-123',
+          email: 'apple@example.com',
+          lastLogin: expect.any(Date),
+        },
+        { merge: true },
+      );
+    });
+
+    it('should sign in via Facebook popup with proper scopes', async () => {
+      const mockCredential = {
+        user: {
+          uid: 'fb-123',
+          email: 'fb@example.com',
+          displayName: 'FB User',
+          photoURL: 'https://graph.facebook.com/photo.jpg',
+          phoneNumber: '1234567890',
+        },
+      };
+      mockSignInWithPopup.mockResolvedValue(mockCredential);
+
+      await service.loginWithProvider('facebook');
+
+      expect(mockFacebookAuthProvider).toHaveBeenCalled();
+      expect(mockAddScope).toHaveBeenCalledWith('email');
+      expect(mockAddScope).toHaveBeenCalledWith('public_profile');
+      expect(mockSignInWithPopup).toHaveBeenCalled();
+      expect(mockDoc).toHaveBeenCalledWith(mockFirestore, 'users/fb-123');
+
+      expect(mockSetDoc).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          uid: 'fb-123',
+          email: 'fb@example.com',
+          displayName: 'FB User',
+          photoURL: 'https://graph.facebook.com/photo.jpg',
+          phoneNumber: '1234567890',
+          lastLogin: expect.any(Date),
+        }),
+        { merge: true },
+      );
+    });
+
+    it('should throw error for unsupported provider', async () => {
+      await expect(
+        service.loginWithProvider('unsupported' as any),
+      ).rejects.toThrow('Unsupported auth provider: unsupported');
     });
   });
 

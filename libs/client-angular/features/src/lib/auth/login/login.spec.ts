@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { By } from '@angular/platform-browser';
 
 // Target Component
 import { Login } from './login';
@@ -15,14 +16,13 @@ describe('Login', () => {
 
   // Mock Auth Service
   const mockAuthService = {
-    loginWithGoogle: vi.fn(),
+    loginWithProvider: vi.fn(),
   };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Login], // Standalone
+      imports: [Login],
       providers: [
-        // Use real router infrastructure so we can spy on it
         provideRouter([]),
         { provide: AuthService, useValue: mockAuthService },
       ],
@@ -31,11 +31,8 @@ describe('Login', () => {
     fixture = TestBed.createComponent(Login);
     component = fixture.componentInstance;
 
-    // Inject the router to spy on it
     router = TestBed.inject(Router);
     vi.spyOn(router, 'navigate');
-
-    // Spy on console.error to keep test output clean and verify exception handling
     vi.spyOn(console, 'error').mockImplementation(() => {});
 
     fixture.detectChanges();
@@ -49,55 +46,148 @@ describe('Login', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should navigate to /profile on successful login', async () => {
-    // Mock success response (truthy)
-    mockAuthService.loginWithGoogle.mockResolvedValue({ uid: '123' });
+  it('should render all 3 provider buttons in the DOM', () => {
+    const buttons = fixture.debugElement.queryAll(By.css('.auth-provider-btn'));
+    expect(buttons.length).toBe(3);
 
-    // Trigger Action
-    await component.loginWithGoogle();
+    const buttonTexts = buttons.map((b) => b.nativeElement.textContent.trim());
+    expect(buttonTexts).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('Sign in with Google'),
+        expect.stringContaining('Sign in with Apple'),
+        expect.stringContaining('Continue with Facebook'),
+      ]),
+    );
+  });
 
-    // Assert Navigation
+  it('should navigate to /profile on successful Google login', async () => {
+    mockAuthService.loginWithProvider.mockResolvedValue({ uid: '123' });
+
+    await component.login('google');
+
+    expect(mockAuthService.loginWithProvider).toHaveBeenCalledWith('google');
     expect(router.navigate).toHaveBeenCalledWith(['/profile']);
+    expect(component.authError()).toBeNull();
+    expect(component.isLoading()).toBeNull();
+  });
 
-    // Assert Error State is clear
+  it('should navigate to /profile on successful Apple login', async () => {
+    mockAuthService.loginWithProvider.mockResolvedValue({ uid: 'apple-123' });
+
+    await component.login('apple');
+
+    expect(mockAuthService.loginWithProvider).toHaveBeenCalledWith('apple');
+    expect(router.navigate).toHaveBeenCalledWith(['/profile']);
     expect(component.authError()).toBeNull();
   });
 
-  it('should set authError when login returns null/false (User cancelled or failed)', async () => {
-    // Mock failure response (falsy)
-    mockAuthService.loginWithGoogle.mockResolvedValue(null);
+  it('should navigate to /profile on successful Facebook login', async () => {
+    mockAuthService.loginWithProvider.mockResolvedValue({ uid: 'fb-123' });
 
-    // Trigger Action
-    await component.loginWithGoogle();
+    await component.login('facebook');
 
-    // Assert NO Navigation
+    expect(mockAuthService.loginWithProvider).toHaveBeenCalledWith('facebook');
+    expect(router.navigate).toHaveBeenCalledWith(['/profile']);
+    expect(component.authError()).toBeNull();
+  });
+
+  it('should set authError when login returns falsy', async () => {
+    mockAuthService.loginWithProvider.mockResolvedValue(null);
+
+    await component.login('google');
+
     expect(router.navigate).not.toHaveBeenCalled();
-
-    // Assert Error Signal
     expect(component.authError()).toBe(
       'Unable to authenticate with Google. Please try again.',
     );
   });
 
-  it('should log errors to console when exception occurs', async () => {
-    // Mock Exception
-    const mockError = { code: 'auth/error', message: 'Something went wrong' };
-    mockAuthService.loginWithGoogle.mockRejectedValue(mockError);
+  it('should map account collision error to friendly message', async () => {
+    mockAuthService.loginWithProvider.mockRejectedValue({
+      code: 'auth/account-exists-with-different-credential',
+      message: 'Account exists',
+    });
 
-    // Trigger Action
-    await component.loginWithGoogle();
+    await component.login('facebook');
 
-    // Verify Console Logs (matches your catch block)
-    expect(console.error).toHaveBeenCalledWith(
-      'Auth Error Code:',
-      'auth/error',
+    expect(component.authError()).toBe(
+      'An account already exists with the same email address using a different sign-in method. Please sign in with your original provider.',
     );
-    expect(console.error).toHaveBeenCalledWith(
-      'Auth Error Message:',
-      'Something went wrong',
-    );
+  });
 
-    // Verify user stays on page
-    expect(router.navigate).not.toHaveBeenCalled();
+  it('should map popup closed/cancelled error to friendly message', async () => {
+    mockAuthService.loginWithProvider.mockRejectedValue({
+      code: 'auth/popup-closed-by-user',
+      message: 'Popup closed',
+    });
+
+    await component.login('google');
+
+    expect(component.authError()).toBe(
+      'Sign-in was cancelled. Please try again.',
+    );
+  });
+
+  it('should map popup blocked error to friendly message', async () => {
+    mockAuthService.loginWithProvider.mockRejectedValue({
+      code: 'auth/popup-blocked',
+      message: 'Popup blocked',
+    });
+
+    await component.login('apple');
+
+    expect(component.authError()).toBe(
+      'The sign-in popup was blocked by your browser. Please allow popups and try again.',
+    );
+  });
+
+  it('should map network request error to friendly message', async () => {
+    mockAuthService.loginWithProvider.mockRejectedValue({
+      code: 'auth/network-request-failed',
+      message: 'Network error',
+    });
+
+    await component.login('google');
+
+    expect(component.authError()).toBe(
+      'A network error occurred. Please check your internet connection and try again.',
+    );
+  });
+
+  it('should map operation-not-allowed error to provider specific message', async () => {
+    mockAuthService.loginWithProvider.mockRejectedValue({
+      code: 'auth/operation-not-allowed',
+      message: 'Not allowed',
+    });
+
+    await component.login('apple');
+
+    expect(component.authError()).toBe(
+      'Apple sign-in is not enabled. Please use another provider.',
+    );
+  });
+
+  it('should map user-disabled error to friendly message', async () => {
+    mockAuthService.loginWithProvider.mockRejectedValue({
+      code: 'auth/user-disabled',
+      message: 'Disabled',
+    });
+
+    await component.login('facebook');
+
+    expect(component.authError()).toBe('This user account has been disabled.');
+  });
+
+  it('should map unknown error to fallback message', async () => {
+    mockAuthService.loginWithProvider.mockRejectedValue({
+      code: 'auth/unknown-error',
+      message: 'Something broke',
+    });
+
+    await component.login('google');
+
+    expect(component.authError()).toBe(
+      'Unable to authenticate with Google. Please try again.',
+    );
   });
 });

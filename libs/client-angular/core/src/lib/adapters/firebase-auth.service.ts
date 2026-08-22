@@ -2,9 +2,12 @@ import { Injectable, inject, signal, computed, effect } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   Auth,
+  AuthProvider,
   User,
   onAuthStateChanged,
   GoogleAuthProvider,
+  FacebookAuthProvider,
+  OAuthProvider,
   signInWithPopup,
   signOut,
 } from 'firebase/auth';
@@ -13,7 +16,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import { AppUser } from '@legislative-tracker/shared/models';
-import { AuthService } from '../services/auth.service';
+import { AuthService, AuthProviderType } from '../services/auth.service';
 import { FIREBASE_AUTH, FIREBASE_FIRESTORE } from '../firebase-tokens';
 
 @Injectable({ providedIn: 'root' })
@@ -78,25 +81,65 @@ export class FirebaseAuthService implements AuthService {
     });
   }
 
-  async loginWithGoogle() {
+  private getAuthProvider(provider: AuthProviderType): AuthProvider {
+    switch (provider) {
+      case 'google':
+        return new GoogleAuthProvider();
+      case 'apple': {
+        const appleProvider = new OAuthProvider('apple.com');
+        appleProvider.addScope('email');
+        appleProvider.addScope('name');
+        return appleProvider;
+      }
+      case 'facebook': {
+        const facebookProvider = new FacebookAuthProvider();
+        facebookProvider.addScope('email');
+        facebookProvider.addScope('public_profile');
+        return facebookProvider;
+      }
+      default:
+        throw new Error(`Unsupported auth provider: ${provider}`);
+    }
+  }
+
+  async loginWithProvider(provider: AuthProviderType) {
     if (!this.auth) throw new Error('Firebase Auth not provided');
-    const provider = new GoogleAuthProvider();
-    const credential = await signInWithPopup(this.auth, provider);
+    const authProvider = this.getAuthProvider(provider);
+    const credential = await signInWithPopup(this.auth, authProvider);
 
     if (credential.user && this.firestore) {
       const userRef = doc(this.firestore, `users/${credential.user.uid}`);
-      await setDoc(
-        userRef,
-        {
-          uid: credential.user.uid,
-          email: credential.user.email,
-          displayName: credential.user.displayName,
-          photoURL: credential.user.photoURL || null,
-          phoneNumber: credential.user.phoneNumber,
-          lastLogin: new Date(),
-        },
-        { merge: true },
-      );
+      const userData: Record<string, any> = {
+        uid: credential.user.uid,
+        lastLogin: new Date(),
+      };
+
+      if (
+        credential.user.email !== undefined &&
+        credential.user.email !== null
+      ) {
+        userData['email'] = credential.user.email;
+      }
+      if (
+        credential.user.displayName !== undefined &&
+        credential.user.displayName !== null
+      ) {
+        userData['displayName'] = credential.user.displayName;
+      }
+      if (
+        credential.user.photoURL !== undefined &&
+        credential.user.photoURL !== null
+      ) {
+        userData['photoURL'] = credential.user.photoURL;
+      }
+      if (
+        credential.user.phoneNumber !== undefined &&
+        credential.user.phoneNumber !== null
+      ) {
+        userData['phoneNumber'] = credential.user.phoneNumber;
+      }
+
+      await setDoc(userRef, userData, { merge: true });
     }
     return credential;
   }
