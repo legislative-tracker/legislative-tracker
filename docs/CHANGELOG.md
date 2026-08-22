@@ -1,3 +1,13 @@
+## 0.11.12 (2026-08-22)
+
+### 🩹 Fixes
+
+- **workspace:** add implicit dependencies to root package for release versioning ([d7c2fd0](https://github.com/legislative-tracker/legislative-tracker/commit/d7c2fd0))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.11 (2026-08-22)
 
 ### 🚀 Features
