@@ -1,17 +1,26 @@
-import { initializeApp, getApps } from 'firebase-admin/app';
+import { initializeApp, getApp } from 'firebase-admin/app';
 import { getFirestore, Firestore } from 'firebase-admin/firestore';
 import { getAuth, Auth } from 'firebase-admin/auth';
 import { defineSecret } from 'firebase-functions/params';
 import { setGlobalOptions } from 'firebase-functions/v2';
+
+const ensureDefaultApp = () => {
+  try {
+    return getApp();
+  } catch {
+    return initializeApp();
+  }
+};
+
+// Initialize default app on module load
+ensureDefaultApp();
 
 let _db: Firestore | undefined;
 let _auth: Auth | undefined;
 
 export const getDb = (): Firestore => {
   if (!_db) {
-    if (getApps().length === 0) {
-      initializeApp();
-    }
+    ensureDefaultApp();
     _db = getFirestore();
     _db.settings({ ignoreUndefinedProperties: true });
   }
@@ -20,9 +29,7 @@ export const getDb = (): Firestore => {
 
 export const getAuthAdmin = (): Auth => {
   if (!_auth) {
-    if (getApps().length === 0) {
-      initializeApp();
-    }
+    ensureDefaultApp();
     _auth = getAuth();
   }
   return _auth;
