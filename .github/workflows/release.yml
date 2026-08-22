@@ -50,7 +50,7 @@ jobs:
 
       - name: Generate Application Changelog
         if: steps.release.outputs.RELEASED == 'true'
-        run: npx nx release changelog --group=app ${{ steps.release.outputs.VERSION }} --git-commit=false --git-tag=false
+        run: node scripts/rebuild-changelog.js ${{ steps.release.outputs.VERSION }}
 
       - name: Commit & Push Release Changes Directly
         if: steps.release.outputs.RELEASED == 'true'

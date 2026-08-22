@@ -1,10 +1,22 @@
 ## 0.11.15 (2026-08-22)
 
-This was a version bump only for @legislative-tracker/source to align it with other projects, there were no code changes.
+### 🩹 Fixes
+
+- **server-firebase:** add openstates secret to legislation triggers ([b9cfa15](https://github.com/legislative-tracker/legislative-tracker/commit/b9cfa15))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
 
 ## 0.11.14 (2026-08-22)
 
-This was a version bump only for @legislative-tracker/source to align it with other projects, there were no code changes.
+### 🩹 Fixes
+
+- **client-angular:** use ocd-person routeType for dashboard member tables ([de13365](https://github.com/legislative-tracker/legislative-tracker/commit/de13365))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
 
 ## 0.11.13 (2026-08-22)
 
