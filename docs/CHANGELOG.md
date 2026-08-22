@@ -1,3 +1,7 @@
+## 0.11.14 (2026-08-22)
+
+This was a version bump only for @legislative-tracker/source to align it with other projects, there were no code changes.
+
 ## 0.11.13 (2026-08-22)
 
 ### 🚀 Features
