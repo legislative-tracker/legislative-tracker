@@ -53,11 +53,17 @@ describe('MemberDetail', () => {
     },
     sponsorships: [
       {
+        legislationId: 'LEG-1',
         ocdBillId: 'BILL-1',
         stateBillId: 'S100',
         billName: 'Clean Energy Act',
       },
-      { ocdBillId: 'BILL-2', stateBillId: 'S200', billName: 'Road Safety Act' },
+      {
+        legislationId: 'LEG-2',
+        ocdBillId: 'BILL-2',
+        stateBillId: 'S200',
+        billName: 'Road Safety Act',
+      },
     ],
     other_identifiers: [
       { scheme: 'twitter', identifier: 'janedoe' },

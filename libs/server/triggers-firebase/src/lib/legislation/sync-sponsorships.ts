@@ -1,5 +1,6 @@
 import * as logger from 'firebase-functions/logger';
 import {
+  Legislation,
   OpenStatesBill,
   OpenStatesPerson,
   PersonSponsorship,
@@ -51,6 +52,7 @@ export const syncBillSponsorshipsToLegislators = async (
   db: FirebaseFirestore.Firestore,
   stateId: string,
   billId: string,
+  legislationId: string,
   beforeBill?: OpenStatesBill | null,
   afterBill?: OpenStatesBill | null,
 ): Promise<{ updatedCount: number; matchedLegislators: string[] }> => {
@@ -62,6 +64,28 @@ export const syncBillSponsorshipsToLegislators = async (
   }
 
   const stateKey = getJurisdictionCode(stateId);
+  const legislationDocRef = db.doc(
+    `legislatures/${stateKey}/legislation/${legislationId}`,
+  );
+  const legislationSnap = await legislationDocRef.get();
+
+  if (!legislationSnap.exists) {
+    logger.warn(
+      `No legislation record found with ID ${legislationId} in state ${stateId} to sync sponsorships for bill ${billId}`,
+    );
+    return { updatedCount: 0, matchedLegislators: [] };
+  }
+
+  const legislationData = legislationSnap.data() as Legislation | undefined;
+  const billName = legislationData?.name;
+
+  if (!billName) {
+    logger.warn(
+      `Legislation record ${legislationId} in state ${stateId} has no name to sync sponsorships for bill ${billId}`,
+    );
+    return { updatedCount: 0, matchedLegislators: [] };
+  }
+
   const peopleSnapshot = await db
     .collection(`legislatures/${stateKey}/ocd-person`)
     .get();
@@ -75,12 +99,6 @@ export const syncBillSponsorshipsToLegislators = async (
 
   const ocdBillId = afterBill?.id || beforeBill?.id || billId;
   const stateBillId = afterBill?.identifier || beforeBill?.identifier || '';
-  const billName =
-    afterBill?.identifier ||
-    afterBill?.title ||
-    beforeBill?.identifier ||
-    beforeBill?.title ||
-    billId;
 
   // Build lookup maps for after & before sponsors
   const afterByPersonId = new Map<string, SponsorInfo>();
@@ -127,13 +145,14 @@ export const syncBillSponsorshipsToLegislators = async (
       ? person.sponsorships
       : [];
 
-    // Filter out existing entry for this bill
+    // Filter out existing entry for this legislation
     const filteredSponsorships = existingSponsorships.filter(
-      (s) => s.ocdBillId !== ocdBillId && s.stateBillId !== stateBillId,
+      (s) => s.legislationId !== legislationId,
     );
 
     if (matchedAfter) {
       const sponsorshipEntry: PersonSponsorship = {
+        legislationId,
         billName,
         stateBillId,
         ocdBillId,

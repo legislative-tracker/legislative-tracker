@@ -46,13 +46,44 @@ describe('sync-sponsorships', () => {
         db,
         'NY',
         'S100',
+        'LEG-1',
         null,
         null,
       );
       expect(res).toEqual({ updatedCount: 0, matchedLegislators: [] });
     });
 
-    it('should update ocd-person document sponsorships array for matching sponsors', async () => {
+    it('should return 0 updated if legislation document does not exist', async () => {
+      const db = {
+        doc: vi.fn().mockReturnValue({
+          get: vi.fn().mockResolvedValue({ exists: false }),
+        }),
+      } as any;
+
+      const afterBill: OpenStatesBill = {
+        id: 'ocd-bill/S100',
+        identifier: 'S 100',
+        title: 'Clean Energy Act',
+        sponsorships: [
+          {
+            name: 'Jane Doe',
+            person: { id: 'ocd-person/P1', name: 'Jane Doe' },
+          },
+        ],
+      } as any;
+
+      const res = await syncBillSponsorshipsToLegislators(
+        db,
+        'NY',
+        'S100',
+        'LEG-1',
+        null,
+        afterBill,
+      );
+      expect(res).toEqual({ updatedCount: 0, matchedLegislators: [] });
+    });
+
+    it('should update ocd-person document sponsorships array with legislation.name and legislationId', async () => {
       const mockSet = vi.fn();
       const mockClose = vi.fn().mockResolvedValue(undefined);
       const mockBulkWriter = {
@@ -66,11 +97,27 @@ describe('sync-sponsorships', () => {
         data: () => ({
           id: 'ocd-person/P1',
           name: 'Jane Doe',
-          sponsorships: [],
+          sponsorships: [
+            {
+              legislationId: 'LEG-OLD',
+              billName: 'Old Bill',
+              stateBillId: 'S99',
+              ocdBillId: 'ocd-bill/S99',
+            },
+          ],
         }),
       };
 
       const db = {
+        doc: vi.fn().mockReturnValue({
+          get: vi.fn().mockResolvedValue({
+            exists: true,
+            data: () => ({
+              id: 'LEG-1',
+              name: 'Medical Aid in Dying Act',
+            }),
+          }),
+        }),
         collection: vi.fn().mockReturnValue({
           get: vi.fn().mockResolvedValue({
             empty: false,
@@ -99,6 +146,7 @@ describe('sync-sponsorships', () => {
         db,
         'NY',
         'S100',
+        'LEG-1',
         null,
         afterBill,
       );
@@ -110,7 +158,14 @@ describe('sync-sponsorships', () => {
         expect.objectContaining({
           sponsorships: [
             {
-              billName: 'S 100',
+              legislationId: 'LEG-OLD',
+              billName: 'Old Bill',
+              stateBillId: 'S99',
+              ocdBillId: 'ocd-bill/S99',
+            },
+            {
+              legislationId: 'LEG-1',
+              billName: 'Medical Aid in Dying Act',
               stateBillId: 'S 100',
               ocdBillId: 'ocd-bill/S100',
             },

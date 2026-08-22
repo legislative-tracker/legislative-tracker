@@ -73,12 +73,7 @@
       mat-row
       *matRowDef="let row; columns: displayedColumns()"
       (click)="onRowClick(row)"
-      [routerLink]="[
-        '/',
-        stateCd(),
-        routeType(),
-        cleanId(row.id ? row.id : row.ocdId ? row.ocdId : row.identifier),
-      ]"
+      [routerLink]="['/', stateCd(), routeType(), getRowTargetId(row)]"
       class="clickable-row"
     ></tr>
   </table>

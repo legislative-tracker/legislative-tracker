@@ -59,6 +59,8 @@ export const addBills = onCall(
     let primaryDocId: string | undefined;
     let fallbackDescription: string | undefined;
 
+    const validBills: Array<{ billData: OpenStatesBill; docId: string }> = [];
+
     for (const billId of billIds) {
       if (!billId || typeof billId !== 'string' || !billId.trim()) {
         continue;
@@ -82,18 +84,9 @@ export const addBills = onCall(
         }
 
         const docId = formatDocId(billData.id);
-        const ocdBillDocRef = ocdBillCollectionRef.doc(docId);
+        validBills.push({ billData, docId });
 
-        // 1. Write raw OpenStatesBill payload to ocd-bill subcollection
-        await ocdBillDocRef.set(
-          {
-            ...billData,
-            updated_at: new Date().toISOString(),
-          },
-          { merge: true },
-        );
-
-        // 2. Accumulate chamber data for single Legislation document
+        // Accumulate chamber data for single Legislation document
         const chamber =
           billData.from_organization?.classification?.toLowerCase() || '';
 
@@ -125,7 +118,7 @@ export const addBills = onCall(
       }
     }
 
-    // 3. Upsert single Legislation document into legislation subcollection
+    // 1. Upsert single Legislation document into legislation subcollection FIRST
     if (added.length > 0 && primaryDocId) {
       const legislationData: Legislation = {
         name: name.trim(),
@@ -142,6 +135,18 @@ export const addBills = onCall(
 
       const legislationDocRef = legislationCollectionRef.doc(primaryDocId);
       await legislationDocRef.set(legislationData, { merge: true });
+    }
+
+    // 2. Write raw OpenStatesBill payloads to ocd-bill subcollection
+    for (const { billData, docId } of validBills) {
+      const ocdBillDocRef = ocdBillCollectionRef.doc(docId);
+      await ocdBillDocRef.set(
+        {
+          ...billData,
+          updated_at: new Date().toISOString(),
+        },
+        { merge: true },
+      );
     }
 
     return {

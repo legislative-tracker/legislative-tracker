@@ -131,6 +131,18 @@ export class TableComponent<T> {
     this.rowClick.emit(row);
   }
 
+  getRowTargetId(row: T): string {
+    if (!row) return '';
+    const r = row as Record<string, any>;
+    const rawId =
+      r['id'] ||
+      r['legislationId'] ||
+      r['ocdId'] ||
+      r['ocdBillId'] ||
+      r['identifier'];
+    return this.cleanId(rawId);
+  }
+
   cleanId(rawId?: string): string {
     if (!rawId) return '';
     return String(rawId).replace(/^ocd-(person|bill)[\/:=]/, '');
