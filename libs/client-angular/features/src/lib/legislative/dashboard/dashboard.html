@@ -32,7 +32,7 @@
         <app-table
           [dataSource]="senateMembers()"
           [columnSource]="memberCols"
-          routeType="member"
+          routeType="ocd-person"
           chamber="SENATE"
           [stateCd]="stateCd()"
         >
@@ -45,7 +45,7 @@
         <app-table
           [dataSource]="assemblyMembers()"
           [columnSource]="memberCols"
-          routeType="member"
+          routeType="ocd-person"
           chamber="ASSEMBLY"
           [stateCd]="stateCd()"
         >
