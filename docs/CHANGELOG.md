@@ -1,3 +1,13 @@
+## 0.11.17 (2026-08-22)
+
+### 🩹 Fixes
+
+- **server-firebase:** add project id to emulator export target ([61a6425](https://github.com/legislative-tracker/legislative-tracker/commit/61a6425))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.16 (2026-08-22)
 
 ### 🩹 Fixes
