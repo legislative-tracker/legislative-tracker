@@ -1,9 +1,10 @@
 {
-  "$schema": "https://unpkg.com/knip@5/schemas/knip.json",
+  "$schema": "https://unpkg.com/knip@6/schemas/knip.json",
   "entry": [
     "apps/client-angular/src/main.ts",
     "apps/client-angular/src/backend.providers.firebase.ts",
     "apps/server-firebase/src/index.ts",
+    "apps/*/playwright.config.ts",
     "libs/**/src/index.ts",
     "scripts/**/*.js"
   ],
