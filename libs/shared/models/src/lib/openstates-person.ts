@@ -6,6 +6,7 @@ import {
 } from './openstates-shared';
 
 export interface PersonSponsorship {
+  legislationId: string;
   billName: string;
   stateBillId: string;
   ocdBillId: string;

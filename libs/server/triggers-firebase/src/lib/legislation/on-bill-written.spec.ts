@@ -2,8 +2,31 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { onBillWritten } from './on-bill-written';
 import { syncBillSponsorshipsToLegislators } from './sync-sponsorships';
 
+const mockLegislationDoc = {
+  id: 'LEG-1',
+  exists: true,
+  data: () => ({
+    name: 'Clean Energy Act',
+    ocdBillIds: { upper: 'ocd-bill/S100' },
+    stateBillIds: { upper: 'S 100' },
+  }),
+};
+
+const mockDb = {
+  collection: vi.fn().mockReturnValue({
+    doc: vi.fn().mockReturnValue({
+      get: vi.fn().mockResolvedValue(mockLegislationDoc),
+    }),
+    get: vi.fn().mockResolvedValue({
+      docs: [mockLegislationDoc],
+    }),
+  }),
+};
+
 vi.mock('../config', () => ({
-  db: {},
+  get db() {
+    return mockDb;
+  },
 }));
 
 vi.mock('./sync-sponsorships', async (importOriginal) => {
@@ -21,7 +44,7 @@ describe('onBillWritten', () => {
     vi.clearAllMocks();
   });
 
-  it('should call syncBillSponsorshipsToLegislators when ocd-bill document is written', async () => {
+  it('should call syncBillSponsorshipsToLegislators with resolved legislationId when ocd-bill document is written', async () => {
     const handler = (onBillWritten as any).run;
     const event = {
       params: { stateId: 'NY', billId: 'S100' },
@@ -57,6 +80,7 @@ describe('onBillWritten', () => {
       expect.anything(),
       'NY',
       'S100',
+      'LEG-1',
       null,
       expect.objectContaining({
         id: 'ocd-bill/S100',

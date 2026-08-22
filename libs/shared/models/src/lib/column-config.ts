@@ -68,6 +68,6 @@ export const COSPONSOR_COLS: ColumnConfig<any>[] = [
 ];
 
 export const SPONSORSHIP_COLS: ColumnConfig<any>[] = [
-  { key: 'stateBillId', label: 'Bill' },
   { key: 'billName', label: 'Title' },
+  { key: 'stateBillId', label: 'Bill' },
 ];
