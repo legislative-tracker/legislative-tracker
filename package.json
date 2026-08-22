@@ -111,7 +111,10 @@
     "uuid": "^11.1.1"
   },
   "nx": {
-    "includedScripts": []
+    "includedScripts": [],
+    "implicitDependencies": [
+      "*"
+    ]
   },
   "allowScripts": {
     "@firebase/util@1.15.3": true,
