@@ -35,7 +35,7 @@ jobs:
         run: |
           echo "$GCP_SA_KEY" > /tmp/gcp-sa.json
           export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-sa.json
-          npx firebase-tools deploy --project tracker-cwapolitical-org
+          npx firebase-tools deploy --project tracker-cwapolitical-org --force
           rm -f /tmp/gcp-sa.json
         env:
           GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TRACKER_CWAPOLITICAL_ORG }}
