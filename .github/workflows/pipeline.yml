@@ -6,6 +6,10 @@ on:
   push:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   changes:
     name: Detect Deployable Changes
@@ -21,6 +25,14 @@ jobs:
             code:
               - 'apps/**'
               - 'libs/**'
+              - 'scripts/**'
+              - '.github/**'
+              - '*.json'
+              - '*.js'
+              - '*.mjs'
+              - '*.cjs'
+              - '*.ts'
+              - 'firestore.rules'
 
   pr-title:
     name: PR Title Lint
@@ -35,28 +47,21 @@ jobs:
 
   test:
     name: Unit & E2E Testing
-    needs: [changes, ci]
+    needs: changes
     if: needs.changes.outputs.code == 'true' && github.event_name == 'pull_request'
     uses: ./.github/workflows/test.yml
 
+  build:
+    name: Build Targets
+    needs: [changes, ci, test]
+    if: needs.changes.outputs.code == 'true' && github.event_name == 'pull_request'
+    uses: ./.github/workflows/build.yml
+
   release:
     name: Release Automation
-    needs: [changes, ci]
+    needs: changes
     if: needs.changes.outputs.code == 'true' && github.event_name == 'push'
     permissions:
       contents: write
       pull-requests: write
     uses: ./.github/workflows/release.yml
-
-  build:
-    name: Build Targets
-    needs: [changes, test, release]
-    if: always() && needs.changes.outputs.code == 'true' && (needs.test.result == 'success' || needs.release.result == 'success')
-    uses: ./.github/workflows/build.yml
-
-  deploy:
-    name: Firebase Deployment
-    needs: [changes, build]
-    if: needs.changes.outputs.code == 'true' && github.event_name == 'push'
-    secrets: inherit
-    uses: ./.github/workflows/deploy.yml
