@@ -1,6 +1,6 @@
 import { onSchedule } from 'firebase-functions/v2/scheduler';
 import * as logger from 'firebase-functions/logger';
-import { pluginLegUsNyKey } from '../config';
+import { dataAccessOpenStatesKey, pluginLegUsNyKey } from '../config';
 import { performLegislationUpdate } from './service';
 
 /**
@@ -11,7 +11,7 @@ export const nightlyUpdate = onSchedule(
     schedule: '0 5 * * *',
     timeZone: 'America/New_York',
     retryCount: 3,
-    secrets: [pluginLegUsNyKey],
+    secrets: [dataAccessOpenStatesKey, pluginLegUsNyKey],
   },
   async () => {
     logger.info('🌙 Starting nightly legislation update...');

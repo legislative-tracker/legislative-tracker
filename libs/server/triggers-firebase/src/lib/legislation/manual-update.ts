@@ -1,13 +1,13 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import * as logger from 'firebase-functions/logger';
-import { pluginLegUsNyKey } from '../config';
+import { dataAccessOpenStatesKey, pluginLegUsNyKey } from '../config';
 import { performLegislationUpdate } from './service';
 
 /**
  * Manual Trigger for Debugging (HTTPS)
  */
 export const manualUpdate = onRequest(
-  { secrets: [pluginLegUsNyKey] },
+  { secrets: [dataAccessOpenStatesKey, pluginLegUsNyKey], timeoutSeconds: 300 },
   async (request, response) => {
     try {
       const data = await performLegislationUpdate();
