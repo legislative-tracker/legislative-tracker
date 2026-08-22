@@ -1,3 +1,13 @@
+## 0.11.13 (2026-08-22)
+
+### 🚀 Features
+
+- **release:** add changelog rebuild script and update release changelog config ([c301985](https://github.com/legislative-tracker/legislative-tracker/commit/c301985))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.12 (2026-08-22)
 
 ### 🚀 Features
