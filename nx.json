@@ -96,7 +96,6 @@
       }
     },
     "changelog": {
-      "automaticFromRef": "HEAD~1",
       "projectChangelogs": true,
       "git": {
         "commit": false,

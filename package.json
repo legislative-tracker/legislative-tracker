@@ -27,6 +27,7 @@
     "format": "prettier --write \"**/*.{ts,js,json,html,scss,md}\"",
     "knip": "knip",
     "release": "nx release",
+    "changelog:rebuild": "node scripts/rebuild-changelog.js",
     "sync-version": "node scripts/sync-version.js",
     "prepare": "husky"
   },
