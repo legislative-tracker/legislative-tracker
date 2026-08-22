@@ -1,3 +1,18 @@
+## 0.11.11 (2026-08-22)
+
+### 🚀 Features
+
+- **core:** implement getNewBill and refactor openstates bill accessors ([be1fa22](https://github.com/legislative-tracker/legislative-tracker/commit/be1fa22))
+- **workspace:** scaffold new plugin and data-access Nx projects ([c404fde](https://github.com/legislative-tracker/legislative-tracker/commit/c404fde))
+
+### 🔥 Performance
+
+- **client-angular:** enable granular feature route code-splitting and sub-path imports ([40effe8](https://github.com/legislative-tracker/legislative-tracker/commit/40effe8))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.10 (2026-08-17)
 
 ### 🚀 Features
