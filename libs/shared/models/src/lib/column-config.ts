@@ -1,37 +1,73 @@
-import { Cosponsor, Legislation, Legislator, Sponsorship } from './legislature';
+import { OpenStatesPerson, PersonSponsorship } from './openstates-person';
+import { OpenStatesBill } from './openstates-bill';
+import { Legislation } from './legislation';
 
 export interface ColumnConfig<T> {
   key: keyof T & string;
   label: string;
 }
 
-export const LEGISLATOR_COLS: ColumnConfig<Legislator>[] = [
+export interface ChamberInfo {
+  upper?: string;
+  lower?: string;
+}
+
+export const MEMBER_COLS: ColumnConfig<OpenStatesPerson>[] = [
   { key: 'name', label: 'Name' },
-  { key: 'chamber', label: 'Chamber' },
-  { key: 'district', label: 'District' },
-  { key: 'party', label: 'Party' },
-];
-
-export const BILL_COLS: ColumnConfig<Legislation>[] = [
-  { key: 'id', label: 'Bill Number' },
-  { key: 'title', label: 'Title' },
-  { key: 'latest_action_date', label: 'Latest Action' },
-];
-
-export const MEMBER_COLS: ColumnConfig<Legislator>[] = [
   { key: 'family_name', label: 'Last Name' },
   { key: 'given_name', label: 'First Name' },
-  { key: 'district', label: 'District' },
   { key: 'party', label: 'Party' },
 ];
 
-export const COSPONSOR_COLS: ColumnConfig<Cosponsor>[] = [
+export const USER_REPS_COLS: ColumnConfig<any>[] = [
   { key: 'name', label: 'Name' },
+  { key: 'party', label: 'Party' },
   { key: 'chamber', label: 'Chamber' },
   { key: 'district', label: 'District' },
 ];
 
-export const SPONSORSHIP_COLS: ColumnConfig<Sponsorship>[] = [
-  { key: 'id', label: 'Bill Id' },
-  { key: 'title', label: 'Title' },
+export function getBillCols(
+  chambersOrPlugin?:
+    | ChamberInfo
+    | { metadata?: { jurisdiction?: { chambers?: ChamberInfo } } }
+    | { chambers?: ChamberInfo },
+): ColumnConfig<Legislation>[] {
+  let upperLabel = 'Upper Chamber';
+  let lowerLabel = 'Lower Chamber';
+
+  let chambers: ChamberInfo | undefined;
+
+  if (chambersOrPlugin && 'metadata' in chambersOrPlugin) {
+    chambers = chambersOrPlugin.metadata?.jurisdiction?.chambers;
+  } else if (chambersOrPlugin && 'chambers' in chambersOrPlugin) {
+    chambers = chambersOrPlugin.chambers;
+  } else if (chambersOrPlugin) {
+    chambers = chambersOrPlugin as ChamberInfo;
+  }
+
+  if (chambers?.upper) {
+    upperLabel = chambers.upper;
+  }
+  if (chambers?.lower) {
+    lowerLabel = chambers.lower;
+  }
+
+  return [
+    { key: 'name', label: 'Title' },
+    { key: 'upperBillId', label: `${upperLabel} Bill` },
+    { key: 'lowerBillId', label: `${lowerLabel} Bill` },
+  ];
+}
+
+export const BILL_COLS: ColumnConfig<Legislation>[] = getBillCols();
+
+export const COSPONSOR_COLS: ColumnConfig<any>[] = [
+  { key: 'name', label: 'Name' },
+  { key: 'party', label: 'Party' },
+  { key: 'district', label: 'District' },
+];
+
+export const SPONSORSHIP_COLS: ColumnConfig<any>[] = [
+  { key: 'stateBillId', label: 'Bill' },
+  { key: 'billName', label: 'Title' },
 ];

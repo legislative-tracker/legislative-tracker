@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 // Target Component
@@ -69,6 +70,9 @@ describe('Profile', () => {
   };
 
   const mockFunctions = {};
+  const mockSnackBar = {
+    open: vi.fn(),
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -77,18 +81,17 @@ describe('Profile', () => {
         DatePipe,
         { provide: AuthService, useValue: mockAuthService },
         { provide: FIREBASE_FUNCTIONS, useValue: mockFunctions },
+        { provide: MatSnackBar, useValue: mockSnackBar },
       ],
     })
       .overrideComponent(Profile, {
-        remove: { imports: [AddressForm, TableComponent] },
+        remove: { imports: [AddressForm, TableComponent, MatSnackBarModule] },
         add: { imports: [MockAddressForm, MockTableComponent] },
       })
       .compileComponents();
 
     fixture = TestBed.createComponent(Profile);
     component = fixture.componentInstance;
-
-    vi.spyOn(window, 'alert').mockImplementation(() => {});
 
     fixture.detectChanges();
   });
@@ -104,6 +107,15 @@ describe('Profile', () => {
   it('should initialize user data from AuthService', () => {
     expect(component.user()?.displayName).toBe('Test User');
     expect(component.user()?.email).toBe('test@example.com');
+  });
+
+  it('should set legislatorCols to name, party, chamber, and district columns', () => {
+    expect(component.legislatorCols).toEqual([
+      { key: 'name', label: 'Name' },
+      { key: 'party', label: 'Party' },
+      { key: 'chamber', label: 'Chamber' },
+      { key: 'district', label: 'District' },
+    ]);
   });
 
   describe('searchAddress', () => {
@@ -129,7 +141,11 @@ describe('Profile', () => {
         address: '123 Main St, Apt 4B, Albany, NY 12201',
       });
 
-      expect(window.alert).toHaveBeenCalledWith('Success!');
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'Representatives search completed successfully!',
+        'Close',
+        expect.objectContaining({ panelClass: ['success-snackbar'] }),
+      );
     });
 
     it('should format address correctly without address2', async () => {
@@ -162,7 +178,11 @@ describe('Profile', () => {
 
       await component.searchAddress(searchData);
 
-      expect(window.alert).toHaveBeenCalledWith(errorObj);
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'Cloud function failed',
+        'Close',
+        expect.objectContaining({ panelClass: ['error-snackbar'] }),
+      );
     });
   });
 });

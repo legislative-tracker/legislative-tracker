@@ -14,13 +14,16 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 // App Imports
+import { getPlugin, getAllPlugins } from '@legislative-tracker/plugins-core';
 import { LegislatureService } from '@legislative-tracker/client-angular/core';
 import { TableComponent } from '@legislative-tracker/client-angular/ui';
 import {
   BILL_COLS,
+  getBillCols,
   MEMBER_COLS,
   Legislation,
-  Legislator,
+  OpenStatesBill,
+  OpenStatesPerson,
 } from '@legislative-tracker/shared/models';
 
 enum DashboardTab {
@@ -43,17 +46,32 @@ export class Dashboard {
   selectedTabIndex = signal<DashboardTab>(DashboardTab.Bills);
 
   Tab = DashboardTab;
-  billCols = BILL_COLS;
+  billCols = computed(() => {
+    const code = this.stateCd().toLowerCase();
+    const plugins = getAllPlugins();
+    const plugin =
+      getPlugin(code) ||
+      plugins.find((p) => {
+        const jCode = p.metadata.jurisdiction?.code?.toLowerCase();
+        const pId = p.metadata.id?.toLowerCase();
+        return (
+          jCode === code ||
+          pId === code ||
+          jCode?.replace(/^us-/, '') === code.replace(/^us-/, '')
+        );
+      }) ||
+      (plugins.length === 1 ? plugins[0] : undefined);
+
+    return getBillCols(plugin);
+  });
   memberCols = MEMBER_COLS;
 
   // --- Request Signals (Triggers) ---
 
-  // Computes the active state for bills, or null if inactive
   private billsRequest = computed(() =>
     this.selectedTabIndex() === DashboardTab.Bills ? this.stateCd() : null,
   );
 
-  // Computes the active state for members, or null if inactive
   private membersRequest = computed(() =>
     [DashboardTab.Senate, DashboardTab.Assembly].includes(
       this.selectedTabIndex(),
@@ -68,11 +86,11 @@ export class Dashboard {
     params: () => this.billsRequest(),
     stream: ({ params: stateCode }) => {
       if (!stateCode) return of([]);
-      return this.legislatureService.getBillsByState(stateCode);
+      return this.legislatureService.getLegislationByState(stateCode);
     },
   });
 
-  membersResource = rxResource<Legislator[], string | null>({
+  membersResource = rxResource<OpenStatesPerson[], string | null>({
     params: () => this.membersRequest(),
     stream: ({ params: stateCode }) => {
       if (!stateCode) return of([]);
@@ -92,10 +110,23 @@ export class Dashboard {
   );
 
   senateMembers = computed(() =>
-    this.members().filter((m) => m.chamber === 'SENATE'),
+    this.members().filter((m) => {
+      const org =
+        m.current_role?.org_classification?.toLowerCase() ??
+        (m as any).chamber?.toLowerCase() ??
+        '';
+      return org === 'upper' || org === 'senate';
+    }),
   );
+
   assemblyMembers = computed(() =>
-    this.members().filter((m) => m.chamber === 'ASSEMBLY'),
+    this.members().filter((m) => {
+      const org =
+        m.current_role?.org_classification?.toLowerCase() ??
+        (m as any).chamber?.toLowerCase() ??
+        '';
+      return org === 'lower' || org === 'assembly' || org === 'house';
+    }),
   );
 
   onTabChange(index: number) {

@@ -1,0 +1,13 @@
+{
+  "name": "@legislative-tracker/server-util-core",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "dependencies": {
+    "@legislative-tracker/plugins-core": "*",
+    "@legislative-tracker/plugins-leg-us-ny": "*",
+    "@legislative-tracker/server-data-access-openstates": "*"
+  }
+}

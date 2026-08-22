@@ -5,15 +5,26 @@
   align-items: center;
   padding: 3rem;
 }
-.header {
-  margin-bottom: 1.5rem;
-}
 
 mat-expansion-panel {
   background-color: var(
     --mat-card-container-color,
     var(--mat-sys-surface-container-low)
   );
+
+  mat-panel-description {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    .action-preview-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: block;
+      width: 100%;
+    }
+  }
 }
 
 .info-panel {
@@ -21,11 +32,17 @@ mat-expansion-panel {
   flex-direction: column;
   gap: 2rem;
   align-items: stretch;
+  margin-bottom: 2rem;
 
   .info-panel-1,
   .info-panel-2 {
-    flex: 1;
+    flex: 1 1 0px;
     width: 100%;
+    min-width: 0;
+
+    mat-expansion-panel {
+      width: 100%;
+    }
   }
 
   @media (min-width: 768px) {
@@ -34,7 +51,8 @@ mat-expansion-panel {
 
     .info-panel-1,
     .info-panel-2 {
-      flex: 1 1 50%;
+      flex: 1 1 0px;
+      min-width: 0;
     }
   }
 }

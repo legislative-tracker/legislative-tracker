@@ -5,13 +5,21 @@ import { LegislaturePluginRegistry } from '@legislative-tracker/plugins-core';
 export const stateGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
-  // Get the 'stateCd' parameter from the current route snapshot
   const stateParam = route.params['stateCd']?.toLowerCase();
 
-  if (stateParam && LegislaturePluginRegistry.has(stateParam)) {
-    return true; // Navigation allowed
+  const isSupportedState =
+    !!stateParam &&
+    (LegislaturePluginRegistry.has(stateParam) ||
+      LegislaturePluginRegistry.getAll().some(
+        (p) =>
+          p.metadata.id.toLowerCase() === stateParam ||
+          p.metadata.jurisdiction?.code?.toLowerCase() === stateParam ||
+          p.metadata.jurisdiction?.code?.toLowerCase() === `us-${stateParam}`,
+      ));
+
+  if (isSupportedState) {
+    return true;
   } else {
-    // Redirect to home if the user tries to enter an unauthorized state
     return router.createUrlTree(['/404']);
   }
 };

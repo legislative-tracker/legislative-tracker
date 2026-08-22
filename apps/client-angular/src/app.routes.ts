@@ -13,13 +13,13 @@ export const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'ny',
+        redirectTo: 'us-ny',
       },
       // --- Public Static Pages ---
       {
         path: '404',
         loadComponent: () =>
-          import('@legislative-tracker/client-angular/features').then(
+          import('@legislative-tracker/client-angular/features/pages/not-found/not-found').then(
             (m) => m.NotFound,
           ),
         title: '404 | Legislative Tracker',
@@ -27,7 +27,7 @@ export const routes: Routes = [
       {
         path: 'about',
         loadComponent: () =>
-          import('@legislative-tracker/client-angular/features').then(
+          import('@legislative-tracker/client-angular/features/pages/about/about').then(
             (m) => m.About,
           ),
         title: 'About | Legislative Tracker',
@@ -35,7 +35,7 @@ export const routes: Routes = [
       {
         path: 'privacy',
         loadComponent: () =>
-          import('@legislative-tracker/client-angular/features').then(
+          import('@legislative-tracker/client-angular/features/pages/privacy/privacy').then(
             (m) => m.Privacy,
           ),
         title: 'Privacy Policy | Legislative Tracker',
@@ -45,7 +45,7 @@ export const routes: Routes = [
       {
         path: 'login',
         loadComponent: () =>
-          import('@legislative-tracker/client-angular/features').then(
+          import('@legislative-tracker/client-angular/features/auth/login/login').then(
             (m) => m.Login,
           ),
         title: 'Login | Legislative Tracker',
@@ -56,7 +56,7 @@ export const routes: Routes = [
         path: 'admin',
         canActivate: [adminGuard],
         loadChildren: () =>
-          import('@legislative-tracker/client-angular/features').then(
+          import('@legislative-tracker/client-angular/features/admin/admin.routes').then(
             (m) => m.ADMIN_ROUTES,
           ),
       },
@@ -65,7 +65,7 @@ export const routes: Routes = [
       {
         path: 'profile',
         loadComponent: () =>
-          import('@legislative-tracker/client-angular/features').then(
+          import('@legislative-tracker/client-angular/features/user/profile/profile').then(
             (m) => m.Profile,
           ),
         title: 'Profile | Legislative Tracker',
@@ -76,7 +76,7 @@ export const routes: Routes = [
         path: ':stateCd',
         canActivate: [stateGuard],
         loadChildren: () =>
-          import('@legislative-tracker/client-angular/features').then(
+          import('@legislative-tracker/client-angular/features/legislative/legislative.routes').then(
             (m) => m.LEGISLATIVE_ROUTES,
           ),
       },

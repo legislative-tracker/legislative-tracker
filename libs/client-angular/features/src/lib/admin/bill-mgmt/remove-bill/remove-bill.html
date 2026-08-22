@@ -6,7 +6,9 @@
         <mat-icon color="warn">delete_forever</mat-icon>
       </div>
       <mat-card-title>Delete Legislation</mat-card-title>
-      <mat-card-subtitle>Permanently remove a bill</mat-card-subtitle>
+      <mat-card-subtitle
+        >Permanently remove a bill or chamber entry</mat-card-subtitle
+      >
     </mat-card-header>
 
     <mat-card-content>
@@ -20,7 +22,7 @@
           <mat-label>Select State</mat-label>
           <mat-select
             [ngModel]="selectedState()"
-            (ngModelChange)="selectedState.set($event)"
+            (ngModelChange)="onStateChange($event)"
             name="state"
             required
             [disabled]="isDeleting()"
@@ -35,7 +37,7 @@
           <mat-label>Select Bill to Delete</mat-label>
           <mat-select
             [ngModel]="selectedBillId()"
-            (ngModelChange)="selectedBillId.set($event)"
+            (ngModelChange)="onBillChange($event)"
             name="billId"
             required
             [disabled]="!selectedState() || isLoadingBills() || isDeleting()"
@@ -53,6 +55,55 @@
             }
           </mat-select>
         </mat-form-field>
+
+        @if (selectedBill(); as bill) {
+        <div class="bill-details-box">
+          <h4>{{ bill.title }}</h4>
+          @if (bill.description) {
+          <p class="bill-desc">{{ bill.description }}</p>
+          }
+          <div class="bill-meta">
+            @if (bill.upperBillId) {
+            <span
+              ><strong>{{ chambers().upper }}:</strong> {{ bill.upperBillId
+              }}</span
+            >
+            } @if (bill.lowerBillId) {
+            <span
+              ><strong>{{ chambers().lower }}:</strong> {{ bill.lowerBillId
+              }}</span
+            >
+            }
+          </div>
+        </div>
+
+        @if (hasMultipleChambers() || (isBicameral() && (hasUpperChamber() ||
+        hasLowerChamber()))) {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Chamber Target</mat-label>
+          <mat-select
+            [ngModel]="selectedChamber()"
+            (ngModelChange)="selectedChamber.set($event)"
+            name="chamber"
+            [disabled]="isDeleting()"
+          >
+            <mat-option value="all"
+              >All Chambers (Remove Entire Legislation)</mat-option
+            >
+            @if (hasUpperChamber()) {
+            <mat-option value="upper">
+              {{ chambers().upper }} Only {{ bill.upperBillId ? '(' +
+              bill.upperBillId + ')' : '' }}
+            </mat-option>
+            } @if (hasLowerChamber()) {
+            <mat-option value="lower">
+              {{ chambers().lower }} Only {{ bill.lowerBillId ? '(' +
+              bill.lowerBillId + ')' : '' }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        } }
 
         <button
           mat-flat-button

@@ -17,7 +17,7 @@ import { routes } from './app.routes';
 import configJson from '../public/assets/config.json';
 
 import { LegislaturePluginRegistry } from '@legislative-tracker/plugins-core';
-import { nyLegislaturePlugin } from '@legislative-tracker/plugins-leg-us-ny';
+import { legUsNyPlugin } from '@legislative-tracker/plugins-leg-us-ny';
 
 export const getAppConfig = (
   runtimeConfig: AppConfig = configJson as AppConfig,
@@ -38,7 +38,7 @@ export const getAppConfig = (
       ...BACKEND_PROVIDERS,
 
       provideAppInitializer(() => {
-        LegislaturePluginRegistry.register(nyLegislaturePlugin);
+        LegislaturePluginRegistry.register(legUsNyPlugin);
         return inject(ConfigService).load();
       }),
     ],

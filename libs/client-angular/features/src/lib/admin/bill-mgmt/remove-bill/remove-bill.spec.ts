@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 // Target Component
 import { RemoveBill } from './remove-bill';
@@ -17,14 +17,13 @@ describe('RemoveBill', () => {
   let component: RemoveBill;
   let fixture: ComponentFixture<RemoveBill>;
 
-  // Mock Services
   const mockAuthService = {
     isAdmin: vi.fn().mockReturnValue(true),
     userProfile: vi.fn().mockReturnValue({ displayName: 'Admin User' }),
   };
 
   const mockLegislatureService = {
-    getBillsByState: vi.fn().mockReturnValue(of([])),
+    getLegislationByState: vi.fn().mockReturnValue(of([])),
     removeBill: vi.fn(),
   };
   const mockSnackBar = {
@@ -32,8 +31,7 @@ describe('RemoveBill', () => {
   };
 
   beforeEach(async () => {
-    vi.clearAllMocks();
-    mockLegislatureService.getBillsByState.mockReturnValue(of([]));
+    mockLegislatureService.getLegislationByState.mockReturnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [RemoveBill],
@@ -52,6 +50,7 @@ describe('RemoveBill', () => {
     fixture = TestBed.createComponent(RemoveBill);
     component = fixture.componentInstance;
 
+    vi.clearAllMocks();
     vi.spyOn(window, 'confirm');
     vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -69,28 +68,37 @@ describe('RemoveBill', () => {
   describe('Fetching Bills', () => {
     it('should fetch bills when selectedState changes', async () => {
       const mockBillsData = [
-        { id: 'BILL-1', title: 'Test Bill' } as any,
+        {
+          id: 'BILL-1',
+          name: 'Test Bill',
+          stateBillIds: { upper: 'S1234', lower: 'A5678' },
+        } as any,
         { id: 'BILL-2', title: 'Other Bill' } as any,
       ];
-      mockLegislatureService.getBillsByState.mockReturnValue(of(mockBillsData));
+      mockLegislatureService.getLegislationByState.mockReturnValue(
+        of(mockBillsData),
+      );
 
-      component.selectedState.set('ny');
+      component.selectedState.set('us-ny');
       fixture.detectChanges();
 
       await TestBed.flushEffects();
 
-      expect(mockLegislatureService.getBillsByState).toHaveBeenCalledWith('ny');
+      expect(mockLegislatureService.getLegislationByState).toHaveBeenCalledWith(
+        'us-ny',
+      );
       expect(component.availableBills().length).toBe(2);
+      expect(component.availableBills()[0].number).toBe('S1234 / A5678');
       expect(component.availableBills()[0].title).toBe('Test Bill');
       expect(component.isLoadingBills()).toBe(false);
     });
 
     it('should handle errors when fetching bills fails', async () => {
-      mockLegislatureService.getBillsByState.mockReturnValue(
+      mockLegislatureService.getLegislationByState.mockReturnValue(
         throwError(() => new Error('Service Error')),
       );
 
-      component.selectedState.set('ca');
+      component.selectedState.set('us-ca');
       fixture.detectChanges();
 
       await TestBed.flushEffects();
@@ -107,7 +115,7 @@ describe('RemoveBill', () => {
 
   describe('onDelete', () => {
     beforeEach(() => {
-      component.selectedState.set('ny');
+      component.selectedState.set('us-ny');
       component.selectedBillId.set('BILL-123');
     });
 
@@ -120,7 +128,7 @@ describe('RemoveBill', () => {
       expect(mockLegislatureService.removeBill).not.toHaveBeenCalled();
     });
 
-    it('should delete bill and refresh list on success', async () => {
+    it('should delete bill with all chambers by default and refresh list on success', async () => {
       vi.mocked(window.confirm).mockReturnValue(true);
       mockLegislatureService.removeBill.mockResolvedValue({ success: true });
 
@@ -129,18 +137,33 @@ describe('RemoveBill', () => {
       await component.onDelete();
 
       expect(mockLegislatureService.removeBill).toHaveBeenCalledWith(
-        'ny',
+        'us-ny',
         'BILL-123',
+        undefined,
       );
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(
-        'Bill deleted successfully.',
+        'Bill removed successfully.',
         'Close',
         expect.objectContaining({ panelClass: ['success-snackbar'] }),
       );
 
-      expect(fetchSpy).toHaveBeenCalledWith('ny');
+      expect(fetchSpy).toHaveBeenCalledWith('us-ny');
       expect(component.isDeleting()).toBe(false);
+    });
+
+    it('should delete specified chamber when selectedChamber is upper', async () => {
+      vi.mocked(window.confirm).mockReturnValue(true);
+      mockLegislatureService.removeBill.mockResolvedValue({ success: true });
+
+      component.selectedChamber.set('upper');
+      await component.onDelete();
+
+      expect(mockLegislatureService.removeBill).toHaveBeenCalledWith(
+        'us-ny',
+        'BILL-123',
+        'upper',
+      );
     });
 
     it('should show error if deletion fails', async () => {

@@ -1,85 +1,170 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Legislation, Legislator } from '@legislative-tracker/shared/models';
-import { LegislatureService } from '../services/legislature.service';
+import {
+  Legislation,
+  OpenStatesBill,
+  OpenStatesPerson,
+} from '@legislative-tracker/shared/models';
+import {
+  LegislatureService,
+  AddBillsParams,
+  UpdateBillParams,
+} from '../services/legislature.service';
 
-const MOCK_BILLS: Legislation[] = [
+const MOCK_LEGISLATION: Legislation[] = [
   {
-    id: 'mock-bill-1',
-    session: '2025-2026',
-    title: 'Clean Energy Infrastructure Act',
-    text: 'An act establishing funding and incentives for renewable energy installation across public facilities.',
-    classification: 'bill',
-    updated_at: '2025-02-01',
+    id: 'mock-leg-1',
+    name: 'Clean Energy Infrastructure Act',
+    description: 'Clean energy infrastructure regulations',
+    upperBillId: 'S1234',
+    lowerBillId: 'A5678',
+    stateBillIds: { upper: 'S1234', lower: 'A5678' },
+    ocdBillIds: {
+      upper: 'ocd-bill/mock-bill-1',
+      lower: 'ocd-bill/mock-bill-2',
+    },
   },
   {
-    id: 'mock-bill-2',
-    session: '2025-2026',
-    title: 'Digital Privacy Protection Amendment',
-    text: 'Provides consumer privacy protection and data handling standard requirements for technology companies.',
-    classification: 'bill',
-    updated_at: '2025-01-15',
+    id: 'mock-leg-2',
+    name: 'Digital Privacy Protection Amendment',
+    description: 'Digital privacy protection measures',
+    upperBillId: 'S5678',
+    lowerBillId: 'A1234',
+    stateBillIds: { upper: 'S5678', lower: 'A1234' },
+    ocdBillIds: {
+      upper: 'ocd-bill/mock-bill-3',
+      lower: 'ocd-bill/mock-bill-4',
+    },
   },
 ];
 
-const MOCK_MEMBERS: Legislator[] = [
+const MOCK_BILLS: OpenStatesBill[] = [
   {
-    id: 'mock-mem-1',
+    id: 'ocd-bill/mock-bill-1',
+    identifier: 'S1234',
+    session: '2025-2026',
+    title: 'Clean Energy Infrastructure Act',
+    updated_at: '2025-02-01',
+    classification: ['bill'],
+  },
+  {
+    id: 'ocd-bill/mock-bill-2',
+    identifier: 'A5678',
+    session: '2025-2026',
+    title: 'Digital Privacy Protection Amendment',
+    updated_at: '2025-01-15',
+    classification: ['bill'],
+  },
+];
+
+const MOCK_MEMBERS: OpenStatesPerson[] = [
+  {
+    id: 'ocd-person/mock-mem-1',
     name: 'Jane Doe',
-    district: '42',
-    chamber: 'SENATE',
+    given_name: 'Jane',
+    family_name: 'Doe',
     party: 'Democrat',
     email: 'jdoe@nysenate.gov',
     image: '',
-    offices: [],
+    current_role: {
+      title: 'Senator',
+      org_classification: 'upper',
+      district: '42',
+    },
   },
   {
-    id: 'mock-mem-2',
+    id: 'ocd-person/mock-mem-2',
     name: 'John Smith',
-    district: '15',
-    chamber: 'ASSEMBLY',
+    given_name: 'John',
+    family_name: 'Smith',
     party: 'Republican',
     email: 'jsmith@nyassembly.gov',
     image: '',
-    offices: [],
+    current_role: {
+      title: 'Assembly Member',
+      org_classification: 'lower',
+      district: '15',
+    },
   },
 ];
 
 @Injectable()
 export class MockLegislatureService extends LegislatureService {
+  private legislation = [...MOCK_LEGISLATION];
   private bills = [...MOCK_BILLS];
   private members = [...MOCK_MEMBERS];
 
-  getBillsByState(stateCode: string): Observable<Legislation[]> {
-    return of(this.bills);
+  getLegislationByState(stateCode: string): Observable<Legislation[]> {
+    return of(this.legislation);
   }
 
-  getMembersByState(stateCode: string): Observable<Legislator[]> {
+  getMembersByState(stateCode: string): Observable<OpenStatesPerson[]> {
     return of(this.members);
   }
 
-  getBillById(stateCode: string, id: string): Observable<Legislation> {
+  getBillById(
+    stateCode: string,
+    id: string,
+  ): Observable<OpenStatesBill | undefined> {
     const bill =
-      this.bills.find((b) => b.id.toLowerCase() === id.toLowerCase()) ??
-      this.bills[0];
+      this.bills.find(
+        (b) =>
+          b.id.toLowerCase() === id.toLowerCase() ||
+          b.identifier?.toLowerCase() === id.toLowerCase(),
+      ) ?? this.bills[0];
     return of(bill);
   }
 
-  getMemberById(stateCode: string, id: string): Observable<Legislator> {
+  getMemberById(
+    stateCode: string,
+    id: string,
+  ): Observable<OpenStatesPerson | undefined> {
     const member =
       this.members.find((m) => m.id.toLowerCase() === id.toLowerCase()) ??
       this.members[0];
     return of(member);
   }
 
-  async addBill(state: string, billData: Legislation): Promise<unknown> {
-    const newBill = { ...billData, id: `mock-bill-${Date.now()}` };
-    this.bills.push(newBill);
-    return Promise.resolve({ data: newBill });
+  async addBills(params: AddBillsParams): Promise<unknown> {
+    const newBills = params.billIds.map((bId, idx) => ({
+      id: `ocd-bill/mock-${bId}-${idx}`,
+      identifier: bId,
+      session: '2025-2026',
+      title: params.name,
+      updated_at: new Date().toISOString(),
+    }));
+    this.bills.push(...newBills);
+    return Promise.resolve({ data: { added: params.billIds, failed: [] } });
   }
 
-  async removeBill(state: string, billId: string): Promise<unknown> {
-    this.bills = this.bills.filter((b) => b.id !== billId);
+  async removeBill(
+    state: string,
+    billId: string,
+    chamber?: 'upper' | 'lower',
+  ): Promise<unknown> {
+    this.bills = this.bills.filter(
+      (b) => b.id !== billId && b.identifier !== billId,
+    );
+    return Promise.resolve({ data: { success: true } });
+  }
+
+  async updateBill(params: UpdateBillParams): Promise<unknown> {
+    const item = this.legislation.find((l) => l.id === params.id);
+    if (item) {
+      if (params.name !== undefined) item.name = params.name;
+      if (params.description !== undefined)
+        item.description = params.description;
+      const stateBillIds = { ...item.stateBillIds };
+      if (params.upperBillId !== undefined) {
+        item.upperBillId = params.upperBillId;
+        stateBillIds.upper = params.upperBillId;
+      }
+      if (params.lowerBillId !== undefined) {
+        item.lowerBillId = params.lowerBillId;
+        stateBillIds.lower = params.lowerBillId;
+      }
+      item.stateBillIds = stateBillIds;
+    }
     return Promise.resolve({ data: { success: true } });
   }
 }

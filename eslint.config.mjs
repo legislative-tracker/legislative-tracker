@@ -47,6 +47,7 @@ export default [
                 'type:util',
                 'type:core',
                 'type:plugin',
+                'type:data-access',
               ],
             },
             {
@@ -89,6 +90,13 @@ export default [
     },
   },
   {
-    ignores: ['dist', '.nx', 'tmp', 'coverage'],
+    ignores: [
+      'dist',
+      '.nx',
+      'tmp',
+      'coverage',
+      '**/vite.config.*.timestamp*',
+      '**/vitest.config.*.timestamp*',
+    ],
   },
 ];

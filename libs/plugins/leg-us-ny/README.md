@@ -1,11 +1,34 @@
-# leg-us-ny
+# @legislative-tracker/plugins-leg-us-ny
 
-This library was generated with [Nx](https://nx.dev).
+New York State Legislative Plugin for the Legislative Tracker monorepo ecosystem.
 
-## Building
+## Features
 
-Run `nx build leg-us-ny` to build the library.
+- Implements `LegislativePlugin` interface from `@legislative-tracker/plugins-core`.
+- Defines New York State jurisdiction metadata (`ocd-jurisdiction/country:us/state:ny/government`).
+- Dynamic `currentSession` evaluation supporting New York's 2-year odd-year bienniums (e.g. `2025-2026`).
 
-## Running unit tests
+## Installation
 
-Run `nx test leg-us-ny` to execute the unit tests via [Vitest](https://vitest.dev/).
+```bash
+npm install @legislative-tracker/plugins-leg-us-ny
+```
+
+## Usage
+
+```typescript
+import { registerPlugin } from '@legislative-tracker/plugins-core';
+import { legUsNyPlugin } from '@legislative-tracker/plugins-leg-us-ny';
+
+// Register plugin
+await registerPlugin(legUsNyPlugin);
+
+// Access dynamic session
+console.log(legUsNyPlugin.metadata.jurisdiction.currentSession); // "2025-2026"
+```
+
+## Building & Testing
+
+- Build output: `nx build plugin-leg-us-ny`
+- Unit tests: `nx test plugin-leg-us-ny`
+- Publish target: `nx run plugin-leg-us-ny:publish`

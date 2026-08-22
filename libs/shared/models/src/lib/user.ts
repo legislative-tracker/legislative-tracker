@@ -1,9 +1,17 @@
-import { Legislator } from './legislature';
+import { OpenStatesPerson } from './openstates-person';
 
 export interface TimestampLike {
   seconds: number;
   nanoseconds: number;
   toDate?: () => Date;
+}
+
+export interface UserRepresentative {
+  name: string;
+  chamber: string;
+  party: string;
+  district: string;
+  ocdId: string;
 }
 
 export interface AppUser {
@@ -21,8 +29,8 @@ export interface AppUser {
     };
   };
   legislators?: {
-    federal?: Legislator[];
-    state?: Legislator[];
+    federal?: (OpenStatesPerson | UserRepresentative)[];
+    state?: (OpenStatesPerson | UserRepresentative)[];
   };
   favorites?: string[];
 }

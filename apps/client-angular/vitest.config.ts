@@ -31,7 +31,7 @@ export default defineConfig({
     ],
     server: {
       deps: {
-        inline: [/@angular\//, /rxfire/],
+        inline: [/@angular\//, /rxfire/, /@legislative-tracker\//],
       },
     },
     coverage: {

@@ -1,4 +1,5 @@
 export * from './lib/legislative/legislative.routes';
+export * from './lib/legislative/legislation/legislation';
 export * from './lib/auth/auth.routes';
 export * from './lib/auth/login/login';
 export * from './lib/user/profile/profile';

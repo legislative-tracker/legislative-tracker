@@ -1,114 +1,58 @@
 import * as logger from 'firebase-functions/logger';
 import {
-  Legislation,
-  Legislator,
-  Sponsorship,
+  OpenStatesBill,
+  OpenStatesPerson,
+  PersonSponsorship,
 } from '@legislative-tracker/shared/models';
-import { slugify } from '@legislative-tracker/server-util-core';
+import { getJurisdictionCode } from '@legislative-tracker/server-util-core';
+import { formatDocId } from '../helpers';
 
 export interface SponsorInfo {
-  id?: string;
+  personId?: string;
   name?: string;
-  chamber?: string;
-  district?: string;
   primary?: boolean;
   classification?: string;
 }
 
 /**
- * Helper to extract all primary sponsors and cosponsors from a Legislation document
+ * Helper to extract all sponsors from an OpenStatesBill payload
  */
-export const extractSponsors = (bill?: Legislation | null): SponsorInfo[] => {
-  if (!bill) return [];
+export const extractSponsors = (
+  bill?: OpenStatesBill | null,
+): SponsorInfo[] => {
+  if (!bill || !Array.isArray(bill.sponsorships)) return [];
 
   const sponsorsMap = new Map<string, SponsorInfo>();
 
-  const addSponsor = (info: SponsorInfo) => {
-    const rawName = info.name || '';
-    const key = info.id || (rawName ? slugify(rawName) : '');
-    if (!key) return;
+  bill.sponsorships.forEach((s) => {
+    if (typeof s === 'object' && s !== null) {
+      const personId = s.person?.id || s.id;
+      const rawName = s.name || s.person?.name || '';
+      const key = personId ? formatDocId(personId) : rawName;
+      if (!key) return;
 
-    const existing = sponsorsMap.get(key);
-    if (!existing) {
-      sponsorsMap.set(key, { ...info });
-    } else {
-      if (info.primary) {
-        existing.primary = true;
-        existing.classification = info.classification || 'primary';
-      }
-      if (info.chamber && !existing.chamber) existing.chamber = info.chamber;
-      if (info.district && !existing.district)
-        existing.district = info.district;
-    }
-  };
-
-  // 1. Process bill.sponsorships array if present
-  if (Array.isArray(bill.sponsorships)) {
-    bill.sponsorships.forEach((s: any) => {
-      if (typeof s === 'object' && s !== null) {
-        const isPrimary = Boolean(s.primary || s.classification === 'primary');
-        addSponsor({
-          id: s.id,
-          name: s.name,
-          chamber: s.chamber,
-          district: s.district,
-          primary: isPrimary,
-          classification: isPrimary
-            ? 'primary'
-            : s.classification || 'cosponsor',
-        });
-      }
-    });
-  }
-
-  // 2. Process bill.cosponsors version map if present
-  if (bill.cosponsors && typeof bill.cosponsors === 'object') {
-    Object.values(bill.cosponsors).forEach((list) => {
-      if (Array.isArray(list)) {
-        list.forEach((c) => {
-          addSponsor({
-            id: c.id,
-            name: c.name,
-            chamber: c.chamber,
-            district: c.district,
-            primary: false,
-            classification: 'cosponsor',
-          });
-        });
-      }
-    });
-  }
-
-  // 3. Process top-level bill.sponsor if present
-  const rawSponsor = (bill as any).sponsor;
-  if (rawSponsor && typeof rawSponsor === 'object') {
-    const member = rawSponsor.member || rawSponsor;
-    const name = member.fullName || member.name;
-    const id = member.id || (name ? slugify(name) : undefined);
-    if (name || id) {
-      addSponsor({
-        id,
-        name,
-        chamber: member.chamber,
-        district: member.districtCode || member.district,
-        primary: true,
-        classification: 'primary',
+      const isPrimary = Boolean(s.primary || s.classification === 'primary');
+      sponsorsMap.set(key, {
+        personId: personId ? formatDocId(personId) : undefined,
+        name: rawName,
+        primary: isPrimary,
+        classification: s.classification,
       });
     }
-  }
+  });
 
   return Array.from(sponsorsMap.values());
 };
 
 /**
- * Synchronizes a bill's sponsorship information with the relevant legislator documents in Firestore.
+ * Synchronizes an OpenStates bill's sponsorship information with ocd-person documents in Firestore.
  */
 export const syncBillSponsorshipsToLegislators = async (
   db: FirebaseFirestore.Firestore,
   stateId: string,
   billId: string,
-  beforeBill?: Legislation | null,
-  afterBill?: Legislation | null,
+  beforeBill?: OpenStatesBill | null,
+  afterBill?: OpenStatesBill | null,
 ): Promise<{ updatedCount: number; matchedLegislators: string[] }> => {
   const beforeSponsors = extractSponsors(beforeBill);
   const afterSponsors = extractSponsors(afterBill);
@@ -117,100 +61,82 @@ export const syncBillSponsorshipsToLegislators = async (
     return { updatedCount: 0, matchedLegislators: [] };
   }
 
-  const legislatorsSnapshot = await db
-    .collection(`legislatures/${stateId}/legislators`)
+  const stateKey = getJurisdictionCode(stateId);
+  const peopleSnapshot = await db
+    .collection(`legislatures/${stateKey}/ocd-person`)
     .get();
 
-  if (legislatorsSnapshot.empty) {
+  if (peopleSnapshot.empty) {
     logger.warn(
-      `No legislators found in state ${stateId} to sync sponsorships for bill ${billId}`,
+      `No ocd-person records found in state ${stateId} to sync sponsorships for bill ${billId}`,
     );
     return { updatedCount: 0, matchedLegislators: [] };
   }
 
-  // Build indexed lookup maps for after & before sponsors
-  const afterById = new Map<string, SponsorInfo>();
-  const afterByLocation = new Map<string, SponsorInfo>();
+  const ocdBillId = afterBill?.id || beforeBill?.id || billId;
+  const stateBillId = afterBill?.identifier || beforeBill?.identifier || '';
+  const billName =
+    afterBill?.identifier ||
+    afterBill?.title ||
+    beforeBill?.identifier ||
+    beforeBill?.title ||
+    billId;
+
+  // Build lookup maps for after & before sponsors
+  const afterByPersonId = new Map<string, SponsorInfo>();
+  const afterByName = new Map<string, SponsorInfo>();
   afterSponsors.forEach((s) => {
-    const key = s.id || (s.name ? slugify(s.name) : '');
-    if (key) afterById.set(key, s);
-    if (s.chamber && s.district) {
-      afterByLocation.set(`${s.chamber.toUpperCase()}:${s.district}`, s);
-    }
+    if (s.personId) afterByPersonId.set(s.personId, s);
+    if (s.name) afterByName.set(s.name.toLowerCase(), s);
   });
 
-  const beforeById = new Map<string, SponsorInfo>();
-  const beforeByLocation = new Map<string, SponsorInfo>();
+  const beforeByPersonId = new Map<string, SponsorInfo>();
+  const beforeByName = new Map<string, SponsorInfo>();
   beforeSponsors.forEach((s) => {
-    const key = s.id || (s.name ? slugify(s.name) : '');
-    if (key) beforeById.set(key, s);
-    if (s.chamber && s.district) {
-      beforeByLocation.set(`${s.chamber.toUpperCase()}:${s.district}`, s);
-    }
+    if (s.personId) beforeByPersonId.set(s.personId, s);
+    if (s.name) beforeByName.set(s.name.toLowerCase(), s);
   });
 
   const bulkWriter = db.bulkWriter();
   let updatedCount = 0;
   const matchedLegislators: string[] = [];
 
-  const effectiveBillId =
-    afterBill?.identifier ||
-    afterBill?.id ||
-    beforeBill?.identifier ||
-    beforeBill?.id ||
-    billId;
-  const billTitle = afterBill?.title || beforeBill?.title || '';
-  const billVersion =
-    afterBill?.current_version ||
-    afterBill?.version ||
-    beforeBill?.current_version ||
-    beforeBill?.version ||
-    '';
-
-  legislatorsSnapshot.docs.forEach((doc) => {
-    const leg = doc.data() as Legislator;
+  peopleSnapshot.docs.forEach((doc) => {
+    const person = doc.data() as OpenStatesPerson;
     const docId = doc.id;
-    const legName = leg.name || '';
-    const legSlug = slugify(legName);
-    const legChamber = leg.chamber?.toUpperCase();
-    const legDistrict = leg.district ? String(leg.district) : undefined;
-    const locationKey =
-      legChamber && legDistrict ? `${legChamber}:${legDistrict}` : undefined;
+    const cleanPersonId = person.id ? formatDocId(person.id) : docId;
+    const personName = (person.name || '').toLowerCase();
 
-    // O(1) sponsor matching
     const matchedAfter =
-      afterById.get(docId) ||
-      afterById.get(legSlug) ||
-      (locationKey ? afterByLocation.get(locationKey) : undefined);
+      afterByPersonId.get(docId) ||
+      afterByPersonId.get(cleanPersonId) ||
+      afterByName.get(personName);
 
     const matchedBefore =
-      beforeById.get(docId) ||
-      beforeById.get(legSlug) ||
-      (locationKey ? beforeByLocation.get(locationKey) : undefined);
+      beforeByPersonId.get(docId) ||
+      beforeByPersonId.get(cleanPersonId) ||
+      beforeByName.get(personName);
 
     if (!matchedAfter && !matchedBefore) {
       return;
     }
 
-    const existingSponsorships: Sponsorship[] = Array.isArray(leg.sponsorships)
-      ? leg.sponsorships
+    const existingSponsorships: PersonSponsorship[] = Array.isArray(
+      person.sponsorships,
+    )
+      ? person.sponsorships
       : [];
-    // Remove previous sponsorship entry for this bill
+
+    // Filter out existing entry for this bill
     const filteredSponsorships = existingSponsorships.filter(
-      (s) => s.id !== billId && s.id !== effectiveBillId,
+      (s) => s.ocdBillId !== ocdBillId && s.stateBillId !== stateBillId,
     );
 
     if (matchedAfter) {
-      const isPrimary = Boolean(matchedAfter.primary);
-      const sponsorshipEntry: Sponsorship = {
-        id: effectiveBillId,
-        version: billVersion,
-        title: billTitle,
-        name: billTitle,
-        primary: isPrimary,
-        classification: isPrimary
-          ? 'primary'
-          : matchedAfter.classification || 'cosponsor',
+      const sponsorshipEntry: PersonSponsorship = {
+        billName,
+        stateBillId,
+        ocdBillId,
       };
       filteredSponsorships.push(sponsorshipEntry);
     }
@@ -230,7 +156,7 @@ export const syncBillSponsorshipsToLegislators = async (
 
   await bulkWriter.close();
   logger.info(
-    `Synced sponsorships for bill ${billId} (${stateId}): updated ${updatedCount} legislator(s).`,
+    `Synced sponsorships for bill ${billId} (${stateId}): updated ${updatedCount} ocd-person record(s).`,
   );
 
   return { updatedCount, matchedLegislators };

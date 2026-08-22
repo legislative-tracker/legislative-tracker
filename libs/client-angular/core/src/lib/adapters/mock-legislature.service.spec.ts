@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
 import { firstValueFrom } from 'rxjs';
 import { describe, it, expect, beforeEach } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { MockLegislatureService } from './mock-legislature.service';
 
 describe('MockLegislatureService', () => {
@@ -17,9 +17,11 @@ describe('MockLegislatureService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should return mock bills for state', async () => {
-    const bills = await firstValueFrom(service.getBillsByState('NY'));
-    expect(bills.length).toBeGreaterThan(0);
+  it('should return mock legislation for state', async () => {
+    const legislation = await firstValueFrom(
+      service.getLegislationByState('NY'),
+    );
+    expect(legislation.length).toBeGreaterThan(0);
   });
 
   it('should return mock members for state', async () => {
@@ -28,31 +30,35 @@ describe('MockLegislatureService', () => {
   });
 
   it('should return mock bill by ID', async () => {
-    const bill = await firstValueFrom(service.getBillById('NY', 'mock-bill-1'));
+    const bill = await firstValueFrom(
+      service.getBillById('NY', 'ocd-bill/mock-bill-1'),
+    );
     expect(bill).toBeTruthy();
-    expect(bill.id).toBe('mock-bill-1');
+    expect(bill?.id).toBe('ocd-bill/mock-bill-1');
   });
 
   it('should return mock member by ID', async () => {
     const member = await firstValueFrom(
-      service.getMemberById('NY', 'mock-mem-1'),
+      service.getMemberById('NY', 'ocd-person/mock-mem-1'),
     );
     expect(member).toBeTruthy();
-    expect(member.id).toBe('mock-mem-1');
+    expect(member?.id).toBe('ocd-person/mock-mem-1');
   });
 
-  it('should add a bill', async () => {
-    const newBill = {
-      id: 'test-bill',
-      title: 'Test Bill',
-    } as any;
-
-    const result = (await service.addBill('NY', newBill)) as any;
-    expect(result.data.title).toBe('Test Bill');
+  it('should add bills', async () => {
+    const result = (await service.addBills({
+      state: 'NY',
+      name: 'Test Bill',
+      billIds: ['S100'],
+    })) as any;
+    expect(result.data.added).toContain('S100');
   });
 
   it('should remove a bill', async () => {
-    const result = (await service.removeBill('NY', 'mock-bill-1')) as any;
+    const result = (await service.removeBill(
+      'NY',
+      'ocd-bill/mock-bill-1',
+    )) as any;
     expect(result.data.success).toBe(true);
   });
 });

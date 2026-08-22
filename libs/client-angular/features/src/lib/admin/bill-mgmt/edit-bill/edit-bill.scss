@@ -1,0 +1,18 @@
+.edit-container {
+  max-width: 500px;
+  margin: 2rem auto;
+}
+.full-width {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+.access-denied {
+  text-align: center;
+  padding: 2rem;
+
+  .large-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+  }
+}

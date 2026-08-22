@@ -16,8 +16,10 @@ import { MatDividerModule } from '@angular/material/divider';
 // App Imports
 import { LegislatureService } from '@legislative-tracker/client-angular/core';
 import { TableComponent } from '@legislative-tracker/client-angular/ui';
-import { COSPONSOR_COLS } from '@legislative-tracker/shared/models';
-import { Legislation } from '@legislative-tracker/shared/models';
+import {
+  COSPONSOR_COLS,
+  OpenStatesBill,
+} from '@legislative-tracker/shared/models';
 
 @Component({
   selector: 'app-bill-detail',
@@ -35,7 +37,7 @@ import { Legislation } from '@legislative-tracker/shared/models';
   styleUrls: ['./bill-detail.scss'],
 })
 export class BillDetail {
-  stateCd = input.required<string>(); // two-letter region abbreviation
+  stateCd = input.required<string>(); // region code (e.g. us-ny or ny)
   id = input.required<string>(); // The Bill ID
 
   private legislatureService = inject(LegislatureService);
@@ -48,18 +50,76 @@ export class BillDetail {
       this.legislatureService.getBillById(params.state, params.id),
   });
 
-  bill = computed(() => this.billResource.value() as Legislation | undefined);
+  bill = computed(
+    () => this.billResource.value() as OpenStatesBill | undefined,
+  );
 
-  // Transform logic specifically for Bill versions
+  summaryText = computed(() => {
+    const b = this.bill();
+    if (!b) return '';
+    if (b.abstracts && b.abstracts.length > 0 && b.abstracts[0].abstract) {
+      return b.abstracts[0].abstract;
+    }
+    return (b as any).text ?? b.title ?? '';
+  });
+
+  // Transform logic for Bill versions / sponsors
   billVersions = computed(() => {
     const b = this.bill();
-    if (!b?.cosponsors) return [];
-    return Object.entries(b.cosponsors)
-      .map(([key, data]) => ({
-        id: key,
-        data: data,
-      }))
-      .sort((a, b) => b.id.localeCompare(a.id, undefined, { numeric: true }));
+    if (!b) return [];
+
+    // Support legacy structure if cosponsors map exists
+    if (
+      (b as any).cosponsors &&
+      typeof (b as any).cosponsors === 'object' &&
+      !Array.isArray((b as any).cosponsors)
+    ) {
+      return Object.entries((b as any).cosponsors)
+        .map(([key, data]) => ({
+          id: key,
+          data: (data as any[]).map((item) => {
+            const rawId = item.id ?? item.person?.id ?? item.name;
+            const cleanId = rawId
+              ? String(rawId).replace(/^ocd-person[\/:=]/, '')
+              : '';
+            return {
+              ...item,
+              id: cleanId,
+              party: item.party ?? item.person?.party ?? '',
+              district:
+                item.district ?? item.person?.current_role?.district ?? '',
+            };
+          }),
+        }))
+        .sort((a, b) => b.id.localeCompare(a.id, undefined, { numeric: true }));
+    }
+
+    // OpenStates schema: sponsorships array
+    if (Array.isArray(b.sponsorships) && b.sponsorships.length > 0) {
+      return [
+        {
+          id: 'Sponsors & Cosponsors',
+          data: b.sponsorships.map((s) => {
+            const rawId = s.person?.id ?? s.id ?? s.name;
+            const cleanId = rawId
+              ? String(rawId).replace(/^ocd-person[\/:=]/, '')
+              : '';
+            return {
+              id: cleanId,
+              name: s.name,
+              primary: s.primary,
+              classification: s.classification,
+              entity_type: s.entity_type,
+              party: s.person?.party ?? (s as any).party ?? '',
+              district:
+                s.person?.current_role?.district ?? (s as any).district ?? '',
+            };
+          }),
+        },
+      ];
+    }
+
+    return [];
   });
 
   billActions = computed(() => {
@@ -68,7 +128,7 @@ export class BillDetail {
     return b.actions.map((data: any, index: number) => ({
       id: data.id ?? index,
       date: data.date,
-      text: data.action ?? data.text ?? data.description,
+      text: data.description ?? data.action ?? data.text,
     }));
   });
 

@@ -77,7 +77,7 @@
         '/',
         stateCd(),
         routeType(),
-        row.id ? row.id : row.identifier,
+        cleanId(row.id ? row.id : row.ocdId ? row.ocdId : row.identifier),
       ]"
       class="clickable-row"
     ></tr>

@@ -26,6 +26,16 @@ service cloud.firestore {
         allow write: if isAdmin();
       }
 
+      match /ocd-bill/{billId} {
+        allow read: if true;
+        allow write: if isAdmin();
+      }
+
+      match /ocd-person/{personId} {
+        allow read: if true;
+        allow write: if isAdmin();
+      }
+
       match /legislators/{memberId} {
         allow read: if true;
         allow write: if isAdmin();

@@ -1,0 +1,9 @@
+{
+  "name": "server-data-access-google-maps",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/server/data-access/google-maps/src",
+  "projectType": "library",
+  "tags": ["domain:server", "type:data-access"],
+  "// targets": "to see all targets run: nx show project data-access-google-maps --web",
+  "targets": {}
+}

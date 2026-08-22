@@ -1,4 +1,3 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import {
   Component,
   Directive,
@@ -6,7 +5,9 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { Title } from '@angular/platform-browser';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 
 // Target Component
@@ -16,13 +17,9 @@ import { MemberDetail } from './member-detail';
 import { LegislatureService } from '@legislative-tracker/client-angular/core';
 import { TableComponent } from '@legislative-tracker/client-angular/ui';
 import { ImgFallbackDirective } from '@legislative-tracker/client-angular/ui';
-import { Legislator } from '@legislative-tracker/shared/models';
+import { OpenStatesPerson } from '@legislative-tracker/shared/models';
 
-// -------------------------------------------------------------------------
-// Create Stubs for Children (Isolation)
-// -------------------------------------------------------------------------
-
-// Stub for TableComponent to avoid table dependencies
+// Stubs
 @Component({
   selector: 'app-table',
   template: '',
@@ -32,7 +29,6 @@ import { Legislator } from '@legislative-tracker/shared/models';
 })
 class MockTableComponent {}
 
-// Stub for Directive to avoid needing the real file
 @Directive({
   selector: 'img[appImgFallback]',
   standalone: true,
@@ -45,16 +41,23 @@ describe('MemberDetail', () => {
   let fixture: ComponentFixture<MemberDetail>;
 
   // Mock Data
-  const mockLegislator: Legislator = {
+  const mockLegislator: OpenStatesPerson = {
     id: '123',
     name: 'Jane Doe',
-    chamber: 'SENATE',
-    district: '123',
-    honorific_prefix: 'Senator',
     party: 'Democratic',
+    current_role: {
+      title: 'Senator',
+      org_classification: 'upper',
+      district: '123',
+      division_id: 'ocd-division/country:us/state:ny/sldu:123',
+    },
     sponsorships: [
-      { id: 'BILL-1', title: 'Clean Energy Act', version: '' },
-      { id: 'BILL-2', title: 'Road Safety Act', version: 'A' },
+      {
+        ocdBillId: 'BILL-1',
+        stateBillId: 'S100',
+        billName: 'Clean Energy Act',
+      },
+      { ocdBillId: 'BILL-2', stateBillId: 'S200', billName: 'Road Safety Act' },
     ],
     other_identifiers: [
       { scheme: 'twitter', identifier: 'janedoe' },
@@ -63,20 +66,18 @@ describe('MemberDetail', () => {
     ],
   };
 
-  // Mock Service
   const mockLegislatureService = {
     getMemberById: vi.fn().mockReturnValue(of(mockLegislator)),
   };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MemberDetail], // Standalone
+      imports: [MemberDetail],
       providers: [
-        provideNoopAnimations(), // For MatTabs/Spinner
+        provideNoopAnimations(),
         { provide: LegislatureService, useValue: mockLegislatureService },
       ],
     })
-      // Override Child Components/Directives
       .overrideComponent(MemberDetail, {
         remove: { imports: [TableComponent, ImgFallbackDirective] },
         add: { imports: [MockTableComponent, MockImgFallbackDirective] },
@@ -86,7 +87,6 @@ describe('MemberDetail', () => {
     fixture = TestBed.createComponent(MemberDetail);
     component = fixture.componentInstance;
 
-    // Initialize Required Inputs (Signals)
     fixture.componentRef.setInput('stateCd', 'ny');
     fixture.componentRef.setInput('id', '123');
 
@@ -98,7 +98,6 @@ describe('MemberDetail', () => {
   });
 
   it('should call getMemberById with correct params on initialization', () => {
-    // rxResource triggers automatically when inputs are stable
     expect(mockLegislatureService.getMemberById).toHaveBeenCalledWith(
       'ny',
       '123',
@@ -106,23 +105,25 @@ describe('MemberDetail', () => {
   });
 
   it('should update member signal when resource resolves', () => {
-    // Verify the computed member() signal holds the data
     const memberData = component.member();
 
     expect(memberData).toBeDefined();
     expect(memberData?.name).toBe('Jane Doe');
-    expect(memberData?.chamber).toBe('SENATE');
-    expect(memberData?.district).toBe('123');
+    expect(component.district()).toBe('123');
     expect(memberData?.party).toBe('Democratic');
-    expect(memberData?.honorific_prefix).toBe('Senator');
+    expect(component.titleOrPrefix()).toBe('Senator');
+  });
+
+  it('should update the page title to <name> | Legislative Tracker', () => {
+    const titleService = TestBed.inject(Title);
+    expect(titleService.getTitle()).toBe('Jane Doe | Legislative Tracker');
   });
 
   it('should compute sponsorships correctly', () => {
-    // Verify the computed sponsorships() signal
     const sponsorships = component.sponsorships();
 
     expect(sponsorships.length).toBe(2);
-    expect(sponsorships[0].title).toBe('Clean Energy Act');
+    expect(sponsorships[0].billName).toBe('Clean Energy Act');
   });
 
   it('should compute socialLinks correctly from other_identifiers', () => {
@@ -144,10 +145,8 @@ describe('MemberDetail', () => {
   });
 
   it('should default sponsorships and socialLinks to empty array if member is undefined', () => {
-    // Simulate a scenario where service returns null/undefined
     mockLegislatureService.getMemberById.mockReturnValueOnce(of(null));
 
-    // Force a refresh (change input ID to trigger new resource fetch)
     fixture.componentRef.setInput('id', '999');
     fixture.detectChanges();
 
@@ -157,15 +156,12 @@ describe('MemberDetail', () => {
   });
 
   it('should refetch data when inputs change', () => {
-    // Clear previous calls
     mockLegislatureService.getMemberById.mockClear();
 
-    // Change inputs
     fixture.componentRef.setInput('stateCd', 'ca');
     fixture.componentRef.setInput('id', '456');
     fixture.detectChanges();
 
-    // Verify service was called with NEW params
     expect(mockLegislatureService.getMemberById).toHaveBeenCalledWith(
       'ca',
       '456',

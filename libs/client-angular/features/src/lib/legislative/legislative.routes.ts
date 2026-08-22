@@ -15,7 +15,13 @@ export const LEGISLATIVE_ROUTES: Routes = [
       import('./bill-detail/bill-detail').then((m) => m.BillDetail),
   },
   {
-    path: 'member/:id',
+    path: 'legislation/:id',
+    title: 'Legislation | Legislative Tracker',
+    loadComponent: () =>
+      import('./legislation/legislation').then((m) => m.Legislation),
+  },
+  {
+    path: 'ocd-person/:id',
     title: 'Member | Legislative Tracker',
     loadComponent: () =>
       import('./member-detail/member-detail').then((m) => m.MemberDetail),
