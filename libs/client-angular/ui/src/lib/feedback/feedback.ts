@@ -81,6 +81,7 @@ export class Feedback {
       const response = await this.feedbackService.sendFeedback(
         title,
         formattedBody,
+        type,
       );
 
       this.snackBar.openFromComponent(LinkSnackBar, {
