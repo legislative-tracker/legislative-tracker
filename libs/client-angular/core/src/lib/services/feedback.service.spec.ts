@@ -34,22 +34,30 @@ describe('FirebaseFeedbackService', () => {
   });
 
   describe('sendFeedback', () => {
-    it('should call the "submitAnonymousIssue" cloud function with correct payload', async () => {
-      const mockResponse = { data: { success: true, message: 'Received' } };
+    it('should call the "system-submitAnonymousIssue" cloud function with correct payload', async () => {
+      const mockResponse = {
+        data: {
+          success: true,
+          issueNumber: 12,
+          issueUrl:
+            'https://github.com/legislative-tracker/legislative-tracker/issues/12',
+        },
+      };
       const callableFn = vi.fn().mockResolvedValue(mockResponse);
       mockHttpsCallable.mockReturnValue(callableFn);
 
       const title = 'Bug Report';
       const body = 'Something went wrong.';
+      const type = 'bug';
 
-      const result = await service.sendFeedback(title, body);
+      const result = await service.sendFeedback(title, body, type);
 
       expect(mockHttpsCallable).toHaveBeenCalledWith(
         mockFunctions,
-        'submitAnonymousIssue',
+        'system-submitAnonymousIssue',
       );
 
-      expect(callableFn).toHaveBeenCalledWith({ title, body });
+      expect(callableFn).toHaveBeenCalledWith({ title, body, type });
       expect(result).toEqual(mockResponse.data);
     });
 

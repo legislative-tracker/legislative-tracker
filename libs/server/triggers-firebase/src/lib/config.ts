@@ -55,6 +55,7 @@ export const auth = new Proxy({} as Auth, {
 // Define Secrets
 export const dataAccessOpenStatesKey = defineSecret('DATA_ACCESS_OPENSTATES');
 export const dataAccessGoogleMapsKey = defineSecret('DATA_ACCESS_GOOGLE_MAPS');
+export const dataAccessGitHubKey = defineSecret('DATA_ACCESS_GITHUB');
 export const pluginLegUsNyKey = defineSecret('PLUGIN_LEG_US_NY');
 
 // Set global options once

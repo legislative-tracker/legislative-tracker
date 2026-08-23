@@ -96,10 +96,12 @@ describe('Feedback', () => {
       expect(mockFeedbackService.sendFeedback).toHaveBeenCalledWith(
         'Add Dark Mode',
         expect.stringContaining('**Type:** FEATURE'),
+        'feature',
       );
       expect(mockFeedbackService.sendFeedback).toHaveBeenCalledWith(
         'Add Dark Mode',
         expect.stringContaining('**Context:** `/current/test/route`'),
+        'feature',
       );
 
       // Assert SnackBar (Success)
