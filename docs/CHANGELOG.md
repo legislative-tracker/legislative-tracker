@@ -1,3 +1,13 @@
+## 0.11.18 (2026-08-23)
+
+### 🚀 Features
+
+- **workspace:** add github issues feedback backend and client integration ([a06d414](https://github.com/legislative-tracker/legislative-tracker/commit/a06d414))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.17 (2026-08-22)
 
 ### 🩹 Fixes
