@@ -1,3 +1,17 @@
+## 0.11.24 (2026-08-24)
+
+### 🚀 Features
+
+- **client-angular:** update bill detail page title to reflect bill identifier ([6b7a55e](https://github.com/legislative-tracker/legislative-tracker/commit/6b7a55e))
+
+### 💅 Refactors
+
+- **workspace:** enforce Angular 2016 filename conventions ([9b95f33](https://github.com/legislative-tracker/legislative-tracker/commit/9b95f33))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.23 (2026-08-24)
 
 ### 🚀 Features
