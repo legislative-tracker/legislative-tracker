@@ -1,3 +1,15 @@
+## 0.11.22 (2026-08-24)
+
+### 🚀 Features
+
+- **client-angular:** add reset districts and delete account data to profile ([88db6bc](https://github.com/legislative-tracker/legislative-tracker/commit/88db6bc))
+- **client-angular:** create ConfirmDialog component in ui library ([ac537f2](https://github.com/legislative-tracker/legislative-tracker/commit/ac537f2))
+- **core:** add clearAll storage and auth resetDistricts and deleteAccountData methods ([4ae4a9e](https://github.com/legislative-tracker/legislative-tracker/commit/4ae4a9e))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.21 (2026-08-24)
 
 ### 🩹 Fixes
