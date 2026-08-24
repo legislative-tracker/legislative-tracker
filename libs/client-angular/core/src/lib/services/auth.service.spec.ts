@@ -6,7 +6,7 @@ import { BehaviorSubject, of } from 'rxjs';
 import { AuthService } from './auth.service';
 import { FirebaseAuthService } from '../adapters/firebase-auth.service';
 import { OfflineStorageService } from './offline-storage.service';
-import { FIREBASE_AUTH, FIREBASE_FIRESTORE } from '../firebase-tokens';
+import { FIREBASE_AUTH, FIREBASE_FIRESTORE } from '../firebase-tokens.token';
 
 const mockSetDoc = vi.fn();
 const mockUpdateDoc = vi.fn();

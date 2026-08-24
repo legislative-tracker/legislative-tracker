@@ -1,1 +1,1 @@
-export * from './lib/plugin-leg-us-ny';
+export * from './lib/plugin-leg-us-ny.plugin';

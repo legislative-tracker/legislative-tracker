@@ -24,7 +24,7 @@ import {
   OfflineStorageService,
   ThemeService,
 } from '@legislative-tracker/client-angular/core';
-import { Footer } from '../footer/footer';
+import { Footer } from '../footer/footer.component';
 
 @Component({
   selector: 'app-nav',

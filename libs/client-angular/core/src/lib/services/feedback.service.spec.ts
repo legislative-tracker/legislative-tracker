@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 import { FeedbackService } from './feedback.service';
 import { FirebaseFeedbackService } from '../adapters/firebase-feedback.service';
-import { FIREBASE_FUNCTIONS } from '../firebase-tokens';
+import { FIREBASE_FUNCTIONS } from '../firebase-tokens.token';
 
 const mockHttpsCallable = vi.fn();
 

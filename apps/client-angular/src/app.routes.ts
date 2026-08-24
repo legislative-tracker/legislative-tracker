@@ -19,7 +19,7 @@ export const routes: Routes = [
       {
         path: '404',
         loadComponent: () =>
-          import('@legislative-tracker/client-angular/features/pages/not-found/not-found').then(
+          import('@legislative-tracker/client-angular/features/pages/not-found/not-found.component').then(
             (m) => m.NotFound,
           ),
         title: '404 | Legislative Tracker',
@@ -27,7 +27,7 @@ export const routes: Routes = [
       {
         path: 'about',
         loadComponent: () =>
-          import('@legislative-tracker/client-angular/features/pages/about/about').then(
+          import('@legislative-tracker/client-angular/features/pages/about/about.component').then(
             (m) => m.About,
           ),
         title: 'About | Legislative Tracker',
@@ -35,7 +35,7 @@ export const routes: Routes = [
       {
         path: 'privacy',
         loadComponent: () =>
-          import('@legislative-tracker/client-angular/features/pages/privacy/privacy').then(
+          import('@legislative-tracker/client-angular/features/pages/privacy/privacy.component').then(
             (m) => m.Privacy,
           ),
         title: 'Privacy Policy | Legislative Tracker',
@@ -45,7 +45,7 @@ export const routes: Routes = [
       {
         path: 'login',
         loadComponent: () =>
-          import('@legislative-tracker/client-angular/features/auth/login/login').then(
+          import('@legislative-tracker/client-angular/features/auth/login/login.component').then(
             (m) => m.Login,
           ),
         title: 'Login | Legislative Tracker',
@@ -65,7 +65,7 @@ export const routes: Routes = [
       {
         path: 'profile',
         loadComponent: () =>
-          import('@legislative-tracker/client-angular/features/user/profile/profile').then(
+          import('@legislative-tracker/client-angular/features/user/profile/profile.component').then(
             (m) => m.Profile,
           ),
         title: 'Profile | Legislative Tracker',

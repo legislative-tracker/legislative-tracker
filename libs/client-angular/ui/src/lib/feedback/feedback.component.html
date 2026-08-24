@@ -1,0 +1,61 @@
+<h2 mat-dialog-title><mat-icon>rate_review</mat-icon> Send Feedback</h2>
+
+<mat-dialog-content>
+  <p class="subtitle">
+    Found a bug or have an idea? Let us know by filling out this form OR
+    <a
+      href="https://github.com/legislative-tracker/legislative-tracker/issues/new/choose"
+      >submitting an issue on GitHub</a
+    >.
+  </p>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Feedback Type</mat-label>
+      <mat-select formControlName="type">
+        @for (type of issueTypes; track type.value) {
+          <mat-option [value]="type.value">
+            <mat-icon>{{ type.icon }}</mat-icon> {{ type.label }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Title</mat-label>
+      <input
+        matInput
+        formControlName="title"
+        placeholder="Summary of the issue"
+      />
+      @if (form.get('title')?.hasError('required')) {
+        <mat-error>Required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="5"></textarea>
+      @if (form.get('description')?.hasError('required')) {
+        <mat-error>Required</mat-error>
+      }
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cancel</button>
+
+  <button
+    mat-flat-button
+    color="primary"
+    (click)="onSubmit()"
+    [disabled]="form.invalid || isSubmitting()"
+  >
+    @if (isSubmitting()) {
+      Sending...
+    } @else {
+      Submit
+    }
+  </button>
+</mat-dialog-actions>

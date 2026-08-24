@@ -3,7 +3,7 @@ import { Router, CanActivateFn } from '@angular/router';
 import { Auth, onAuthStateChanged, User } from 'firebase/auth';
 import { map, switchMap, take } from 'rxjs/operators';
 import { from, of, Observable } from 'rxjs';
-import { FIREBASE_AUTH } from '../firebase-tokens';
+import { FIREBASE_AUTH } from '../firebase-tokens.token';
 
 export const adminGuard: CanActivateFn = (route, state) => {
   const auth = inject<Auth>(FIREBASE_AUTH, { optional: true });

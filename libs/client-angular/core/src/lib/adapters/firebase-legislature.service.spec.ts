@@ -2,7 +2,10 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { doc } from 'firebase/firestore';
 import { FirebaseLegislatureService } from './firebase-legislature.service';
-import { FIREBASE_FIRESTORE, FIREBASE_FUNCTIONS } from '../firebase-tokens';
+import {
+  FIREBASE_FIRESTORE,
+  FIREBASE_FUNCTIONS,
+} from '../firebase-tokens.token';
 
 const mockHttpsCallable = vi.fn();
 

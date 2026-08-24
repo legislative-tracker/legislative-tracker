@@ -13,7 +13,7 @@ import { signal } from '@angular/core';
 
 // Target Component
 import { NavComponent } from './nav.component';
-import { Footer } from '../footer/footer'; // Import the real footer class so we can reference it
+import { Footer } from '../footer/footer.component'; // Import the real footer class so we can reference it
 
 // Service Dependencies
 import {

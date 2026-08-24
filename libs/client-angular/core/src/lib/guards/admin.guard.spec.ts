@@ -10,7 +10,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { firstValueFrom, isObservable } from 'rxjs';
 
 import { adminGuard } from './admin.guard';
-import { FIREBASE_AUTH } from '../firebase-tokens';
+import { FIREBASE_AUTH } from '../firebase-tokens.token';
 
 const mockOnAuthStateChanged = vi.fn();
 

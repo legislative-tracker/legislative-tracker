@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { SearchAddress } from './address';
-import { getBillCols } from './column-config';
+import { SearchAddress } from './address.model';
+import { getBillCols } from './column-config.model';
 
 describe('Shared Models', () => {
   it('should construct a valid address object', () => {

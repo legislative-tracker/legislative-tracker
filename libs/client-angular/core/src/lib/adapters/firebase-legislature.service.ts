@@ -21,7 +21,10 @@ import {
   AddBillsParams,
   UpdateBillParams,
 } from '../services/legislature.service';
-import { FIREBASE_FIRESTORE, FIREBASE_FUNCTIONS } from '../firebase-tokens';
+import {
+  FIREBASE_FIRESTORE,
+  FIREBASE_FUNCTIONS,
+} from '../firebase-tokens.token';
 
 @Injectable()
 export class FirebaseLegislatureService extends LegislatureService {

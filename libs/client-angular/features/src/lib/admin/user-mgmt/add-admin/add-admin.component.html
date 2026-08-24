@@ -1,0 +1,49 @@
+<div class="admin-container">
+  <mat-card class="admin-card">
+    <mat-card-header>
+      <div mat-card-avatar>
+        <mat-icon color="primary">security</mat-icon>
+      </div>
+      <mat-card-title>Admin Management</mat-card-title>
+      <mat-card-subtitle>Grant administrative privileges</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <p class="warning-text">
+        <mat-icon inline>info</mat-icon>
+        <span>Admins have full read/write access to all collections.</span>
+      </p>
+
+      <form (submit)="promoteUser(); $event.preventDefault()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>User Email Address</mat-label>
+          <input
+            matInput
+            type="email"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event)"
+            name="email"
+            placeholder="colleague@example.com"
+            required
+            [disabled]="isLoading()"
+          />
+          <mat-icon matSuffix>email</mat-icon>
+        </mat-form-field>
+
+        <button
+          mat-flat-button
+          color="primary"
+          class="full-width"
+          type="submit"
+          [disabled]="isLoading() || !email()"
+        >
+          @if (isLoading()) {
+            Processing...
+          } @else {
+            Promote to Admin
+          }
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
