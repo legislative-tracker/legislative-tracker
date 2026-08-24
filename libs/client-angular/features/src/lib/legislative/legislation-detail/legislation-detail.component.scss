@@ -26,4 +26,25 @@
   .tab-content {
     padding-top: 1rem;
   }
+
+  .tab-label-text {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .pop-out-btn {
+    margin-left: 0.5rem;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
 }

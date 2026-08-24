@@ -7,9 +7,13 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { getPlugin, getAllPlugins } from '@legislative-tracker/plugins-core';
 
 // App Imports
@@ -22,7 +26,16 @@ import { BillDetail } from '../bill-detail/bill-detail.component';
 
 @Component({
   selector: 'app-legislation-detail',
-  imports: [MatCardModule, MatProgressSpinnerModule, MatTabsModule, BillDetail],
+  imports: [
+    RouterLink,
+    MatButtonModule,
+    MatCardModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    MatTabsModule,
+    MatTooltipModule,
+    BillDetail,
+  ],
   templateUrl: './legislation-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./legislation-detail.component.scss'],
@@ -91,16 +104,25 @@ export class LegislationDetail {
     };
   });
 
+  cleanId(rawId?: string): string {
+    if (!rawId) return '';
+    return String(rawId).replace(/^ocd-(person|bill)[\/:=]/, '');
+  }
+
   upperBillId = computed(() => {
     const leg = this.legislation();
     if (!leg) return undefined;
-    return leg.ocdBillIds?.upper || leg.upperBillId || leg.stateBillIds?.upper;
+    const raw =
+      leg.ocdBillIds?.upper || leg.upperBillId || leg.stateBillIds?.upper;
+    return raw ? this.cleanId(raw) : undefined;
   });
 
   lowerBillId = computed(() => {
     const leg = this.legislation();
     if (!leg) return undefined;
-    return leg.ocdBillIds?.lower || leg.lowerBillId || leg.stateBillIds?.lower;
+    const raw =
+      leg.ocdBillIds?.lower || leg.lowerBillId || leg.stateBillIds?.lower;
+    return raw ? this.cleanId(raw) : undefined;
   });
 
   upperBillDisplayId = computed(() => {
