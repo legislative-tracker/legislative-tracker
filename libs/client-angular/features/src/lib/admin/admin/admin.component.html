@@ -1,0 +1,292 @@
+<mat-accordion>
+  <mat-expansion-panel
+    (opened)="panelOpenState.set(true)"
+    (closed)="panelOpenState.set(false)"
+  >
+    <mat-expansion-panel-header>
+      <mat-panel-title> Legislation Mgmt </mat-panel-title>
+      <mat-panel-description>
+        Add, Edit, or Remove Legislation from the Tracker
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <mat-action-row>
+      <a mat-button routerLink="/admin/manualUpdate">Manual Data Sync</a>
+      <span class="spacer"></span>
+      <a mat-button routerLink="/admin/removeBill">Remove Legislation</a>
+      <a mat-button routerLink="/admin/editBill">Edit Legislation</a>
+      <a mat-button routerLink="/admin/addBill">Add Legislation</a>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel
+    (opened)="panelOpenState.set(true)"
+    (closed)="panelOpenState.set(false)"
+  >
+    <mat-expansion-panel-header>
+      <mat-panel-title> Admin Mgmt </mat-panel-title>
+      <mat-panel-description>
+        Add or Remove Admin Privileges
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <p>
+      To modify a user's Admin privileges, you will need the email address with
+      which they registered their account.
+    </p>
+    <mat-action-row>
+      <a mat-button routerLink="/admin/removeAdmin">Remove Admin Privileges</a>
+      <a mat-button routerLink="/admin/addAdmin">Add Admin Privileges</a>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel
+    (opened)="panelOpenState.set(true)"
+    (closed)="panelOpenState.set(false)"
+  >
+    <mat-expansion-panel-header>
+      <mat-panel-title> App Config </mat-panel-title>
+      <mat-panel-description>
+        Manage Branding & Organization
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <ng-template matExpansionPanelContent>
+      <form [formGroup]="form" class="config-form-container">
+        <h3 class="section-title">Organization</h3>
+        <div class="form-grid-2-col" formGroupName="organization">
+          <div class="form-grid-item">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Organization Name</mat-label>
+              <input matInput formControlName="name" placeholder="Acme Corp" />
+              @if (form.get('organization.name')?.hasError('required')) {
+                <mat-error>Name is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="form-grid-item">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Website URL</mat-label>
+              <input
+                matInput
+                formControlName="url"
+                placeholder="https://acme.com"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <mat-divider class="section-divider"></mat-divider>
+
+        <h3 class="section-title">Branding & Theme</h3>
+        <div class="form-stack" formGroupName="branding">
+          <div class="form-stack-item">
+            <label class="field-label">Primary Color</label>
+            <div class="color-picker-row">
+              <input
+                type="color"
+                formControlName="primaryColor"
+                class="color-input"
+              />
+
+              <mat-form-field appearance="outline" class="flex-grow">
+                <mat-label>Hex Code</mat-label>
+                <input
+                  matInput
+                  formControlName="primaryColor"
+                  placeholder="#673ab7"
+                />
+                @if (form.get('branding.primaryColor')?.invalid) {
+                  <mat-error>Invalid Hex Color</mat-error>
+                }
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="form-stack-item">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Logo Asset Path</mat-label>
+              <input
+                matInput
+                formControlName="logoUrl"
+                placeholder="assets/logo.png"
+              />
+              <mat-icon matSuffix>image</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <div class="form-stack-item">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Favicon Path</mat-label>
+              <input
+                matInput
+                formControlName="faviconUrl"
+                placeholder="favicon.ico"
+              />
+              <mat-icon matSuffix>public</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <div class="form-stack-item">
+            <div class="toggle-card">
+              <div>
+                <strong>Force Dark Mode</strong>
+                <div class="text-hint">Set default theme to dark</div>
+              </div>
+              <mat-slide-toggle
+                formControlName="darkMode"
+                color="primary"
+              ></mat-slide-toggle>
+            </div>
+          </div>
+        </div>
+
+        <mat-divider class="section-divider"></mat-divider>
+
+        <div class="section-header">
+          <h3 class="section-title no-margin">Resources & Links</h3>
+          <button
+            mat-stroked-button
+            color="primary"
+            type="button"
+            (click)="addResource()"
+          >
+            <mat-icon>add</mat-icon> Add Resource
+          </button>
+        </div>
+
+        <div
+          formArrayName="resources"
+          cdkDropList
+          (cdkDropListDropped)="drop($event)"
+        >
+          @for (
+            control of resourcesArray.controls;
+            track control;
+            let i = $index
+          ) {
+            <mat-card
+              appearance="outlined"
+              class="resource-card"
+              [formGroupName]="i"
+              cdkDrag
+            >
+              <div class="resource-card-placeholder" *cdkDragPlaceholder></div>
+
+              <button
+                mat-icon-button
+                type="button"
+                class="resource-drag-handle"
+                cdkDragHandle
+                matTooltip="Drag to reorder"
+              >
+                <mat-icon>drag_indicator</mat-icon>
+              </button>
+
+              <button
+                mat-icon-button
+                color="warn"
+                type="button"
+                class="resource-delete-btn"
+                (click)="removeResource(i)"
+                matTooltip="Remove this resource"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+
+              <mat-card-header>
+                <mat-card-title style="margin-left: 24px"
+                  >Resource #{{ i + 1 }}</mat-card-title
+                >
+              </mat-card-header>
+
+              <mat-card-content>
+                <div class="resource-flex-container">
+                  <div class="field-two-thirds">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Title</mat-label>
+                      <input
+                        matInput
+                        formControlName="title"
+                        placeholder="GitHub Repo"
+                      />
+                    </mat-form-field>
+                  </div>
+
+                  <div class="field-one-third">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Icon Name</mat-label>
+                      <input
+                        matInput
+                        formControlName="icon"
+                        placeholder="code"
+                      />
+                      <mat-icon matSuffix>{{
+                        control.get('icon')?.value || 'link'
+                      }}</mat-icon>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="field-two-thirds">
+                    <mat-form-field appearance="outline">
+                      <mat-label>URL</mat-label>
+                      <input
+                        matInput
+                        formControlName="url"
+                        placeholder="https://..."
+                      />
+                    </mat-form-field>
+                  </div>
+
+                  <div class="field-one-third">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Button Label</mat-label>
+                      <input
+                        matInput
+                        formControlName="actionLabel"
+                        placeholder="View"
+                      />
+                    </mat-form-field>
+                  </div>
+
+                  <div class="field-full">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Description</mat-label>
+                      <textarea
+                        matInput
+                        formControlName="description"
+                        rows="2"
+                      ></textarea>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </mat-card-content>
+            </mat-card>
+          }
+          @if (resourcesArray.controls.length === 0) {
+            <div class="empty-state">
+              No resources configured. Click "Add Resource" to create one.
+            </div>
+          }
+        </div>
+      </form>
+    </ng-template>
+
+    <mat-action-row>
+      <button mat-button (click)="resetForm()" [disabled]="isSaving()">
+        Reset
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="saveConfig()"
+        [disabled]="form.invalid || isSaving()"
+      >
+        {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+      </button>
+    </mat-action-row>
+  </mat-expansion-panel>
+</mat-accordion>
+
+<div class="action-bar">
+  <div class="bill-fn-btn"></div>
+</div>

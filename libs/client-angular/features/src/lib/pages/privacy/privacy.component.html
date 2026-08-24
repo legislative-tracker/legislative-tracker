@@ -1,0 +1,78 @@
+<div class="container privacy-wrapper">
+  <header>
+    <h1>Privacy Policy</h1>
+    <p class="last-updated">
+      Last Updated: {{ lastUpdated() | date: 'longDate' }}
+    </p>
+  </header>
+
+  <section>
+    <h2>1. Introduction</h2>
+    <p>
+      Welcome to the Legislative Tracker. We respect your privacy and are
+      committed to protecting your personal data.
+    </p>
+  </section>
+
+  <section>
+    <h2>2. Data We Collect & How We Use It</h2>
+    <mat-card appearance="outlined" class="data-card">
+      <mat-list>
+        @for (item of dataCategories(); track item.title; let last = $last) {
+          <mat-list-item lines="3">
+            <mat-icon matListItemIcon class="category-icon">{{
+              item.icon
+            }}</mat-icon>
+            <span matListItemTitle>{{ item.title }}</span>
+            <p matListItemLine class="category-desc">
+              {{ item.description }}
+              @if (item.importantNote) {
+                <span class="highlight-note">{{ item.importantNote }}</span>
+              }
+            </p>
+          </mat-list-item>
+
+          @if (!last) {
+            <mat-divider></mat-divider>
+          }
+        }
+      </mat-list>
+    </mat-card>
+  </section>
+
+  <section>
+    <h2>3. Data Retention</h2>
+    <p>
+      We only retain your personal data for as long as is necessary to provide
+      the intended functionality of this app. If you would like your personal
+      data removed from our database entirely, please click the "Report Bug"
+      link in the footer to submit the request.
+    </p>
+  </section>
+
+  <section>
+    <h2>4. Third-Party Services</h2>
+    <p>This app uses secure third-party services:</p>
+    <div class="policy-links">
+      <a
+        href="https://policies.google.com/privacy"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <mat-icon inline>open_in_new</mat-icon> Google Privacy Policy
+      </a>
+      <a
+        href="https://open.pluralpolicy.com/tos/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <mat-icon inline>open_in_new</mat-icon> OpenStates Terms of Service
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <h2>5. Contact Us</h2>
+    <p>If you have questions, please contact us via the "Report Bug" link.</p>
+  </section>
+</div>

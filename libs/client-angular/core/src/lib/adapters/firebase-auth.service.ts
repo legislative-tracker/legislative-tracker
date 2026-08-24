@@ -23,7 +23,7 @@ import { Observable } from 'rxjs';
 import { AppUser } from '@legislative-tracker/shared/models';
 import { AuthService } from '../services/auth.service';
 import { OfflineStorageService } from '../services/offline-storage.service';
-import { FIREBASE_AUTH, FIREBASE_FIRESTORE } from '../firebase-tokens';
+import { FIREBASE_AUTH, FIREBASE_FIRESTORE } from '../firebase-tokens.token';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseAuthService implements AuthService {

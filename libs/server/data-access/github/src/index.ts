@@ -1,2 +1,2 @@
 export * from './lib/post-github-issue';
-export * from './lib/model';
+export * from './lib/github.model';

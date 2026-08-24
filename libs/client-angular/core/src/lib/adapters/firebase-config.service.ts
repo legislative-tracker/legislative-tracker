@@ -11,7 +11,7 @@ import {
 } from '@legislative-tracker/shared/models';
 import { ConfigService } from '../services/config.service';
 import { ThemeService } from '../services/theme.service';
-import { FIREBASE_FIRESTORE } from '../firebase-tokens';
+import { FIREBASE_FIRESTORE } from '../firebase-tokens.token';
 
 const GITHUB_RESOURCE: ResourceLink = {
   title: 'GitHub Repository',

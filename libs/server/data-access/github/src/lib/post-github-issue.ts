@@ -1,5 +1,5 @@
 import { FeedbackResponse } from '@legislative-tracker/shared/models';
-import { PostGitHubIssueOptions, GitHubIssueApiResponse } from './model';
+import { PostGitHubIssueOptions, GitHubIssueApiResponse } from './github.model';
 
 const DEFAULT_OWNER = 'legislative-tracker';
 const DEFAULT_REPO = 'legislative-tracker';

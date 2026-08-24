@@ -5,20 +5,22 @@ export const ADMIN_ROUTES: Routes = [
     path: '',
     pathMatch: 'full',
     title: 'Admin | Legislative Tracker',
-    loadComponent: () => import('./admin/admin').then((m) => m.Admin),
+    loadComponent: () => import('./admin/admin.component').then((m) => m.Admin),
   },
   // User Management
   {
     path: 'addAdmin',
     title: 'Promote User to Admin | Legislative Tracker',
     loadComponent: () =>
-      import('./user-mgmt/add-admin/add-admin').then((m) => m.AddAdmin),
+      import('./user-mgmt/add-admin/add-admin.component').then(
+        (m) => m.AddAdmin,
+      ),
   },
   {
     path: 'removeAdmin',
     title: 'Demote Admin | Legislative Tracker',
     loadComponent: () =>
-      import('./user-mgmt/remove-admin/remove-admin').then(
+      import('./user-mgmt/remove-admin/remove-admin.component').then(
         (m) => m.RemoveAdmin,
       ),
   },
@@ -27,7 +29,7 @@ export const ADMIN_ROUTES: Routes = [
     path: 'manualUpdate',
     title: 'Manual Data Sync | Legislative Tracker',
     loadComponent: () =>
-      import('./bill-mgmt/manual-update/manual-update').then(
+      import('./bill-mgmt/manual-update/manual-update.component').then(
         (m) => m.ManualUpdate,
       ),
   },
@@ -35,18 +37,22 @@ export const ADMIN_ROUTES: Routes = [
     path: 'addBill',
     title: 'Add Bill | Legislative Tracker',
     loadComponent: () =>
-      import('./bill-mgmt/add-bill/add-bill').then((m) => m.AddBill),
+      import('./bill-mgmt/add-bill/add-bill.component').then((m) => m.AddBill),
   },
   {
     path: 'editBill',
     title: 'Edit Bill | Legislative Tracker',
     loadComponent: () =>
-      import('./bill-mgmt/edit-bill/edit-bill').then((m) => m.EditBill),
+      import('./bill-mgmt/edit-bill/edit-bill.component').then(
+        (m) => m.EditBill,
+      ),
   },
   {
     path: 'removeBill',
     title: 'Remove Bill | Legislative Tracker',
     loadComponent: () =>
-      import('./bill-mgmt/remove-bill/remove-bill').then((m) => m.RemoveBill),
+      import('./bill-mgmt/remove-bill/remove-bill.component').then(
+        (m) => m.RemoveBill,
+      ),
   },
 ];

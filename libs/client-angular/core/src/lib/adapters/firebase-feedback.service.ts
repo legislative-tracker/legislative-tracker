@@ -5,7 +5,7 @@ import {
   FeedbackType,
 } from '@legislative-tracker/shared/models';
 import { FeedbackService } from '../services/feedback.service';
-import { FIREBASE_FUNCTIONS } from '../firebase-tokens';
+import { FIREBASE_FUNCTIONS } from '../firebase-tokens.token';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseFeedbackService implements FeedbackService {

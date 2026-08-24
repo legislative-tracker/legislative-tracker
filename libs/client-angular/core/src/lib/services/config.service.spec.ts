@@ -4,7 +4,7 @@ import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 import { ConfigService } from './config.service';
 import { FirebaseConfigService } from '../adapters/firebase-config.service';
-import { FIREBASE_FIRESTORE } from '../firebase-tokens';
+import { FIREBASE_FIRESTORE } from '../firebase-tokens.token';
 
 const mockDoc = vi.fn();
 const mockSetDoc = vi.fn();

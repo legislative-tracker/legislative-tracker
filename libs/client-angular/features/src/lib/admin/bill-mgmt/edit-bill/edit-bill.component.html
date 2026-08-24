@@ -1,0 +1,152 @@
+<div class="edit-container">
+  @if (auth.isAdmin()) {
+    <mat-card>
+      <mat-card-header>
+        <div mat-card-avatar>
+          <mat-icon color="primary">edit_note</mat-icon>
+        </div>
+        <mat-card-title>Edit Legislation</mat-card-title>
+        <mat-card-subtitle
+          >Update bill metadata or tracking information</mat-card-subtitle
+        >
+      </mat-card-header>
+
+      <mat-card-content>
+        <form (submit)="onSubmit(); $event.preventDefault()">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Select State</mat-label>
+            <mat-select
+              [ngModel]="selectedState()"
+              (ngModelChange)="onStateChange($event)"
+              name="state"
+              required
+              [disabled]="isSaving()"
+            >
+              @for (state of states; track state.value) {
+                <mat-option [value]="state.value">{{ state.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Select Bill to Edit</mat-label>
+            <mat-select
+              [ngModel]="selectedBillId()"
+              (ngModelChange)="onBillChange($event)"
+              name="billId"
+              required
+              [disabled]="!selectedState() || isLoadingBills() || isSaving()"
+            >
+              @if (isLoadingBills()) {
+                <mat-option disabled>Loading bills...</mat-option>
+              }
+              @for (bill of availableBills(); track bill.id) {
+                <mat-option [value]="bill.id">
+                  <strong>{{ bill.number }}</strong
+                  >: {{ bill.name | slice: 0 : 40 }}...
+                </mat-option>
+              }
+              @if (
+                !isLoadingBills() &&
+                availableBills().length === 0 &&
+                selectedState()
+              ) {
+                <mat-option disabled>No bills found in this state</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          @if (selectedBill()) {
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Legislation Title</mat-label>
+              <input
+                matInput
+                [ngModel]="name()"
+                (ngModelChange)="name.set($event)"
+                name="name"
+                placeholder="e.g. Clean Energy Infrastructure Act"
+                required
+                [disabled]="isSaving()"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Description (Optional)</mat-label>
+              <textarea
+                matInput
+                [ngModel]="description()"
+                (ngModelChange)="description.set($event)"
+                name="description"
+                rows="3"
+                placeholder="Brief summary of the legislative goals"
+                [disabled]="isSaving()"
+              ></textarea>
+            </mat-form-field>
+
+            @if (isBicameral()) {
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ chambers().upper }} Bill ID</mat-label>
+                <input
+                  matInput
+                  [ngModel]="upperBillId()"
+                  (ngModelChange)="upperBillId.set($event)"
+                  name="upperBillId"
+                  placeholder="e.g. S1234"
+                  [disabled]="isSaving()"
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ chambers().lower }} Bill ID</mat-label>
+                <input
+                  matInput
+                  [ngModel]="lowerBillId()"
+                  (ngModelChange)="lowerBillId.set($event)"
+                  name="lowerBillId"
+                  placeholder="e.g. A5678"
+                  [disabled]="isSaving()"
+                />
+              </mat-form-field>
+            } @else {
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Bill ID</mat-label>
+                <input
+                  matInput
+                  [ngModel]="singleBillId()"
+                  (ngModelChange)="singleBillId.set($event)"
+                  name="singleBillId"
+                  placeholder="e.g. HB101"
+                  [disabled]="isSaving()"
+                />
+              </mat-form-field>
+            }
+
+            <button
+              mat-flat-button
+              color="primary"
+              class="full-width"
+              type="submit"
+              [disabled]="
+                !selectedState() || !selectedBillId() || !name() || isSaving()
+              "
+            >
+              @if (isSaving()) {
+                Updating...
+              } @else {
+                Save Changes
+              }
+            </button>
+          }
+        </form>
+      </mat-card-content>
+    </mat-card>
+  } @else {
+    <mat-card class="access-denied">
+      <mat-card-content>
+        <mat-icon color="warn" class="large-icon">lock</mat-icon>
+        <h2>Access Denied</h2>
+        <p>You do not have administrative privileges to view this page.</p>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

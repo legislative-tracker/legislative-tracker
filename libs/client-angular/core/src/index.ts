@@ -1,5 +1,5 @@
-export * from './lib/app-config/app-config-token';
-export * from './lib/firebase-tokens';
+export * from './lib/app-config/app-config.token';
+export * from './lib/firebase-tokens.token';
 export * from './lib/guards/admin.guard';
 export * from './lib/guards/auth.guard';
 export * from './lib/guards/state.guard';
