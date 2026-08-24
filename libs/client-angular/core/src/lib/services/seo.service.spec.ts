@@ -143,4 +143,54 @@ describe('SeoService', () => {
       "name='description'",
     );
   });
+
+  it('should set bill tags with identifier as title', () => {
+    service.setBillTags({
+      identifier: 'A 10360',
+      title: 'Broadband Expansion',
+      description: 'Relates to broadband programs.',
+    });
+
+    expect(titleServiceMock.setTitle).toHaveBeenCalledWith(
+      'A 10360 | Legislative Tracker',
+    );
+    expect(metaServiceMock.updateTag).toHaveBeenCalledWith(
+      {
+        property: 'og:title',
+        content: 'A 10360 | Legislative Tracker',
+      },
+      "property='og:title'",
+    );
+  });
+
+  it('should set member tags with member details', () => {
+    service.setMemberTags({
+      name: 'Jane Doe',
+      details: 'Senator, Democratic, District 23',
+      image: 'https://example.com/headshot.jpg',
+    });
+
+    expect(titleServiceMock.setTitle).toHaveBeenCalledWith(
+      'Jane Doe | Legislative Tracker',
+    );
+    expect(metaServiceMock.updateTag).toHaveBeenCalledWith(
+      {
+        name: 'description',
+        content:
+          'Jane Doe (Senator, Democratic, District 23) - Legislative Tracker member profile and sponsored legislation.',
+      },
+      "name='description'",
+    );
+  });
+
+  it('should set legislation tags', () => {
+    service.setLegislationTags({
+      name: 'Clean Water Initiative',
+      description: 'Clean water legislation.',
+    });
+
+    expect(titleServiceMock.setTitle).toHaveBeenCalledWith(
+      'Clean Water Initiative | Legislative Tracker',
+    );
+  });
 });

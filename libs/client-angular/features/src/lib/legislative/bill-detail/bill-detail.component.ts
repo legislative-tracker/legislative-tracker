@@ -7,6 +7,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { of } from 'rxjs';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatListModule } from '@angular/material/list';
@@ -44,8 +45,8 @@ import {
   styleUrls: ['./bill-detail.component.scss'],
 })
 export class BillDetail {
-  stateCd = input.required<string>(); // region code (e.g. us-ny or ny)
-  id = input.required<string>(); // The Bill ID
+  stateCd = input<string>(''); // region code (e.g. us-ny or ny)
+  id = input<string>(''); // The Bill ID
   updateSeoTags = input<boolean>(true);
 
   private legislatureService = inject(LegislatureService);
@@ -58,16 +59,10 @@ export class BillDetail {
       if (!this.updateSeoTags()) return;
       const b = this.bill();
       if (b) {
-        const title = b.identifier
-          ? `${b.identifier}: ${b.title || 'Bill Details'}`
-          : b.title || 'Bill Details';
-        const description =
-          this.summaryText() || b.title || 'View bill details and actions.';
-        this.seoService.updateTags({
-          title,
-          description,
-          type: 'article',
-          twitterCard: 'summary',
+        this.seoService.setBillTags({
+          identifier: b.identifier,
+          title: b.title,
+          description: this.summaryText(),
         });
       } else {
         this.seoService.resetTags();
@@ -75,9 +70,18 @@ export class BillDetail {
     });
   }
 
+  billParams = computed(
+    () => {
+      const state = this.stateCd();
+      const id = this.id();
+      return state && id ? { state, id } : undefined;
+    },
+    { equal: (a, b) => a?.state === b?.state && a?.id === b?.id },
+  );
+
   // Single dedicated resource for this bill
   billResource = rxResource({
-    params: () => ({ state: this.stateCd(), id: this.id() }),
+    params: () => this.billParams(),
     stream: ({ params }) =>
       this.legislatureService.getBillById(params.state, params.id),
   });

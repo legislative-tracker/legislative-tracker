@@ -39,11 +39,13 @@ describe('LegislationDetail', () => {
   const mockSeoService = {
     updateTags: vi.fn(),
     resetTags: vi.fn(),
+    setLegislationTags: vi.fn(),
   };
 
   beforeEach(async () => {
     mockSeoService.updateTags.mockClear();
     mockSeoService.resetTags.mockClear();
+    mockSeoService.setLegislationTags.mockClear();
 
     await TestBed.configureTestingModule({
       imports: [LegislationDetail],
@@ -75,11 +77,9 @@ describe('LegislationDetail', () => {
   });
 
   it('should update page title and SEO tags to <name> | Legislative Tracker', () => {
-    expect(mockSeoService.updateTags).toHaveBeenCalledWith({
-      title: 'Clean Energy Act | Legislative Tracker',
+    expect(mockSeoService.setLegislationTags).toHaveBeenCalledWith({
+      name: 'Clean Energy Act',
       description: 'Promotes clean energy incentives',
-      type: 'article',
-      twitterCard: 'summary',
     });
   });
 });

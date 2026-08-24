@@ -102,6 +102,7 @@ describe('MemberDetail', () => {
   const mockSeoService = {
     updateTags: vi.fn(),
     resetTags: vi.fn(),
+    setMemberTags: vi.fn(),
   };
 
   const mockUserProfileSignal = signal<any>(null);
@@ -112,6 +113,7 @@ describe('MemberDetail', () => {
   beforeEach(async () => {
     mockSeoService.updateTags.mockClear();
     mockSeoService.resetTags.mockClear();
+    mockSeoService.setMemberTags.mockClear();
     mockUserProfileSignal.set(null);
 
     await TestBed.configureTestingModule({
@@ -160,13 +162,10 @@ describe('MemberDetail', () => {
   });
 
   it('should update the SEO tags and title for member', () => {
-    expect(mockSeoService.updateTags).toHaveBeenCalledWith({
-      title: 'Jane Doe | Legislative Tracker',
-      description:
-        'Jane Doe (Senator, Democratic, District 123) - Legislative Tracker member profile and sponsored legislation.',
+    expect(mockSeoService.setMemberTags).toHaveBeenCalledWith({
+      name: 'Jane Doe',
+      details: 'Senator, Democratic, District 123',
       image: 'https://example.com/janedoe.jpg',
-      type: 'profile',
-      twitterCard: 'summary_large_image',
     });
   });
 
