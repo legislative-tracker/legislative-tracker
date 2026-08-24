@@ -247,34 +247,113 @@ export class MemberDetail {
     return phoneList;
   });
 
-  websiteUrl = computed<string | undefined>(() => {
+  officialWebsiteUrl = computed<string | undefined>(() => {
     const m = this.member();
     if (!m) return undefined;
+
+    const isGov = (url: string) => {
+      try {
+        const parsed = new URL(url);
+        return parsed.hostname.toLowerCase().endsWith('.gov');
+      } catch {
+        return /\.gov(?:\/|$)/i.test(url);
+      }
+    };
+
+    const isSocial = (url: string, note?: string) =>
+      Object.values(SOCIAL_PLATFORMS).some(
+        (sp) =>
+          sp.domainRegex?.test(url) ||
+          (note && note.toLowerCase().includes(sp.name.toLowerCase())),
+      );
 
     const memberLinks = m.links ?? [];
     for (const item of memberLinks) {
       if (!item?.url) continue;
       const urlStr = item.url.trim();
-      const isSocial = Object.values(SOCIAL_PLATFORMS).some(
-        (sp) =>
-          sp.domainRegex?.test(urlStr) ||
-          (item.note &&
-            item.note.toLowerCase().includes(sp.name.toLowerCase())),
-      );
+      if (!isSocial(urlStr, item.note) && isGov(urlStr)) {
+        return urlStr;
+      }
+    }
+
+    if ((m as any).website && isGov((m as any).website)) {
+      return (m as any).website;
+    }
+
+    return undefined;
+  });
+
+  openStatesUrl = computed<string | undefined>(() => {
+    const m = this.member();
+    if (!m) return undefined;
+
+    if (m.openstates_url) {
+      return m.openstates_url;
+    }
+
+    const memberLinks = m.links ?? [];
+    for (const item of memberLinks) {
+      if (!item?.url) continue;
+      const urlStr = item.url.trim();
       if (
-        !isSocial &&
+        urlStr.includes('openstates.org') ||
+        (item.note && item.note.toLowerCase().includes('openstates'))
+      ) {
+        return urlStr;
+      }
+    }
+
+    return undefined;
+  });
+
+  generalWebsiteUrl = computed<string | undefined>(() => {
+    const m = this.member();
+    if (!m) return undefined;
+
+    const isGov = (url: string) => {
+      try {
+        const parsed = new URL(url);
+        return parsed.hostname.toLowerCase().endsWith('.gov');
+      } catch {
+        return /\.gov(?:\/|$)/i.test(url);
+      }
+    };
+
+    const isOpenStates = (url: string, note?: string) =>
+      url.includes('openstates.org') ||
+      (note && note.toLowerCase().includes('openstates'));
+
+    const isSocial = (url: string, note?: string) =>
+      Object.values(SOCIAL_PLATFORMS).some(
+        (sp) =>
+          sp.domainRegex?.test(url) ||
+          (note && note.toLowerCase().includes(sp.name.toLowerCase())),
+      );
+
+    const memberLinks = m.links ?? [];
+    for (const item of memberLinks) {
+      if (!item?.url) continue;
+      const urlStr = item.url.trim();
+      if (
+        !isSocial(urlStr, item.note) &&
+        !isGov(urlStr) &&
+        !isOpenStates(urlStr, item.note) &&
         (urlStr.startsWith('http://') || urlStr.startsWith('https://'))
       ) {
         return urlStr;
       }
     }
 
-    if (m.openstates_url) {
-      return m.openstates_url;
+    if ((m as any).website && !isGov((m as any).website)) {
+      return (m as any).website;
     }
 
-    return (m as any).website;
+    return undefined;
   });
+
+  websiteUrl = computed<string | undefined>(
+    () => this.officialWebsiteUrl() || this.generalWebsiteUrl(),
+  );
 
   userRepLabel = computed<string | undefined>(() => {
     const m = this.member();

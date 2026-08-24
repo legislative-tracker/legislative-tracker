@@ -226,9 +226,35 @@ describe('MemberDetail', () => {
     });
   });
 
-  it('should compute primaryEmail and non-social websiteUrl correctly', () => {
+  it('should compute primaryEmail, officialWebsiteUrl (.gov), and openStatesUrl correctly', () => {
     expect(component.primaryEmail()).toBe('jdoe@senate.example.gov');
+    expect(component.officialWebsiteUrl()).toBe('https://janedoe.senate.gov');
     expect(component.websiteUrl()).toBe('https://janedoe.senate.gov');
+  });
+
+  it('should only set officialWebsiteUrl for .gov URLs and identify OpenStates profiles', () => {
+    const nonGovMember: OpenStatesPerson = {
+      id: '456',
+      name: 'John NonGov',
+      openstates_url: 'https://openstates.org/person/john-nongov-456',
+      links: [
+        { url: 'https://johnnongov.com', note: 'Campaign Site' },
+        {
+          url: 'https://openstates.org/person/john-nongov-456',
+          note: 'OpenStates Profile',
+        },
+      ],
+    };
+
+    mockLegislatureService.getMemberById.mockReturnValueOnce(of(nonGovMember));
+    fixture.componentRef.setInput('id', '456');
+    fixture.detectChanges();
+
+    expect(component.officialWebsiteUrl()).toBeUndefined();
+    expect(component.generalWebsiteUrl()).toBe('https://johnnongov.com');
+    expect(component.openStatesUrl()).toBe(
+      'https://openstates.org/person/john-nongov-456',
+    );
   });
 
   it('should compute userRepLabel when member matches user representative', () => {
