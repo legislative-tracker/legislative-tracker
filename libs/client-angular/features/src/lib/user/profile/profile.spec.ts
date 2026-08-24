@@ -2,6 +2,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { of } from 'rxjs';
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 // Target Component
@@ -14,6 +16,7 @@ import {
 } from '@legislative-tracker/client-angular/core';
 import {
   AddressForm,
+  ConfirmDialog,
   TableComponent,
 } from '@legislative-tracker/client-angular/ui';
 
@@ -67,10 +70,15 @@ describe('Profile', () => {
       lastLogin: mockTimestamp,
       legislators: null,
     }),
+    resetDistricts: vi.fn(),
+    deleteAccountData: vi.fn(),
   };
 
   const mockFunctions = {};
   const mockSnackBar = {
+    open: vi.fn(),
+  };
+  const mockDialog = {
     open: vi.fn(),
   };
 
@@ -82,10 +90,18 @@ describe('Profile', () => {
         { provide: AuthService, useValue: mockAuthService },
         { provide: FIREBASE_FUNCTIONS, useValue: mockFunctions },
         { provide: MatSnackBar, useValue: mockSnackBar },
+        { provide: MatDialog, useValue: mockDialog },
       ],
     })
       .overrideComponent(Profile, {
-        remove: { imports: [AddressForm, TableComponent, MatSnackBarModule] },
+        remove: {
+          imports: [
+            AddressForm,
+            TableComponent,
+            MatSnackBarModule,
+            MatDialogModule,
+          ],
+        },
         add: { imports: [MockAddressForm, MockTableComponent] },
       })
       .compileComponents();
@@ -180,6 +196,111 @@ describe('Profile', () => {
 
       expect(mockSnackBar.open).toHaveBeenCalledWith(
         'Cloud function failed',
+        'Close',
+        expect.objectContaining({ panelClass: ['error-snackbar'] }),
+      );
+    });
+  });
+
+  describe('resetDistricts', () => {
+    it('should call auth.resetDistricts and display success snackbar', async () => {
+      mockAuthService.resetDistricts.mockResolvedValue(undefined);
+
+      await component.resetDistricts();
+
+      expect(mockAuthService.resetDistricts).toHaveBeenCalled();
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'Districts and representatives have been reset.',
+        'Close',
+        expect.objectContaining({ panelClass: ['success-snackbar'] }),
+      );
+    });
+
+    it('should handle error when resetDistricts fails', async () => {
+      mockAuthService.resetDistricts.mockRejectedValue(
+        new Error('Reset failed'),
+      );
+
+      await component.resetDistricts();
+
+      expect(mockAuthService.resetDistricts).toHaveBeenCalled();
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'Reset failed',
+        'Close',
+        expect.objectContaining({ panelClass: ['error-snackbar'] }),
+      );
+    });
+  });
+
+  describe('confirmDeleteAccount', () => {
+    it('should open ConfirmDialog with warn configuration and delete account when confirmed', async () => {
+      const dialogRefMock = {
+        afterClosed: () => of(true),
+      };
+      mockDialog.open.mockReturnValue(dialogRefMock);
+      mockAuthService.deleteAccountData.mockResolvedValue(undefined);
+
+      component.confirmDeleteAccount();
+
+      expect(mockDialog.open).toHaveBeenCalledWith(
+        ConfirmDialog,
+        expect.objectContaining({
+          data: expect.objectContaining({
+            title: 'Delete Account Data',
+            confirmColor: 'warn',
+          }),
+        }),
+      );
+
+      // Wait microtasks for afterClosed subscription
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(mockAuthService.deleteAccountData).toHaveBeenCalled();
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'Account data deleted successfully.',
+        'Close',
+        expect.objectContaining({ panelClass: ['success-snackbar'] }),
+      );
+    });
+
+    it('should not delete account data when dialog is cancelled', async () => {
+      const dialogRefMock = {
+        afterClosed: () => of(false),
+      };
+      mockDialog.open.mockReturnValue(dialogRefMock);
+
+      component.confirmDeleteAccount();
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(mockAuthService.deleteAccountData).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('deleteAccount', () => {
+    it('should call auth.deleteAccountData and show success snackbar', async () => {
+      mockAuthService.deleteAccountData.mockResolvedValue(undefined);
+
+      await component.deleteAccount();
+
+      expect(mockAuthService.deleteAccountData).toHaveBeenCalled();
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'Account data deleted successfully.',
+        'Close',
+        expect.objectContaining({ panelClass: ['success-snackbar'] }),
+      );
+    });
+
+    it('should handle error when deleteAccountData fails', async () => {
+      mockAuthService.deleteAccountData.mockRejectedValue(
+        new Error('Failed to delete account data from server'),
+      );
+
+      await component.deleteAccount();
+
+      expect(mockAuthService.deleteAccountData).toHaveBeenCalled();
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'Failed to delete account data from server',
         'Close',
         expect.objectContaining({ panelClass: ['error-snackbar'] }),
       );

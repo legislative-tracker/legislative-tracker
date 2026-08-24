@@ -35,4 +35,24 @@ describe('OfflineStorageService', () => {
     expect(bills).toBeDefined();
     expect(Array.isArray(bills)).toBe(true);
   });
+
+  it('should handle clearAll gracefully when indexedDB is unavailable', async () => {
+    await expect(service.clearAll()).resolves.toBeUndefined();
+  });
+
+  it('should clear object stores when database is available', async () => {
+    const originalIndexedDB = (globalThis as any).indexedDB;
+    (globalThis as any).indexedDB = {};
+    const mockClear = vi.fn().mockResolvedValue(undefined);
+    (service as any).dbPromise = Promise.resolve({
+      clear: mockClear,
+    });
+
+    await service.clearAll();
+
+    expect(mockClear).toHaveBeenCalledWith('saved_bills');
+    expect(mockClear).toHaveBeenCalledWith('offline_notes');
+
+    (globalThis as any).indexedDB = originalIndexedDB;
+  });
 });
