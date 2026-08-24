@@ -3,6 +3,7 @@ import {
   input,
   inject,
   computed,
+  effect,
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -14,7 +15,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 
 // App Imports
-import { LegislatureService } from '@legislative-tracker/client-angular/core';
+import {
+  LegislatureService,
+  SeoService,
+} from '@legislative-tracker/client-angular/core';
 import { TableComponent } from '@legislative-tracker/client-angular/ui';
 import {
   COSPONSOR_COLS,
@@ -39,9 +43,33 @@ import {
 export class BillDetail {
   stateCd = input.required<string>(); // region code (e.g. us-ny or ny)
   id = input.required<string>(); // The Bill ID
+  updateSeoTags = input<boolean>(true);
 
   private legislatureService = inject(LegislatureService);
+  private seoService = inject(SeoService);
   cosponsorCols = COSPONSOR_COLS;
+
+  constructor() {
+    effect(() => {
+      if (!this.updateSeoTags()) return;
+      const b = this.bill();
+      if (b) {
+        const title = b.identifier
+          ? `${b.identifier}: ${b.title || 'Bill Details'}`
+          : b.title || 'Bill Details';
+        const description =
+          this.summaryText() || b.title || 'View bill details and actions.';
+        this.seoService.updateTags({
+          title,
+          description,
+          type: 'article',
+          twitterCard: 'summary',
+        });
+      } else {
+        this.seoService.resetTags();
+      }
+    });
+  }
 
   // Single dedicated resource for this bill
   billResource = rxResource({

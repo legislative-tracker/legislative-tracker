@@ -9,12 +9,6 @@ export const LEGISLATIVE_ROUTES: Routes = [
       import('./dashboard/dashboard').then((m) => m.Dashboard),
   },
   {
-    path: 'bill/:id',
-    title: 'Bill | Legislative Tracker',
-    loadComponent: () =>
-      import('./bill-detail/bill-detail').then((m) => m.BillDetail),
-  },
-  {
     path: 'legislation/:id',
     title: 'Legislation | Legislative Tracker',
     loadComponent: () =>
@@ -25,5 +19,11 @@ export const LEGISLATIVE_ROUTES: Routes = [
     title: 'Member | Legislative Tracker',
     loadComponent: () =>
       import('./member-detail/member-detail').then((m) => m.MemberDetail),
+  },
+  {
+    path: 'ocd-bill/:id',
+    title: 'Bill | Legislative Tracker',
+    loadComponent: () =>
+      import('./bill-detail/bill-detail').then((m) => m.BillDetail),
   },
 ];

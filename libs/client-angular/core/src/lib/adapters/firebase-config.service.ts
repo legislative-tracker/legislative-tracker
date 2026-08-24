@@ -10,6 +10,7 @@ import {
   DEFAULT_CONFIG,
 } from '@legislative-tracker/shared/models';
 import { ConfigService } from '../services/config.service';
+import { ThemeService } from '../services/theme.service';
 import { FIREBASE_FIRESTORE } from '../firebase-tokens';
 
 const GITHUB_RESOURCE: ResourceLink = {
@@ -23,6 +24,7 @@ const GITHUB_RESOURCE: ResourceLink = {
 @Injectable({ providedIn: 'root' })
 export class FirebaseConfigService implements ConfigService {
   private readonly document = inject(DOCUMENT);
+  private readonly themeService = inject(ThemeService, { optional: true });
   private readonly firestore = inject<Firestore>(FIREBASE_FIRESTORE, {
     optional: true,
   });
@@ -115,6 +117,11 @@ export class FirebaseConfigService implements ConfigService {
   }
 
   private async applyAngularMaterialTheme(hexColor: string) {
+    if (this.themeService) {
+      this.themeService.setPrimaryColor(hexColor);
+      return;
+    }
+
     try {
       const { argbFromHex, themeFromSourceColor, hexFromArgb } =
         await import('@material/material-color-utilities');

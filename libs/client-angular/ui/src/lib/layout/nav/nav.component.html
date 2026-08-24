@@ -35,6 +35,62 @@
       <span>Offline Mode</span>
     </div>
   }
+
+  <button
+    mat-icon-button
+    [matMenuTriggerFor]="themeMenu"
+    aria-label="Select theme mode"
+    [matTooltip]="'Theme: ' + themeService.mode()"
+    class="theme-toggle-btn"
+  >
+    @switch (themeService.mode()) {
+      @case ('light') {
+        <mat-icon style="color: white">light_mode</mat-icon>
+      }
+      @case ('dark') {
+        <mat-icon style="color: white">dark_mode</mat-icon>
+      }
+      @default {
+        <mat-icon style="color: white">brightness_auto</mat-icon>
+      }
+    }
+  </button>
+
+  <mat-menu #themeMenu="matMenu">
+    <button
+      mat-menu-item
+      (click)="themeService.setThemeMode('light')"
+      [class.active-theme]="themeService.mode() === 'light'"
+    >
+      <mat-icon>light_mode</mat-icon>
+      <span>Light</span>
+      @if (themeService.mode() === 'light') {
+        <mat-icon class="theme-check-icon">check</mat-icon>
+      }
+    </button>
+    <button
+      mat-menu-item
+      (click)="themeService.setThemeMode('dark')"
+      [class.active-theme]="themeService.mode() === 'dark'"
+    >
+      <mat-icon>dark_mode</mat-icon>
+      <span>Dark</span>
+      @if (themeService.mode() === 'dark') {
+        <mat-icon class="theme-check-icon">check</mat-icon>
+      }
+    </button>
+    <button
+      mat-menu-item
+      (click)="themeService.setThemeMode('system')"
+      [class.active-theme]="themeService.mode() === 'system'"
+    >
+      <mat-icon>brightness_auto</mat-icon>
+      <span>System</span>
+      @if (themeService.mode() === 'system') {
+        <mat-icon class="theme-check-icon">check</mat-icon>
+      }
+    </button>
+  </mat-menu>
 </mat-toolbar>
 
 <mat-sidenav-container class="sidenav-container">

@@ -1,11 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { Title } from '@angular/platform-browser';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of } from 'rxjs';
 
 import { Legislation } from './legislation';
-import { LegislatureService } from '@legislative-tracker/client-angular/core';
+import {
+  LegislatureService,
+  SeoService,
+} from '@legislative-tracker/client-angular/core';
 
 describe('Legislation', () => {
   let component: Legislation;
@@ -34,12 +36,21 @@ describe('Legislation', () => {
     ),
   };
 
+  const mockSeoService = {
+    updateTags: vi.fn(),
+    resetTags: vi.fn(),
+  };
+
   beforeEach(async () => {
+    mockSeoService.updateTags.mockClear();
+    mockSeoService.resetTags.mockClear();
+
     await TestBed.configureTestingModule({
       imports: [Legislation],
       providers: [
         provideNoopAnimations(),
         { provide: LegislatureService, useValue: mockLegislatureService },
+        { provide: SeoService, useValue: mockSeoService },
       ],
     }).compileComponents();
 
@@ -63,10 +74,12 @@ describe('Legislation', () => {
     expect(component.lowerBillId()).toBe('A200');
   });
 
-  it('should update page title to <name> | Legislative Tracker', () => {
-    const titleService = TestBed.inject(Title);
-    expect(titleService.getTitle()).toBe(
-      'Clean Energy Act | Legislative Tracker',
-    );
+  it('should update page title and SEO tags to <name> | Legislative Tracker', () => {
+    expect(mockSeoService.updateTags).toHaveBeenCalledWith({
+      title: 'Clean Energy Act | Legislative Tracker',
+      description: 'Promotes clean energy incentives',
+      type: 'article',
+      twitterCard: 'summary',
+    });
   });
 });

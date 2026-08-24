@@ -27,7 +27,11 @@
       [label]="chamberNames().upper + (upperBillDisplayId() ? ' (' + upperBillDisplayId() + ')' : '')"
     >
       <div class="tab-content">
-        <app-bill-detail [stateCd]="stateCd()" [id]="upperId"></app-bill-detail>
+        <app-bill-detail
+          [stateCd]="stateCd()"
+          [id]="upperId"
+          [updateSeoTags]="false"
+        ></app-bill-detail>
       </div>
     </mat-tab>
     } @if (lowerBillId(); as lowerId) {
@@ -35,7 +39,11 @@
       [label]="chamberNames().lower + (lowerBillDisplayId() ? ' (' + lowerBillDisplayId() + ')' : '')"
     >
       <div class="tab-content">
-        <app-bill-detail [stateCd]="stateCd()" [id]="lowerId"></app-bill-detail>
+        <app-bill-detail
+          [stateCd]="stateCd()"
+          [id]="lowerId"
+          [updateSeoTags]="false"
+        ></app-bill-detail>
       </div>
     </mat-tab>
     }
