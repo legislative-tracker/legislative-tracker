@@ -1,23 +1,35 @@
-import { onRequest } from 'firebase-functions/v2/https';
+import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import * as logger from 'firebase-functions/logger';
 import { dataAccessOpenStatesKey, pluginLegUsNyKey } from '../config';
 import { updateLegislators } from './service';
 
-export const manualUpdate = onRequest(
+/**
+ * Manual Trigger for Legislators Updates (Callable)
+ */
+export const manualUpdate = onCall(
   { secrets: [dataAccessOpenStatesKey, pluginLegUsNyKey], timeoutSeconds: 300 },
-  async (request, response) => {
+  async (request) => {
+    if (request.auth?.token['admin'] !== true) {
+      throw new HttpsError(
+        'permission-denied',
+        'Only admins can perform manual legislator updates.',
+      );
+    }
+
     try {
       const results = await updateLegislators();
-
-      response.send({
+      return {
         status: 'success',
         timestamp: new Date().toISOString(),
-        results: results,
-      });
+        results,
+      };
     } catch (error: unknown) {
-      logger.error('HTTP Update Failed', error);
+      logger.error('Manual Legislator Update Failed', error);
+      if (error instanceof HttpsError) {
+        throw error;
+      }
       const msg = error instanceof Error ? error.message : 'Unknown error';
-      response.status(500).send({ error: msg });
+      throw new HttpsError('internal', msg);
     }
   },
 );

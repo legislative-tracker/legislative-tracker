@@ -1,0 +1,96 @@
+<div class="manual-update-container">
+  @if (auth.isAdmin()) {
+  <mat-card class="update-card">
+    <mat-card-header>
+      <div mat-card-avatar>
+        <mat-icon color="primary">sync</mat-icon>
+      </div>
+      <mat-card-title>Manual Data Sync</mat-card-title>
+      <mat-card-subtitle
+        >Trigger on-demand data synchronization with
+        OpenStates</mat-card-subtitle
+      >
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="info-box">
+        <mat-icon>info</mat-icon>
+        <span
+          >Manual sync calls OpenStates APIs to refresh data in Firestore. These
+          operations may take up to a few minutes to complete.</span
+        >
+      </div>
+
+      <div class="sync-section">
+        <div class="sync-info">
+          <h3>Sync Legislation</h3>
+          <p>
+            Fetches and updates bill statuses, titles, and legislative actions
+            for all tracked bills.
+          </p>
+        </div>
+        <div class="sync-action">
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            class="sync-btn"
+            (click)="triggerLegislationUpdate()"
+            [disabled]="isUpdatingLegislation() || isUpdatingLegislators()"
+          >
+            <span class="btn-content">
+              @if (isUpdatingLegislation()) {
+              <mat-spinner diameter="20"></mat-spinner>
+              <span>Syncing Legislation...</span>
+              } @else {
+              <mat-icon>update</mat-icon>
+              <span>Sync Legislation</span>
+              }
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="sync-section">
+        <div class="sync-info">
+          <h3>Sync Legislators</h3>
+          <p>
+            Updates the rosters and details of legislators across all active
+            jurisdictions.
+          </p>
+        </div>
+        <div class="sync-action">
+          <button
+            mat-flat-button
+            color="accent"
+            type="button"
+            class="sync-btn"
+            (click)="triggerLegislatorsUpdate()"
+            [disabled]="isUpdatingLegislation() || isUpdatingLegislators()"
+          >
+            <span class="btn-content">
+              @if (isUpdatingLegislators()) {
+              <mat-spinner diameter="20"></mat-spinner>
+              <span>Syncing Legislators...</span>
+              } @else {
+              <mat-icon>people</mat-icon>
+              <span>Sync Legislators</span>
+              }
+            </span>
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  } @else {
+  <mat-card class="access-denied">
+    <mat-card-content>
+      <mat-icon color="warn" class="large-icon">lock</mat-icon>
+      <h2>Access Denied</h2>
+      <p>You do not have administrative privileges to view this page.</p>
+    </mat-card-content>
+  </mat-card>
+  }
+</div>

@@ -24,6 +24,14 @@ export const ADMIN_ROUTES: Routes = [
   },
   // Bill Management
   {
+    path: 'manualUpdate',
+    title: 'Manual Data Sync | Legislative Tracker',
+    loadComponent: () =>
+      import('./bill-mgmt/manual-update/manual-update').then(
+        (m) => m.ManualUpdate,
+      ),
+  },
+  {
     path: 'addBill',
     title: 'Add Bill | Legislative Tracker',
     loadComponent: () =>

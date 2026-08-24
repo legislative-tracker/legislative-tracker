@@ -30,4 +30,6 @@ export abstract class LegislatureService {
     chamber?: 'upper' | 'lower',
   ): Promise<unknown>;
   abstract updateBill(params: UpdateBillParams): Promise<unknown>;
+  abstract manualUpdateLegislation(): Promise<unknown>;
+  abstract manualUpdateLegislators(): Promise<unknown>;
 }

@@ -331,4 +331,30 @@ export class FirebaseLegislatureService extends LegislatureService {
       throw error;
     }
   }
+
+  async manualUpdateLegislation() {
+    if (!this.functions) throw new Error('Firebase Functions not provided');
+    const updateFn = httpsCallable(this.functions, 'legislation-manualUpdate');
+    try {
+      const result = await updateFn();
+      console.log('Legislation manual update completed:', result.data);
+      return result;
+    } catch (error) {
+      console.error('Failed to manually update legislation:', error);
+      throw error;
+    }
+  }
+
+  async manualUpdateLegislators() {
+    if (!this.functions) throw new Error('Firebase Functions not provided');
+    const updateFn = httpsCallable(this.functions, 'legislators-manualUpdate');
+    try {
+      const result = await updateFn();
+      console.log('Legislators manual update completed:', result.data);
+      return result;
+    } catch (error) {
+      console.error('Failed to manually update legislators:', error);
+      throw error;
+    }
+  }
 }
