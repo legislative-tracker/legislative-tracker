@@ -23,6 +23,11 @@ describe('ThemeService', () => {
     vi.resetAllMocks();
     localStorage.clear();
 
+    documentMock = document;
+    documentMock.documentElement.className = '';
+    documentMock.documentElement.style.colorScheme = '';
+    vi.spyOn(documentMock.documentElement.style, 'setProperty');
+
     mockArgbFromHex.mockReturnValue(12345);
     mockHexFromArgb.mockReturnValue('#000000');
     mockThemeFromSourceColor.mockReturnValue({

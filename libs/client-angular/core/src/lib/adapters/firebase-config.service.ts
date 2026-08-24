@@ -119,6 +119,7 @@ export class FirebaseConfigService implements ConfigService {
   private async applyAngularMaterialTheme(hexColor: string) {
     if (this.themeService) {
       this.themeService.setPrimaryColor(hexColor);
+      return;
     }
 
     try {

@@ -40,7 +40,9 @@ export class ThemeService {
     } catch (e) {
       console.warn('Failed to save theme to localStorage', e);
     }
-    this.applyTheme(this.currentPrimaryColor(), this.isDarkMode());
+    const isDark =
+      mode === 'dark' ? true : mode === 'light' ? false : this.systemIsDark();
+    this.applyTheme(this.currentPrimaryColor(), isDark);
   }
 
   setPrimaryColor(hexColor: string): void {
@@ -50,13 +52,21 @@ export class ThemeService {
     }
   }
 
+  private themeApplyVersion = 0;
+
   async applyTheme(
     hexColor: string = this.currentPrimaryColor(),
     isDark: boolean = this.isDarkMode(),
   ): Promise<void> {
+    const version = ++this.themeApplyVersion;
     try {
       const { argbFromHex, themeFromSourceColor, hexFromArgb } =
         await import('@material/material-color-utilities');
+
+      if (version !== this.themeApplyVersion) {
+        return;
+      }
+
       const flattenSchemeToCssVars = (scheme: any): Record<string, string> => {
         const mapping: Record<string, string> = {};
         const toHex = (argb: number) => hexFromArgb(argb);
