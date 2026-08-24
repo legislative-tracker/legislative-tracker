@@ -1,3 +1,21 @@
+## 0.11.20 (2026-08-24)
+
+### 🚀 Features
+
+- **client-angular:** update bill route to use ocd-bill path parameter ([4cdce5e](https://github.com/legislative-tracker/legislative-tracker/commit/4cdce5e))
+- **client-angular:** add baseline OpenGraph and Twitter meta tags to index.html ([473bc45](https://github.com/legislative-tracker/legislative-tracker/commit/473bc45))
+- **client-angular:** add dynamic social metadata for bill and member routes ([943fc67](https://github.com/legislative-tracker/legislative-tracker/commit/943fc67))
+- **client-angular:** add theme toggle button and menu to navigation header ([1d6846b](https://github.com/legislative-tracker/legislative-tracker/commit/1d6846b))
+- **core:** add SeoService and ThemeService with tests ([fd8db33](https://github.com/legislative-tracker/legislative-tracker/commit/fd8db33))
+
+### 🩹 Fixes
+
+- **core:** resolve theme toggle race condition and prevent light mode override ([7387f38](https://github.com/legislative-tracker/legislative-tracker/commit/7387f38))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.19 (2026-08-24)
 
 ### 🚀 Features
