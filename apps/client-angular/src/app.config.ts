@@ -4,7 +4,11 @@ import {
   inject,
   provideAppInitializer,
 } from '@angular/core';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
+import {
+  provideRouter,
+  withComponentInputBinding,
+  withRouterConfig,
+} from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 
 import {
@@ -28,7 +32,11 @@ export const getAppConfig = (
 
       provideZonelessChangeDetection(),
 
-      provideRouter(routes, withComponentInputBinding()),
+      provideRouter(
+        routes,
+        withComponentInputBinding(),
+        withRouterConfig({ paramsInheritanceStrategy: 'always' }),
+      ),
 
       provideServiceWorker('ngsw-worker.js', {
         enabled: true,
@@ -38,7 +46,9 @@ export const getAppConfig = (
       ...BACKEND_PROVIDERS,
 
       provideAppInitializer(() => {
-        LegislaturePluginRegistry.register(legUsNyPlugin);
+        if (!LegislaturePluginRegistry.has(legUsNyPlugin.metadata.id)) {
+          LegislaturePluginRegistry.register(legUsNyPlugin);
+        }
         return inject(ConfigService).load();
       }),
     ],

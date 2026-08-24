@@ -51,6 +51,7 @@ describe('BillDetail', () => {
   const mockSeoService = {
     updateTags: vi.fn(),
     resetTags: vi.fn(),
+    setBillTags: vi.fn(),
   };
 
   const mockUserProfileSignal = signal<any>(null);
@@ -61,6 +62,7 @@ describe('BillDetail', () => {
   beforeEach(async () => {
     mockSeoService.updateTags.mockClear();
     mockSeoService.resetTags.mockClear();
+    mockSeoService.setBillTags.mockClear();
     mockUserProfileSignal.set(null);
 
     await TestBed.configureTestingModule({
@@ -103,14 +105,33 @@ describe('BillDetail', () => {
     expect(bill?.title).toBe('Clean Water Act');
   });
 
-  it('should update SEO tags with bill title and details', async () => {
+  it('should update SEO tags with bill identifier', async () => {
     await fixture.whenStable();
 
-    expect(mockSeoService.updateTags).toHaveBeenCalledWith({
-      title: 'S 123: Clean Water Act',
+    expect(mockSeoService.setBillTags).toHaveBeenCalledWith({
+      identifier: 'S 123',
+      title: 'Clean Water Act',
       description: 'Clean Water Act',
-      type: 'article',
-      twitterCard: 'summary',
+    });
+  });
+
+  it('should fallback to bill title if identifier is missing', async () => {
+    mockLegislatureService.getBillById.mockReturnValueOnce(
+      of({
+        id: 'BILL-456',
+        title: 'Education Reform Act',
+        identifier: '',
+      }),
+    );
+
+    fixture.componentRef.setInput('id', 'BILL-456');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(mockSeoService.setBillTags).toHaveBeenCalledWith({
+      identifier: '',
+      title: 'Education Reform Act',
+      description: 'Education Reform Act',
     });
   });
 

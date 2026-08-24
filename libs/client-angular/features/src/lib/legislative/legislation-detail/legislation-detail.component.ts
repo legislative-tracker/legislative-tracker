@@ -28,8 +28,8 @@ import { BillDetail } from '../bill-detail/bill-detail.component';
   styleUrls: ['./legislation-detail.component.scss'],
 })
 export class LegislationDetail {
-  stateCd = input.required<string>();
-  id = input.required<string>();
+  stateCd = input<string>('');
+  id = input<string>('');
 
   private legislatureService = inject(LegislatureService);
   private seoService = inject(SeoService);
@@ -38,12 +38,9 @@ export class LegislationDetail {
     effect(() => {
       const leg = this.legislation();
       if (leg?.name) {
-        this.seoService.updateTags({
-          title: `${leg.name} | Legislative Tracker`,
-          description:
-            leg.description || `${leg.name} legislation details and chambers.`,
-          type: 'article',
-          twitterCard: 'summary',
+        this.seoService.setLegislationTags({
+          name: leg.name,
+          description: leg.description,
         });
       } else {
         this.seoService.resetTags();
@@ -51,8 +48,16 @@ export class LegislationDetail {
     });
   }
 
+  legislationParams = computed(
+    () => {
+      const state = this.stateCd();
+      return state ? { state } : undefined;
+    },
+    { equal: (a, b) => a?.state === b?.state },
+  );
+
   legislationResource = rxResource({
-    params: () => ({ state: this.stateCd(), id: this.id() }),
+    params: () => this.legislationParams(),
     stream: ({ params }) =>
       this.legislatureService.getLegislationByState(params.state),
   });

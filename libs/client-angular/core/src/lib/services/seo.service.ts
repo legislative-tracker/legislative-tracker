@@ -83,6 +83,59 @@ export class SeoService {
     });
   }
 
+  setBillTags(options: {
+    identifier?: string;
+    title?: string;
+    description?: string;
+    url?: string;
+  }): void {
+    const pageTitle = options.identifier || options.title || 'Bill Details';
+    const description =
+      options.description || options.title || 'View bill details and actions.';
+    this.updateTags({
+      title: pageTitle,
+      description,
+      type: 'article',
+      twitterCard: 'summary',
+      url: options.url,
+    });
+  }
+
+  setMemberTags(options: {
+    name: string;
+    details?: string;
+    image?: string;
+    url?: string;
+  }): void {
+    const description = options.details
+      ? `${options.name} (${options.details}) - Legislative Tracker member profile and sponsored legislation.`
+      : `${options.name} - Legislative Tracker member profile and sponsored legislation.`;
+    this.updateTags({
+      title: options.name,
+      description,
+      image: options.image,
+      type: 'profile',
+      twitterCard: options.image ? 'summary_large_image' : 'summary',
+      url: options.url,
+    });
+  }
+
+  setLegislationTags(options: {
+    name: string;
+    description?: string;
+    url?: string;
+  }): void {
+    this.updateTags({
+      title: options.name,
+      description:
+        options.description ||
+        `${options.name} legislation details and chambers.`,
+      type: 'article',
+      twitterCard: 'summary',
+      url: options.url,
+    });
+  }
+
   private updateOrRemoveTag(tag: MetaDefinition): void {
     const selector = tag.name
       ? `name='${tag.name}'`

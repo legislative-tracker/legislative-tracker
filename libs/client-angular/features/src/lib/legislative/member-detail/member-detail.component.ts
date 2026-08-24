@@ -136,8 +136,8 @@ const SOCIAL_PLATFORMS: Record<
   styleUrls: ['./member-detail.component.scss'],
 })
 export class MemberDetail {
-  stateCd = input.required<string>();
-  id = input.required<string>(); // The Member ID
+  stateCd = input<string>('');
+  id = input<string>(''); // The Member ID
 
   private legislatureService = inject(LegislatureService);
   private seoService = inject(SeoService);
@@ -154,16 +154,11 @@ export class MemberDetail {
         const details = [role, party, dist ? `District ${dist}` : '']
           .filter(Boolean)
           .join(', ');
-        const description = details
-          ? `${m.name} (${details}) - Legislative Tracker member profile and sponsored legislation.`
-          : `${m.name} - Legislative Tracker member profile and sponsored legislation.`;
 
-        this.seoService.updateTags({
-          title: `${m.name} | Legislative Tracker`,
-          description,
+        this.seoService.setMemberTags({
+          name: m.name,
+          details,
           image: m.image,
-          type: 'profile',
-          twitterCard: m.image ? 'summary_large_image' : 'summary',
         });
       } else {
         this.seoService.resetTags();
@@ -171,8 +166,17 @@ export class MemberDetail {
     });
   }
 
+  memberParams = computed(
+    () => {
+      const state = this.stateCd();
+      const id = this.id();
+      return state && id ? { state, id } : undefined;
+    },
+    { equal: (a, b) => a?.state === b?.state && a?.id === b?.id },
+  );
+
   memberResource = rxResource({
-    params: () => ({ state: this.stateCd(), id: this.id() }),
+    params: () => this.memberParams(),
     stream: ({ params }) =>
       this.legislatureService.getMemberById(params.state, params.id),
   });
