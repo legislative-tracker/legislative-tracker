@@ -1,3 +1,20 @@
+## 0.11.23 (2026-08-24)
+
+### 🚀 Features
+
+- **client-angular:** restrict official website button to .gov domains and label OpenStates profile ([198b5ce](https://github.com/legislative-tracker/legislative-tracker/commit/198b5ce))
+- **client-angular:** add contact shortcuts and social links from links array in member detail ([98f372b](https://github.com/legislative-tracker/legislative-tracker/commit/98f372b))
+- **client-angular:** badge representative sponsorships and add civic banner in bill detail ([ec8361f](https://github.com/legislative-tracker/legislative-tracker/commit/ec8361f))
+- **client-angular:** support rep badges and user rep row highlighting in table component ([cd1bc26](https://github.com/legislative-tracker/legislative-tracker/commit/cd1bc26))
+
+### 🩹 Fixes
+
+- **client-angular:** support district, chamber, and name variations in rep matching ([25746ee](https://github.com/legislative-tracker/legislative-tracker/commit/25746ee))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.22 (2026-08-24)
 
 ### 🚀 Features
