@@ -1,3 +1,13 @@
+## 0.11.21 (2026-08-24)
+
+### 🩹 Fixes
+
+- **client-angular:** use routerLink instead of href in admin expansion panels ([998651c](https://github.com/legislative-tracker/legislative-tracker/commit/998651c))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.20 (2026-08-24)
 
 ### 🚀 Features
