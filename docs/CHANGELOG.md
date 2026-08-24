@@ -1,3 +1,13 @@
+## 0.11.19 (2026-08-24)
+
+### 🚀 Features
+
+- **workspace:** protect manual update triggers and add admin sync UI ([908de8a](https://github.com/legislative-tracker/legislative-tracker/commit/908de8a))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.18 (2026-08-23)
 
 ### 🚀 Features
