@@ -12,6 +12,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
@@ -20,6 +22,7 @@ import {
   AuthService,
   ConfigService,
   OfflineStorageService,
+  ThemeService,
 } from '@legislative-tracker/client-angular/core';
 import { Footer } from '../footer/footer';
 
@@ -37,12 +40,15 @@ import { Footer } from '../footer/footer';
     MatSidenavModule,
     MatListModule,
     MatIconModule,
+    MatMenuModule,
+    MatTooltipModule,
     AsyncPipe,
     Footer,
   ],
 })
 export class NavComponent {
   auth = inject(AuthService);
+  themeService = inject(ThemeService);
   private router = inject(Router);
   private breakpointObserver = inject(BreakpointObserver);
 

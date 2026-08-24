@@ -38,6 +38,21 @@
     padding: 4px 10px;
     border-radius: 16px;
   }
+
+  .theme-toggle-btn {
+    margin-left: 8px;
+  }
+}
+
+.theme-check-icon {
+  margin-left: auto;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.active-theme {
+  font-weight: 600;
 }
 
 .sidenav-container {

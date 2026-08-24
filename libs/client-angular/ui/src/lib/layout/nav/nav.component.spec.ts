@@ -19,6 +19,7 @@ import { Footer } from '../footer/footer'; // Import the real footer class so we
 import {
   AuthService,
   ConfigService,
+  ThemeService,
 } from '@legislative-tracker/client-angular/core';
 
 // Create a Dummy Footer
@@ -54,6 +55,12 @@ describe('NavComponent', () => {
     }),
   };
 
+  const mockThemeService = {
+    mode: signal('system'),
+    isDarkMode: signal(false),
+    setThemeMode: vi.fn(),
+  };
+
   // Mock Breakpoint Observer with a Subject for live updates
   const screenState$ = new BehaviorSubject<BreakpointState>({
     matches: false,
@@ -73,6 +80,7 @@ describe('NavComponent', () => {
         provideRouter([]),
         { provide: AuthService, useValue: mockAuthService },
         { provide: ConfigService, useValue: mockConfigService },
+        { provide: ThemeService, useValue: mockThemeService },
         { provide: BreakpointObserver, useValue: mockBreakpointObserver },
       ],
     })
@@ -136,6 +144,13 @@ describe('NavComponent', () => {
       expect(protectedComponent.config().branding.logoUrl).toBe(
         '/assets/logo.png',
       );
+    });
+  });
+
+  describe('Theme Toggle', () => {
+    it('should expose themeService', () => {
+      expect(component.themeService).toBeDefined();
+      expect(component.themeService.mode()).toBe('system');
     });
   });
 });
