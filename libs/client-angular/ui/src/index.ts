@@ -1,4 +1,5 @@
 export * from './lib/address-form/address-form.component';
+export * from './lib/confirm-dialog/confirm-dialog';
 export * from './lib/directives/img-fallback';
 export * from './lib/feedback/feedback';
 export * from './lib/snackbars/link-snackbar/link-snackbar';
