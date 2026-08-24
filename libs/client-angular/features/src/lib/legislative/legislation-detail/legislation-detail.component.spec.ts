@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { provideRouter, RouterLink } from '@angular/router';
+import { By } from '@angular/platform-browser';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of } from 'rxjs';
 
@@ -51,6 +53,7 @@ describe('LegislationDetail', () => {
       imports: [LegislationDetail],
       providers: [
         provideNoopAnimations(),
+        provideRouter([]),
         { provide: LegislatureService, useValue: mockLegislatureService },
         { provide: SeoService, useValue: mockSeoService },
       ],
@@ -81,5 +84,41 @@ describe('LegislationDetail', () => {
       name: 'Clean Energy Act',
       description: 'Promotes clean energy incentives',
     });
+  });
+
+  it('should render pop-out buttons in chamber tab headers with correct links and accessibility attributes', () => {
+    const popOutLinks = fixture.debugElement.queryAll(By.css('.pop-out-btn'));
+    expect(popOutLinks.length).toBe(2);
+
+    const upperLink = popOutLinks[0].nativeElement as HTMLAnchorElement;
+    expect(upperLink.getAttribute('target')).toBe('_blank');
+    expect(upperLink.getAttribute('rel')).toBe('noopener noreferrer');
+    expect(upperLink.getAttribute('aria-label')).toBe(
+      `Open ${component.chamberNames().upper} bill in new tab`,
+    );
+    expect(upperLink.getAttribute('href')).toContain('/us-ny/ocd-bill/S100');
+
+    const lowerLink = popOutLinks[1].nativeElement as HTMLAnchorElement;
+    expect(lowerLink.getAttribute('target')).toBe('_blank');
+    expect(lowerLink.getAttribute('rel')).toBe('noopener noreferrer');
+    expect(lowerLink.getAttribute('aria-label')).toBe(
+      `Open ${component.chamberNames().lower} bill in new tab`,
+    );
+    expect(lowerLink.getAttribute('href')).toContain('/us-ny/ocd-bill/A200');
+  });
+
+  it('should stop event propagation when pop-out button is clicked', () => {
+    const popOutLinks = fixture.debugElement.queryAll(By.css('.pop-out-btn'));
+    expect(popOutLinks.length).toBeGreaterThan(0);
+
+    const clickEvent = new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+    });
+    const stopPropagationSpy = vi.spyOn(clickEvent, 'stopPropagation');
+
+    popOutLinks[0].nativeElement.dispatchEvent(clickEvent);
+
+    expect(stopPropagationSpy).toHaveBeenCalled();
   });
 });

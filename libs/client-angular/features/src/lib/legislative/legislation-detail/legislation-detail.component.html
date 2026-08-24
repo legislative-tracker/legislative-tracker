@@ -23,12 +23,29 @@
       animationDuration="0ms"
     >
       @if (upperBillId(); as upperId) {
-        <mat-tab
-          [label]="
-            chamberNames().upper +
-            (upperBillDisplayId() ? ' (' + upperBillDisplayId() + ')' : '')
-          "
-        >
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <span class="tab-label-text">
+              {{ chamberNames().upper
+              }}{{
+                upperBillDisplayId() ? ' (' + upperBillDisplayId() + ')' : ''
+              }}
+            </span>
+            <a
+              mat-icon-button
+              class="pop-out-btn"
+              [routerLink]="['/', stateCd(), 'ocd-bill', upperId]"
+              target="_blank"
+              rel="noopener noreferrer"
+              [attr.aria-label]="
+                'Open ' + chamberNames().upper + ' bill in new tab'
+              "
+              [matTooltip]="'Open ' + chamberNames().upper + ' bill in new tab'"
+              (click)="$event.stopPropagation()"
+            >
+              <mat-icon>open_in_new</mat-icon>
+            </a>
+          </ng-template>
           <div class="tab-content">
             <app-bill-detail
               [stateCd]="stateCd()"
@@ -39,12 +56,29 @@
         </mat-tab>
       }
       @if (lowerBillId(); as lowerId) {
-        <mat-tab
-          [label]="
-            chamberNames().lower +
-            (lowerBillDisplayId() ? ' (' + lowerBillDisplayId() + ')' : '')
-          "
-        >
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <span class="tab-label-text">
+              {{ chamberNames().lower
+              }}{{
+                lowerBillDisplayId() ? ' (' + lowerBillDisplayId() + ')' : ''
+              }}
+            </span>
+            <a
+              mat-icon-button
+              class="pop-out-btn"
+              [routerLink]="['/', stateCd(), 'ocd-bill', lowerId]"
+              target="_blank"
+              rel="noopener noreferrer"
+              [attr.aria-label]="
+                'Open ' + chamberNames().lower + ' bill in new tab'
+              "
+              [matTooltip]="'Open ' + chamberNames().lower + ' bill in new tab'"
+              (click)="$event.stopPropagation()"
+            >
+              <mat-icon>open_in_new</mat-icon>
+            </a>
+          </ng-template>
           <div class="tab-content">
             <app-bill-detail
               [stateCd]="stateCd()"
