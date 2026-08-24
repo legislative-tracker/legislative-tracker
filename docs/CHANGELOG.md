@@ -1,3 +1,13 @@
+## 0.11.25 (2026-08-24)
+
+### 🚀 Features
+
+- **client-angular:** add bill pop-out button to chamber tabs on legislation view ([b501ce0](https://github.com/legislative-tracker/legislative-tracker/commit/b501ce0))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.24 (2026-08-24)
 
 ### 🚀 Features
