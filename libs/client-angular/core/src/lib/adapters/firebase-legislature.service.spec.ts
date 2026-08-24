@@ -121,4 +121,36 @@ describe('FirebaseLegislatureService', () => {
 
     expect(result).toEqual({ success: true });
   });
+
+  it('should call legislation-manualUpdate function on manualUpdateLegislation', async () => {
+    const mockCallable = vi
+      .fn()
+      .mockResolvedValue({ data: { status: 'success' } });
+    mockHttpsCallable.mockReturnValue(mockCallable);
+
+    const result = await service.manualUpdateLegislation();
+
+    expect(mockHttpsCallable).toHaveBeenCalledWith(
+      mockFunctions,
+      'legislation-manualUpdate',
+    );
+    expect(mockCallable).toHaveBeenCalledWith();
+    expect(result).toEqual({ data: { status: 'success' } });
+  });
+
+  it('should call legislators-manualUpdate function on manualUpdateLegislators', async () => {
+    const mockCallable = vi
+      .fn()
+      .mockResolvedValue({ data: { status: 'success' } });
+    mockHttpsCallable.mockReturnValue(mockCallable);
+
+    const result = await service.manualUpdateLegislators();
+
+    expect(mockHttpsCallable).toHaveBeenCalledWith(
+      mockFunctions,
+      'legislators-manualUpdate',
+    );
+    expect(mockCallable).toHaveBeenCalledWith();
+    expect(result).toEqual({ data: { status: 'success' } });
+  });
 });
