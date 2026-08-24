@@ -3,7 +3,69 @@
   <mat-spinner diameter="50"></mat-spinner>
 </div>
 } @else if (member()) {
-<h1>{{ titleOrPrefix() }} {{ member()?.name }}</h1>
+<div class="member-header">
+  <h1>{{ titleOrPrefix() }} {{ member()?.name }}</h1>
+  @if (userRepLabel(); as repLabel) {
+  <span class="user-rep-tag" [title]="repLabel">
+    <mat-icon class="tag-icon">how_to_reg</mat-icon>
+    <span>{{ repLabel }}</span>
+  </span>
+  }
+</div>
+
+<div class="contact-actions-bar">
+  @for (phone of phones(); track phone.number) {
+  <a
+    mat-flat-button
+    color="primary"
+    [href]="phone.telUrl"
+    class="contact-btn phone-btn"
+    [attr.aria-label]="phone.label"
+  >
+    <mat-icon>phone</mat-icon>
+    <span>{{ phone.label }}</span>
+  </a>
+  } @if (primaryEmail()) {
+  <a
+    mat-stroked-button
+    color="primary"
+    [href]="'mailto:' + primaryEmail()"
+    class="contact-btn email-btn"
+    [attr.aria-label]="'Email ' + (member()?.name || 'Legislator')"
+  >
+    <mat-icon>email</mat-icon>
+    <span>Email Legislator</span>
+  </a>
+  } @if (websiteUrl()) {
+  <a
+    mat-stroked-button
+    color="primary"
+    [href]="websiteUrl()"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="contact-btn website-btn"
+    aria-label="Official Website"
+  >
+    <mat-icon>language</mat-icon>
+    <span>Official Website</span>
+  </a>
+  } @if (socialLinks().length) {
+  <div class="social-links-row">
+    @for (link of socialLinks(); track link.url) {
+    <a
+      mat-icon-button
+      [href]="link.url"
+      target="_blank"
+      rel="noopener noreferrer"
+      [attr.aria-label]="link.platform"
+      [title]="link.platform + (link.username ? ': ' + link.username : '')"
+    >
+      <i [class]="link.icon"></i>
+    </a>
+    }
+  </div>
+  }
+</div>
 
 <div class="member-details-container">
   <img
@@ -51,21 +113,6 @@
         >
       </span>
     </mat-list-item>
-    } @if (socialLinks().length) {
-    <div class="social-links-row">
-      @for (link of socialLinks(); track link.platform) {
-      <a
-        mat-icon-button
-        [href]="link.url"
-        target="_blank"
-        rel="noopener noreferrer"
-        [attr.aria-label]="link.platform"
-        [title]="link.platform + ': ' + link.username"
-      >
-        <i [class]="link.icon"></i>
-      </a>
-      }
-    </div>
     }
   </mat-list>
 </div>
