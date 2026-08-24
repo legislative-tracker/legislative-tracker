@@ -223,4 +223,24 @@ describe('TableComponent', () => {
     }
     expect(emitSpy).not.toHaveBeenCalled();
   });
+
+  it('should render rep badge and apply user-rep-row class when repBadge is present', async () => {
+    const dataWithBadge = [
+      { id: '1', name: 'Alice', role: 'Admin', repBadge: 'Your Senator' },
+      { id: '2', name: 'Bob', role: 'User' },
+    ];
+    fixture.componentRef.setInput('dataSource', dataWithBadge);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const badgeDebug = fixture.debugElement.query(By.css('.rep-badge'));
+    expect(badgeDebug).toBeTruthy();
+    expect(badgeDebug.nativeElement.textContent).toContain('Your Senator');
+
+    const rows = fixture.debugElement.queryAll(By.css('tr[mat-row]'));
+    expect(rows[0].nativeElement.classList.contains('user-rep-row')).toBe(true);
+    expect(rows[1].nativeElement.classList.contains('user-rep-row')).toBe(
+      false,
+    );
+  });
 });
