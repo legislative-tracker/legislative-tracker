@@ -9,10 +9,12 @@ import { BillDetail } from './bill-detail';
 
 // Dependencies
 import {
+  AuthService,
   LegislatureService,
   SeoService,
 } from '@legislative-tracker/client-angular/core';
 import { TableComponent } from '@legislative-tracker/client-angular/ui';
+import { signal } from '@angular/core';
 
 // Stub Child Component
 @Component({
@@ -52,9 +54,15 @@ describe('BillDetail', () => {
     resetTags: vi.fn(),
   };
 
+  const mockUserProfileSignal = signal<any>(null);
+  const mockAuthService = {
+    userProfile: mockUserProfileSignal,
+  };
+
   beforeEach(async () => {
     mockSeoService.updateTags.mockClear();
     mockSeoService.resetTags.mockClear();
+    mockUserProfileSignal.set(null);
 
     await TestBed.configureTestingModule({
       imports: [BillDetail],
@@ -62,6 +70,7 @@ describe('BillDetail', () => {
         provideNoopAnimations(),
         { provide: LegislatureService, useValue: mockLegislatureService },
         { provide: SeoService, useValue: mockSeoService },
+        { provide: AuthService, useValue: mockAuthService },
       ],
     })
       .overrideComponent(BillDetail, {
@@ -151,5 +160,101 @@ describe('BillDetail', () => {
       'ca',
       'BILL-456',
     );
+  });
+
+  it('should badge sponsors that match the user representative profile', async () => {
+    mockUserProfileSignal.set({
+      districts: { state: { senate: '42' } },
+      legislators: {
+        state: [
+          {
+            id: 'ocd-person/2',
+            name: 'Rep. Doe',
+            chamber: 'Senate',
+            district: '42',
+            party: 'Democrat',
+          },
+        ],
+        federal: [],
+      },
+    });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const versions = component.billVersions();
+    const originalVer = versions.find((v) => v.id === 'ORIGINAL');
+    expect(originalVer).toBeDefined();
+
+    const repDoe = originalVer?.data.find((d: any) => d.name === 'Rep. Doe');
+    expect(repDoe?.repBadge).toBe('Your State Senator');
+    expect(repDoe?.isUserRep).toBe(true);
+
+    const repJones = originalVer?.data.find(
+      (d: any) => d.name === 'Rep. Jones',
+    );
+    expect(repJones?.repBadge).toBeUndefined();
+    expect(repJones?.isUserRep).toBe(false);
+
+    expect(component.userRepSponsors()).toEqual([
+      { name: 'Rep. Doe', badge: 'Your State Senator', isPrimary: false },
+    ]);
+  });
+
+  it('should badge sponsorships array in OpenStates schema', async () => {
+    mockBillData.cosponsors = null as any;
+    (mockBillData as any).sponsorships = [
+      {
+        id: 'ocd-person/555',
+        name: 'Jane Senator',
+        primary: true,
+        classification: 'primary',
+        entity_type: 'person',
+        person: { id: 'ocd-person/555', party: 'Democratic' },
+      },
+    ];
+
+    mockUserProfileSignal.set({
+      legislators: {
+        federal: [
+          {
+            id: '555',
+            name: 'Jane Senator',
+            chamber: 'Senate',
+            district: 'US',
+            party: 'Democratic',
+          },
+        ],
+        state: [],
+      },
+    });
+
+    mockLegislatureService.getBillById.mockReturnValueOnce(of(mockBillData));
+    fixture.componentRef.setInput('id', 'BILL-OPENSTATES');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const versions = component.billVersions();
+    expect(versions.length).toBe(1);
+    expect(versions[0].data[0].repBadge).toBe('Your U.S. Senator');
+    expect(versions[0].data[0].isUserRep).toBe(true);
+    expect(component.userRepSponsors()).toEqual([
+      { name: 'Jane Senator', badge: 'Your U.S. Senator', isPrimary: true },
+    ]);
+  });
+
+  it('should gracefully fall back when user has not saved their address', async () => {
+    mockUserProfileSignal.set(null);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const versions = component.billVersions();
+    for (const v of versions) {
+      for (const item of v.data) {
+        expect(item.repBadge).toBeUndefined();
+        expect(item.isUserRep).toBe(false);
+      }
+    }
+    expect(component.userRepSponsors()).toEqual([]);
   });
 });

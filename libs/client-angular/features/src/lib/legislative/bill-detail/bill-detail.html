@@ -42,6 +42,23 @@
   </div>
 </div>
 
+@if (userRepSponsors().length > 0) {
+<div class="user-rep-banner" role="status">
+  <mat-icon class="banner-icon">how_to_reg</mat-icon>
+  <div class="banner-text">
+    @for (rep of userRepSponsors(); track rep.name) {
+    <span class="banner-item">
+      <strong
+        >{{ rep.isPrimary ? 'Sponsored' : 'Cosponsored' }} by {{ rep.badge
+        }}:</strong
+      >
+      {{ rep.name }}
+    </span>
+    }
+  </div>
+</div>
+}
+
 <mat-tab-group>
   @for (version of billVersions(); track version.id) {
   <mat-tab [label]="version.id">
