@@ -8,18 +8,28 @@ import {
   signInWithPopup,
   signOut,
 } from 'firebase/auth';
-import { Firestore, doc, onSnapshot, setDoc } from 'firebase/firestore';
+import {
+  Firestore,
+  doc,
+  onSnapshot,
+  setDoc,
+  updateDoc,
+  deleteDoc,
+  deleteField,
+} from 'firebase/firestore';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import { AppUser } from '@legislative-tracker/shared/models';
 import { AuthService } from '../services/auth.service';
+import { OfflineStorageService } from '../services/offline-storage.service';
 import { FIREBASE_AUTH, FIREBASE_FIRESTORE } from '../firebase-tokens';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseAuthService implements AuthService {
   private auth = inject<Auth>(FIREBASE_AUTH, { optional: true });
   private firestore = inject<Firestore>(FIREBASE_FIRESTORE, { optional: true });
+  private offlineStorage = inject(OfflineStorageService, { optional: true });
   private router = inject(Router);
 
   private readonly authState$ = new Observable<User | null>((subscriber) => {
@@ -74,6 +84,8 @@ export class FirebaseAuthService implements AuthService {
         const data =
           typeof snapshot.data === 'function' ? snapshot.data() : snapshot;
         this.userProfile.set(data as AppUser);
+      } else {
+        this.userProfile.set(null);
       }
     });
   }
@@ -121,5 +133,36 @@ export class FirebaseAuthService implements AuthService {
 
     const userRef = doc(this.firestore, `users/${currentUser.uid}`);
     return setDoc(userRef, { favorites: newFavorites }, { merge: true });
+  }
+
+  async resetDistricts(): Promise<void> {
+    const currentUser = this.userSig();
+    if (!currentUser || !this.firestore) return;
+
+    const userRef = doc(this.firestore, `users/${currentUser.uid}`);
+    await updateDoc(userRef, {
+      districts: deleteField(),
+      legislators: deleteField(),
+    });
+
+    const currentProfile = this.userProfile();
+    if (currentProfile) {
+      const updated = { ...currentProfile };
+      delete updated.districts;
+      delete updated.legislators;
+      this.userProfile.set(updated);
+    }
+  }
+
+  async deleteAccountData(): Promise<void> {
+    const currentUser = this.userSig();
+    if (currentUser && this.firestore) {
+      const userRef = doc(this.firestore, `users/${currentUser.uid}`);
+      await deleteDoc(userRef);
+    }
+    if (this.offlineStorage) {
+      await this.offlineStorage.clearAll();
+    }
+    this.userProfile.set(null);
   }
 }

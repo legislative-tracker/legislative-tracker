@@ -5,15 +5,22 @@ import { BehaviorSubject, of } from 'rxjs';
 
 import { AuthService } from './auth.service';
 import { FirebaseAuthService } from '../adapters/firebase-auth.service';
+import { OfflineStorageService } from './offline-storage.service';
 import { FIREBASE_AUTH, FIREBASE_FIRESTORE } from '../firebase-tokens';
 
 const mockSetDoc = vi.fn();
+const mockUpdateDoc = vi.fn();
+const mockDeleteDoc = vi.fn();
+const mockDeleteField = vi.fn(() => '__DELETE_FIELD__');
 const mockDoc = vi.fn();
 const mockOnSnapshot = vi.fn();
 
 vi.mock('firebase/firestore', () => ({
   doc: (...args: any[]) => mockDoc(...args),
   setDoc: (...args: any[]) => mockSetDoc(...args),
+  updateDoc: (...args: any[]) => mockUpdateDoc(...args),
+  deleteDoc: (...args: any[]) => mockDeleteDoc(...args),
+  deleteField: () => mockDeleteField(),
   onSnapshot: (...args: any[]) => mockOnSnapshot(...args),
 }));
 
@@ -39,6 +46,9 @@ describe('FirebaseAuthService', () => {
 
   const mockAuth = {};
   const mockFirestore = {};
+  const mockOfflineStorage = {
+    clearAll: vi.fn().mockResolvedValue(undefined),
+  };
 
   let authCallback: ((user: any) => void) | null = null;
   let snapshotCallback: ((snapshot: any) => void) | null = null;
@@ -67,6 +77,7 @@ describe('FirebaseAuthService', () => {
         { provide: AuthService, useClass: FirebaseAuthService },
         { provide: FIREBASE_AUTH, useValue: mockAuth },
         { provide: FIREBASE_FIRESTORE, useValue: mockFirestore },
+        { provide: OfflineStorageService, useValue: mockOfflineStorage },
         { provide: Router, useValue: { navigate: vi.fn() } },
       ],
     });
@@ -243,6 +254,86 @@ describe('FirebaseAuthService', () => {
       await service.toggleFavorite('BILL_1');
 
       expect(mockSetDoc).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('resetDistricts', () => {
+    it('should update Firestore document removing districts and legislators fields', async () => {
+      const mockUser = {
+        uid: 'USER_RESET',
+        getIdTokenResult: async () => ({ claims: {} }),
+      };
+
+      mockOnSnapshot.mockImplementation((docRef, cb) => {
+        cb({
+          data: () => ({
+            uid: 'USER_RESET',
+            districts: { federal: '1' },
+            legislators: { federal: [], state: [] },
+          }),
+        });
+        return () => {};
+      });
+
+      if (authCallback) {
+        authCallback(mockUser);
+      }
+
+      await TestBed.flushEffects();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      await service.resetDistricts();
+
+      expect(mockDoc).toHaveBeenCalledWith(mockFirestore, 'users/USER_RESET');
+      expect(mockUpdateDoc).toHaveBeenCalledWith(expect.anything(), {
+        districts: '__DELETE_FIELD__',
+        legislators: '__DELETE_FIELD__',
+      });
+      expect(service.userProfile()?.districts).toBeUndefined();
+      expect(service.userProfile()?.legislators).toBeUndefined();
+    });
+
+    it('should do nothing if user is not logged in', async () => {
+      if (authCallback) {
+        authCallback(null);
+      }
+      await TestBed.flushEffects();
+
+      await service.resetDistricts();
+
+      expect(mockUpdateDoc).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('deleteAccountData', () => {
+    it('should delete Firestore user document, clear offline storage, and reset user profile signal', async () => {
+      const mockUser = {
+        uid: 'USER_DELETE',
+        getIdTokenResult: async () => ({ claims: {} }),
+      };
+
+      mockOnSnapshot.mockImplementation((docRef, cb) => {
+        cb({
+          data: () => ({ uid: 'USER_DELETE', displayName: 'Delete Me' }),
+        });
+        return () => {};
+      });
+
+      if (authCallback) {
+        authCallback(mockUser);
+      }
+
+      await TestBed.flushEffects();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(service.userProfile()).toBeTruthy();
+
+      await service.deleteAccountData();
+
+      expect(mockDoc).toHaveBeenCalledWith(mockFirestore, 'users/USER_DELETE');
+      expect(mockDeleteDoc).toHaveBeenCalledWith(expect.anything());
+      expect(mockOfflineStorage.clearAll).toHaveBeenCalled();
+      expect(service.userProfile()).toBeNull();
     });
   });
 });

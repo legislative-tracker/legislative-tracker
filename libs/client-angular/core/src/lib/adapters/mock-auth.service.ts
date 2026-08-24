@@ -2,6 +2,7 @@ import { Injectable, signal, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppUser } from '@legislative-tracker/shared/models';
 import { AuthService } from '../services/auth.service';
+import { OfflineStorageService } from '../services/offline-storage.service';
 
 const MOCK_USER: AppUser = {
   uid: 'mock-user-123',
@@ -27,6 +28,7 @@ const MOCK_USER: AppUser = {
 @Injectable({ providedIn: 'root' })
 export class MockAuthService implements AuthService {
   private router = inject(Router);
+  private offlineStorage = inject(OfflineStorageService, { optional: true });
 
   readonly userSig = signal<any>(MOCK_USER);
   readonly isLoggedIn = computed(() => !!this.userSig());
@@ -57,5 +59,22 @@ export class MockAuthService implements AuthService {
       : [...currentFavorites, billId];
 
     this.userProfile.set({ ...profile, favorites: newFavorites });
+  }
+
+  async resetDistricts() {
+    const profile = this.userProfile();
+    if (!profile) return;
+
+    const updated = { ...profile };
+    delete updated.districts;
+    delete updated.legislators;
+    this.userProfile.set(updated);
+  }
+
+  async deleteAccountData() {
+    if (this.offlineStorage) {
+      await this.offlineStorage.clearAll();
+    }
+    this.userProfile.set(null);
   }
 }

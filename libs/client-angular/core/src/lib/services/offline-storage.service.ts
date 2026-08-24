@@ -111,6 +111,14 @@ export class OfflineStorageService {
     }
   }
 
+  async clearAll(): Promise<void> {
+    const db = await this.initDB();
+    if (db) {
+      await db.clear('saved_bills');
+      await db.clear('offline_notes');
+    }
+  }
+
   private async syncPendingData(): Promise<void> {
     const notes = await this.getOfflineNotes();
     if (notes.length > 0) {
