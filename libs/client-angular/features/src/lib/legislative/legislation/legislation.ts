@@ -6,7 +6,6 @@ import {
   effect,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { Title } from '@angular/platform-browser';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -14,7 +13,10 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { getPlugin, getAllPlugins } from '@legislative-tracker/plugins-core';
 
 // App Imports
-import { LegislatureService } from '@legislative-tracker/client-angular/core';
+import {
+  LegislatureService,
+  SeoService,
+} from '@legislative-tracker/client-angular/core';
 import { Legislation as LegislationModel } from '@legislative-tracker/shared/models';
 import { BillDetail } from '../bill-detail/bill-detail';
 
@@ -30,15 +32,21 @@ export class Legislation {
   id = input.required<string>();
 
   private legislatureService = inject(LegislatureService);
-  private titleService = inject(Title);
+  private seoService = inject(SeoService);
 
   constructor() {
     effect(() => {
       const leg = this.legislation();
       if (leg?.name) {
-        this.titleService.setTitle(`${leg.name} | Legislative Tracker`);
+        this.seoService.updateTags({
+          title: `${leg.name} | Legislative Tracker`,
+          description:
+            leg.description || `${leg.name} legislation details and chambers.`,
+          type: 'article',
+          twitterCard: 'summary',
+        });
       } else {
-        this.titleService.setTitle('Legislation | Legislative Tracker');
+        this.seoService.resetTags();
       }
     });
   }

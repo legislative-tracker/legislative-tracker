@@ -8,7 +8,10 @@ import { of } from 'rxjs';
 import { BillDetail } from './bill-detail';
 
 // Dependencies
-import { LegislatureService } from '@legislative-tracker/client-angular/core';
+import {
+  LegislatureService,
+  SeoService,
+} from '@legislative-tracker/client-angular/core';
 import { TableComponent } from '@legislative-tracker/client-angular/ui';
 
 // Stub Child Component
@@ -44,12 +47,21 @@ describe('BillDetail', () => {
     getBillById: vi.fn().mockReturnValue(of(mockBillData)),
   };
 
+  const mockSeoService = {
+    updateTags: vi.fn(),
+    resetTags: vi.fn(),
+  };
+
   beforeEach(async () => {
+    mockSeoService.updateTags.mockClear();
+    mockSeoService.resetTags.mockClear();
+
     await TestBed.configureTestingModule({
       imports: [BillDetail],
       providers: [
         provideNoopAnimations(),
         { provide: LegislatureService, useValue: mockLegislatureService },
+        { provide: SeoService, useValue: mockSeoService },
       ],
     })
       .overrideComponent(BillDetail, {
@@ -81,6 +93,17 @@ describe('BillDetail', () => {
 
     const bill = component.bill();
     expect(bill?.title).toBe('Clean Water Act');
+  });
+
+  it('should update SEO tags with bill title and details', async () => {
+    await fixture.whenStable();
+
+    expect(mockSeoService.updateTags).toHaveBeenCalledWith({
+      title: 'S 123: Clean Water Act',
+      description: 'Clean Water Act',
+      type: 'article',
+      twitterCard: 'summary',
+    });
   });
 
   it('should transform cosponsors object into billVersions array', async () => {

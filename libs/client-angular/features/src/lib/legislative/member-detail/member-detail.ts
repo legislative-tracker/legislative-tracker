@@ -6,7 +6,6 @@ import {
   effect,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { Title } from '@angular/platform-browser';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatListModule } from '@angular/material/list';
@@ -14,7 +13,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-import { LegislatureService } from '@legislative-tracker/client-angular/core';
+import {
+  LegislatureService,
+  SeoService,
+} from '@legislative-tracker/client-angular/core';
 import {
   TableComponent,
   ImgFallbackDirective,
@@ -81,16 +83,32 @@ export class MemberDetail {
   id = input.required<string>(); // The Member ID
 
   private legislatureService = inject(LegislatureService);
-  private titleService = inject(Title);
+  private seoService = inject(SeoService);
   sponsorshipCols = SPONSORSHIP_COLS;
 
   constructor() {
     effect(() => {
       const m = this.member();
       if (m?.name) {
-        this.titleService.setTitle(`${m.name} | Legislative Tracker`);
+        const role = this.titleOrPrefix();
+        const dist = this.district();
+        const party = m.party;
+        const details = [role, party, dist ? `District ${dist}` : '']
+          .filter(Boolean)
+          .join(', ');
+        const description = details
+          ? `${m.name} (${details}) - Legislative Tracker member profile and sponsored legislation.`
+          : `${m.name} - Legislative Tracker member profile and sponsored legislation.`;
+
+        this.seoService.updateTags({
+          title: `${m.name} | Legislative Tracker`,
+          description,
+          image: m.image,
+          type: 'profile',
+          twitterCard: m.image ? 'summary_large_image' : 'summary',
+        });
       } else {
-        this.titleService.setTitle('Member | Legislative Tracker');
+        this.seoService.resetTags();
       }
     });
   }

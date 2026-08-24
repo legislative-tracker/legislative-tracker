@@ -14,7 +14,10 @@ import { of } from 'rxjs';
 import { MemberDetail } from './member-detail';
 
 // Dependencies
-import { LegislatureService } from '@legislative-tracker/client-angular/core';
+import {
+  LegislatureService,
+  SeoService,
+} from '@legislative-tracker/client-angular/core';
 import { TableComponent } from '@legislative-tracker/client-angular/ui';
 import { ImgFallbackDirective } from '@legislative-tracker/client-angular/ui';
 import { OpenStatesPerson } from '@legislative-tracker/shared/models';
@@ -45,6 +48,7 @@ describe('MemberDetail', () => {
     id: '123',
     name: 'Jane Doe',
     party: 'Democratic',
+    image: 'https://example.com/janedoe.jpg',
     current_role: {
       title: 'Senator',
       org_classification: 'upper',
@@ -76,12 +80,21 @@ describe('MemberDetail', () => {
     getMemberById: vi.fn().mockReturnValue(of(mockLegislator)),
   };
 
+  const mockSeoService = {
+    updateTags: vi.fn(),
+    resetTags: vi.fn(),
+  };
+
   beforeEach(async () => {
+    mockSeoService.updateTags.mockClear();
+    mockSeoService.resetTags.mockClear();
+
     await TestBed.configureTestingModule({
       imports: [MemberDetail],
       providers: [
         provideNoopAnimations(),
         { provide: LegislatureService, useValue: mockLegislatureService },
+        { provide: SeoService, useValue: mockSeoService },
       ],
     })
       .overrideComponent(MemberDetail, {
@@ -120,9 +133,15 @@ describe('MemberDetail', () => {
     expect(component.titleOrPrefix()).toBe('Senator');
   });
 
-  it('should update the page title to <name> | Legislative Tracker', () => {
-    const titleService = TestBed.inject(Title);
-    expect(titleService.getTitle()).toBe('Jane Doe | Legislative Tracker');
+  it('should update the SEO tags and title for member', () => {
+    expect(mockSeoService.updateTags).toHaveBeenCalledWith({
+      title: 'Jane Doe | Legislative Tracker',
+      description:
+        'Jane Doe (Senator, Democratic, District 123) - Legislative Tracker member profile and sponsored legislation.',
+      image: 'https://example.com/janedoe.jpg',
+      type: 'profile',
+      twitterCard: 'summary_large_image',
+    });
   });
 
   it('should compute sponsorships correctly', () => {
