@@ -275,6 +275,36 @@ describe('MemberDetail', () => {
     expect(component.userRepLabel()).toBe('Your State Senator');
   });
 
+  it('should compute userRepLabel based on profile.districts (e.g. State Senate District 24)', () => {
+    const district24Member: OpenStatesPerson = {
+      id: 'lanza-24',
+      name: 'Andrew J. Lanza',
+      current_role: {
+        district: '24',
+        title: 'Senator',
+        org_classification: 'upper',
+      },
+    };
+
+    mockLegislatureService.getMemberById.mockReturnValueOnce(
+      of(district24Member),
+    );
+    fixture.componentRef.setInput('id', 'lanza-24');
+    fixture.detectChanges();
+
+    mockUserProfileSignal.set({
+      districts: {
+        state: {
+          senate: '24',
+          assembly: '64',
+        },
+        federal: '11',
+      },
+    });
+
+    expect(component.userRepLabel()).toBe('Your State Senator');
+  });
+
   it('should default sponsorships, phones, and socialLinks to empty array if member is undefined', () => {
     mockLegislatureService.getMemberById.mockReturnValueOnce(of(null));
 

@@ -360,14 +360,13 @@ export class MemberDetail {
     if (!m) return undefined;
 
     const profile = this.authService?.userProfile();
-    if (!profile?.legislators) return undefined;
+    if (!profile) return undefined;
 
-    const stateReps = profile.legislators.state ?? [];
-    const federalReps = profile.legislators.federal ?? [];
+    const stateReps = profile.legislators?.state ?? [];
+    const federalReps = profile.legislators?.federal ?? [];
     const allReps = [...stateReps, ...federalReps];
-    if (allReps.length === 0) return undefined;
 
-    const clean = (val?: string) =>
+    const cleanId = (val?: string) =>
       val
         ? String(val)
             .replace(/^ocd-person[\/:=]/, '')
@@ -375,41 +374,127 @@ export class MemberDetail {
             .toLowerCase()
         : '';
 
-    const memberCleanId = clean(m.id);
-    const memberName = (m.name ?? '').trim().toLowerCase();
+    const normalizeDistrict = (d?: string | number): string => {
+      if (d === undefined || d === null) return '';
+      const str = String(d)
+        .trim()
+        .replace(/^district\s+/i, '');
+      const part = str.split('-').pop()?.trim() ?? str;
+      return part.replace(/^0+/, '');
+    };
+
+    const normalizeName = (name?: string): string => {
+      if (!name) return '';
+      return name
+        .toLowerCase()
+        .replace(
+          /\b(senator|sen\.|assemblymember|assembly member|assemblyman|assemblywoman|representative|rep\.|hon\.|mr\.|ms\.|mrs\.|dr\.)\b/g,
+          '',
+        )
+        .replace(/\b(jr\.|sr\.|ii|iii|iv)\b/g, '')
+        .replace(/[^a-z0-9\s]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    };
+
+    const namesMatch = (nameA: string, nameB: string): boolean => {
+      const normA = normalizeName(nameA);
+      const normB = normalizeName(nameB);
+      if (!normA || !normB) return false;
+      if (normA === normB) return true;
+
+      const partsA = normA.split(' ').filter(Boolean);
+      const partsB = normB.split(' ').filter(Boolean);
+      const lastA = partsA[partsA.length - 1];
+      const lastB = partsB[partsB.length - 1];
+
+      if (lastA && lastB && lastA === lastB) {
+        const firstA = partsA[0];
+        const firstB = partsB[0];
+        if (
+          firstA &&
+          firstB &&
+          (firstA === firstB ||
+            firstA.startsWith(firstB) ||
+            firstB.startsWith(firstA))
+        ) {
+          return true;
+        }
+      }
+
+      return normA.includes(normB) || normB.includes(normA);
+    };
+
+    const memberCleanId = cleanId(m.id);
+    const memberName = m.name ?? '';
+    const memberDist = normalizeDistrict(
+      m.current_role?.district ?? (m as any).district,
+    );
+    const memberChamberStr = String(
+      m.current_role?.title ??
+        m.current_role?.org_classification ??
+        (m as any).chamber ??
+        '',
+    ).toLowerCase();
+    const memberChamber =
+      memberChamberStr.includes('senat') || memberChamberStr === 'upper'
+        ? 'upper'
+        : memberChamberStr.includes('assembly') ||
+            memberChamberStr.includes('house') ||
+            memberChamberStr === 'lower'
+          ? 'lower'
+          : 'unknown';
 
     for (const rep of allReps) {
-      const repCleanId = clean((rep as any).ocdId ?? (rep as any).id);
-      const repName = (rep.name ?? '').trim().toLowerCase();
+      const repCleanId = cleanId((rep as any).ocdId ?? (rep as any).id);
+      const repName = rep.name ?? '';
+      const repDist = normalizeDistrict(
+        (rep as any).district ?? (rep as any).current_role?.district,
+      );
       const isStateRep = stateReps.includes(rep);
       const isFederalRep = federalReps.includes(rep);
+
+      const repChamberStr = String(
+        (rep as any).chamber ??
+          (rep as any).current_role?.title ??
+          (rep as any).current_role?.org_classification ??
+          '',
+      ).toLowerCase();
+      const repChamber =
+        repChamberStr.includes('senat') || repChamberStr === 'upper'
+          ? 'upper'
+          : repChamberStr.includes('assembly') ||
+              repChamberStr.includes('house') ||
+              repChamberStr === 'lower'
+            ? 'lower'
+            : 'unknown';
 
       const idMatches = !!(
         memberCleanId &&
         repCleanId &&
         memberCleanId === repCleanId
       );
-      const nameMatches = !!(memberName && repName && memberName === repName);
+      const nameMatches = !!(
+        memberName &&
+        repName &&
+        namesMatch(memberName, repName)
+      );
+      const districtAndChamberMatches = !!(
+        memberDist &&
+        repDist &&
+        memberDist === repDist &&
+        memberChamber !== 'unknown' &&
+        repChamber !== 'unknown' &&
+        memberChamber === repChamber
+      );
 
-      if (idMatches || nameMatches) {
-        const chamber = String(
-          (rep as any).chamber ??
-            (rep as any).current_role?.title ??
-            (rep as any).current_role?.org_classification ??
-            '',
-        ).toLowerCase();
-
-        if (chamber.includes('senat') || chamber === 'upper') {
+      if (idMatches || nameMatches || districtAndChamberMatches) {
+        if (repChamber === 'upper') {
           return isFederalRep ? 'Your U.S. Senator' : 'Your State Senator';
         }
-        if (chamber.includes('assembly')) {
-          return 'Your State Assemblymember';
-        }
-        if (
-          chamber.includes('house') ||
-          chamber.includes('rep') ||
-          chamber === 'lower'
-        ) {
+        if (repChamber === 'lower') {
+          if (repChamberStr.includes('assembly'))
+            return 'Your State Assemblymember';
           return isFederalRep
             ? 'Your U.S. Representative'
             : 'Your State Representative';
@@ -417,6 +502,38 @@ export class MemberDetail {
         return isFederalRep
           ? 'Your Federal Representative'
           : 'Your Representative';
+      }
+    }
+
+    // Direct district matching against profile.districts
+    const userDistricts = profile.districts;
+    if (userDistricts && memberDist) {
+      const userStateSenate = normalizeDistrict(userDistricts.state?.senate);
+      const userStateAssembly = normalizeDistrict(
+        userDistricts.state?.assembly,
+      );
+      const userFederal = normalizeDistrict(userDistricts.federal);
+
+      if (
+        userStateSenate &&
+        memberDist === userStateSenate &&
+        (memberChamber === 'upper' || memberChamber === 'unknown')
+      ) {
+        return 'Your State Senator';
+      }
+      if (
+        userStateAssembly &&
+        memberDist === userStateAssembly &&
+        (memberChamber === 'lower' || memberChamber === 'unknown')
+      ) {
+        return 'Your State Assemblymember';
+      }
+      if (
+        userFederal &&
+        memberDist === userFederal &&
+        (memberChamber === 'lower' || memberChamber === 'unknown')
+      ) {
+        return 'Your U.S. Representative';
       }
     }
 

@@ -243,6 +243,50 @@ describe('BillDetail', () => {
     ]);
   });
 
+  it('should badge sponsor by district match (e.g. NY State Senate District 24)', async () => {
+    mockBillData.cosponsors = null as any;
+    (mockBillData as any).sponsorships = [
+      {
+        name: 'Senator Andrew Lanza',
+        primary: true,
+        person: {
+          name: 'Andrew Lanza',
+          current_role: {
+            org_classification: 'upper',
+            district: '24',
+            title: 'Senator',
+          },
+        },
+      },
+    ];
+
+    mockUserProfileSignal.set({
+      districts: {
+        state: {
+          senate: '24',
+          assembly: '64',
+        },
+        federal: '11',
+      },
+    });
+
+    mockLegislatureService.getBillById.mockReturnValueOnce(of(mockBillData));
+    fixture.componentRef.setInput('id', 'BILL-DISTRICT-24');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const versions = component.billVersions();
+    expect(versions[0].data[0].repBadge).toBe('Your State Senator');
+    expect(versions[0].data[0].isUserRep).toBe(true);
+    expect(component.userRepSponsors()).toEqual([
+      {
+        name: 'Senator Andrew Lanza',
+        badge: 'Your State Senator',
+        isPrimary: true,
+      },
+    ]);
+  });
+
   it('should gracefully fall back when user has not saved their address', async () => {
     mockUserProfileSignal.set(null);
     fixture.detectChanges();
