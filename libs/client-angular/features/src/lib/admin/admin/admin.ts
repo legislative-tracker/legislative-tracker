@@ -30,6 +30,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+import { RouterLink } from '@angular/router';
+
 import {
   RuntimeConfig,
   ResourceLink,
@@ -41,6 +43,7 @@ import { ConfigService } from '@legislative-tracker/client-angular/core';
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     ReactiveFormsModule,
     DragDropModule,
     MatExpansionModule,

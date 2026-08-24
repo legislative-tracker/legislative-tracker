@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { provideRouter, RouterLink } from '@angular/router';
+import { By } from '@angular/platform-browser';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { signal } from '@angular/core';
 
@@ -58,6 +60,7 @@ describe('Admin', () => {
       imports: [Admin],
       providers: [
         provideNoopAnimations(),
+        provideRouter([]),
         { provide: ConfigService, useValue: mockConfigService },
         { provide: MatSnackBar, useValue: mockSnackBar },
       ],
@@ -169,5 +172,23 @@ describe('Admin', () => {
 
     expect(component.form.get('organization.name')?.value).toBe('Test Org');
     expect(component.resourcesArray.length).toBe(2);
+  });
+
+  it('should configure routerLinks properly for all admin action buttons', () => {
+    const linkDebugElements = fixture.debugElement.queryAll(
+      By.directive(RouterLink),
+    );
+    expect(linkDebugElements.length).toBe(6);
+
+    const hrefs = linkDebugElements.map((de) =>
+      de.nativeElement.getAttribute('href'),
+    );
+
+    expect(hrefs).toContain('/admin/manualUpdate');
+    expect(hrefs).toContain('/admin/removeBill');
+    expect(hrefs).toContain('/admin/editBill');
+    expect(hrefs).toContain('/admin/addBill');
+    expect(hrefs).toContain('/admin/removeAdmin');
+    expect(hrefs).toContain('/admin/addAdmin');
   });
 });
