@@ -86,4 +86,53 @@
     // A slightly darker interaction state
     background-color: var(--mat-sys-secondary-container);
   }
+
+  &.user-rep-row {
+    background-color: color-mix(
+      in srgb,
+      var(--mat-sys-primary, #1976d2) 6%,
+      transparent
+    );
+    border-left: 3px solid var(--mat-sys-primary, #1976d2);
+
+    &:hover {
+      background-color: color-mix(
+        in srgb,
+        var(--mat-sys-primary, #1976d2) 12%,
+        transparent
+      );
+    }
+  }
+}
+
+.cell-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.rep-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.725rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  background-color: var(--mat-sys-primary-container, #d3e4ff);
+  color: var(--mat-sys-on-primary-container, #041e49);
+  border: 1px solid
+    color-mix(in srgb, var(--mat-sys-primary, #1976d2) 30%, transparent);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  white-space: nowrap;
+
+  .badge-icon {
+    font-size: 13px !important;
+    width: 13px !important;
+    height: 13px !important;
+    line-height: 13px !important;
+  }
 }

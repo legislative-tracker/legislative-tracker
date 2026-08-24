@@ -22,7 +22,18 @@
           {{ col.label }}
         </th>
         <td mat-cell *matCellDef="let element">
-          {{ element[col.key] }}
+          <div class="cell-content">
+            <span class="cell-text">{{ element[col.key] }}</span>
+            @if (col.key === 'name' && (element.repBadge || element.badge)) {
+              <span
+                class="rep-badge"
+                [title]="element.repBadge || element.badge"
+              >
+                <mat-icon class="badge-icon">how_to_reg</mat-icon>
+                <span>{{ element.repBadge || element.badge }}</span>
+              </span>
+            }
+          </div>
         </td>
       </ng-container>
 
@@ -75,6 +86,7 @@
       (click)="onRowClick(row)"
       [routerLink]="['/', stateCd(), routeType(), getRowTargetId(row)]"
       class="clickable-row"
+      [class.user-rep-row]="row.repBadge || row.badge || row.isUserRep"
     ></tr>
   </table>
 </div>
