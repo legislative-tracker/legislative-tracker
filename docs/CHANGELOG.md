@@ -1,3 +1,17 @@
+## 0.11.32 (2026-08-25)
+
+### 🚀 Features
+
+- **plugins:** scaffold and register New Jersey state plugin (GH-111) ([83d8aea](https://github.com/legislative-tracker/legislative-tracker/commit/83d8aea))
+
+### 🩹 Fixes
+
+- **client-angular:** update e2e card selector for multi-jurisdiction display ([a0f55ea](https://github.com/legislative-tracker/legislative-tracker/commit/a0f55ea))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.31 (2026-08-25)
 
 ### 🚀 Features
