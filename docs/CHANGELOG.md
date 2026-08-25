@@ -1,3 +1,17 @@
+## 0.11.33 (2026-08-25)
+
+### 🩹 Fixes
+
+- **client-angular:** normalize workspace package names for npm compatibility (GH-124) ([a92bae2](https://github.com/legislative-tracker/legislative-tracker/commit/a92bae2))
+
+### 🔥 Performance
+
+- **client-angular:** optimize bundle chunks and calibrate build budgets (GH-124) ([685d0fe](https://github.com/legislative-tracker/legislative-tracker/commit/685d0fe))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.32 (2026-08-25)
 
 ### 🚀 Features
