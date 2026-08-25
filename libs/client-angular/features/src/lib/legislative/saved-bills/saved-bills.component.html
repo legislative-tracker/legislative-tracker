@@ -83,29 +83,12 @@
         @for (bill of filteredBills(); track bill.id) {
           <mat-card class="bill-card">
             <mat-card-header>
-              <div class="card-header-top">
-                <div class="chips-row">
-                  @if (bill.identifier) {
-                    <span class="badge-chip identifier-chip">{{
-                      bill.identifier
-                    }}</span>
-                  }
-                  @if (bill.stateCd) {
-                    <span class="badge-chip state-chip">{{
-                      bill.stateCd | uppercase
-                    }}</span>
-                  }
-                  @if (bill.type === 'legislation') {
-                    <span class="badge-chip type-chip">Legislation</span>
-                  }
-                </div>
-                <span class="saved-date">
-                  Saved {{ bill.savedAt | date: 'mediumDate' }}
-                </span>
-              </div>
               <mat-card-title class="bill-title">
                 {{ getBillTitle(bill) }}
               </mat-card-title>
+              <mat-card-subtitle class="saved-date">
+                Saved {{ bill.savedAt | date: 'mediumDate' }}
+              </mat-card-subtitle>
             </mat-card-header>
 
             @if (bill.summary) {
