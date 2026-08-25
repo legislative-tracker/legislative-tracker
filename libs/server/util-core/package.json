@@ -8,6 +8,7 @@
   "dependencies": {
     "@legislative-tracker/plugins-core": "*",
     "@legislative-tracker/plugins-leg-us-ny": "*",
+    "@legislative-tracker/plugins-leg-us-nj": "*",
     "@legislative-tracker/server-data-access-openstates": "*"
   }
 }

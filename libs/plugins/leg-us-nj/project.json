@@ -1,0 +1,16 @@
+{
+  "name": "plugin-leg-us-nj",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/plugins/leg-us-nj/src",
+  "projectType": "library",
+  "tags": ["domain:plugins", "type:plugin"],
+  "targets": {
+    "publish": {
+      "command": "npm publish --access public",
+      "options": {
+        "cwd": "dist/libs/plugins/leg-us-nj"
+      },
+      "dependsOn": ["build"]
+    }
+  }
+}

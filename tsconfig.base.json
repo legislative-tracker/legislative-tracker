@@ -46,6 +46,9 @@
       "@legislative-tracker/plugins-leg-us-ny": [
         "./libs/plugins/leg-us-ny/src/index.ts"
       ],
+      "@legislative-tracker/plugins-leg-us-nj": [
+        "./libs/plugins/leg-us-nj/src/index.ts"
+      ],
       "@legislative-tracker/server-util-core": [
         "./libs/server/util-core/src/index.ts"
       ]
