@@ -12,12 +12,14 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
 
 import {
   AuthService,
   LegislatureService,
   SeoService,
 } from '@legislative-tracker/client-angular/core';
+import { getPlugin, getAllPlugins } from '@legislative-tracker/plugins-core';
 import {
   TableComponent,
   ImgFallbackDirective,
@@ -127,6 +129,7 @@ const SOCIAL_PLATFORMS: Record<
     MatButtonModule,
     MatListModule,
     MatTabsModule,
+    MatCardModule,
     TableComponent,
     MatProgressSpinnerModule,
     ImgFallbackDirective,
@@ -195,6 +198,58 @@ export class MemberDetail {
   titleOrPrefix = computed(() => {
     const m = this.member();
     return m?.current_role?.title ?? (m as any)?.honorific_prefix ?? '';
+  });
+
+  chamber = computed(() => {
+    const m = this.member();
+    if (!m) return '';
+
+    const code = this.stateCd().toLowerCase();
+    const plugins = getAllPlugins();
+    const plugin =
+      getPlugin(code) ||
+      plugins.find((p) => {
+        const jCode = p.metadata.jurisdiction?.code?.toLowerCase();
+        const pId = p.metadata.id?.toLowerCase();
+        return (
+          jCode === code ||
+          pId === code ||
+          jCode?.replace(/^us-/, '') === code.replace(/^us-/, '')
+        );
+      }) ||
+      (plugins.length === 1 ? plugins[0] : undefined);
+
+    const chambers = plugin?.metadata?.jurisdiction?.chambers;
+    const orgClass = m.current_role?.org_classification?.toLowerCase() || '';
+
+    if (orgClass === 'upper') {
+      return chambers?.upper ?? 'Senate';
+    }
+    if (orgClass === 'lower') {
+      return chambers?.lower ?? 'Assembly';
+    }
+
+    const title = (m.current_role?.title || '').toLowerCase();
+    if (title.includes('senat')) return chambers?.upper ?? 'Senate';
+    if (
+      title.includes('assembly') ||
+      title.includes('rep') ||
+      title.includes('house')
+    ) {
+      return chambers?.lower ?? 'Assembly';
+    }
+
+    return (m as any).chamber || '';
+  });
+
+  headerTitle = computed(() => {
+    const m = this.member();
+    if (!m?.name) return '';
+    const ch = this.chamber();
+    const dist = this.district();
+    const districtPart = dist ? `District ${dist}` : '';
+    const chamberDistrict = [ch, districtPart].filter(Boolean).join(' ');
+    return chamberDistrict ? `${m.name} | ${chamberDistrict}` : m.name;
   });
 
   primaryEmail = computed<string | undefined>(() => {

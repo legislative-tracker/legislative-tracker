@@ -29,7 +29,7 @@ import { signal } from '@angular/core';
   template: '',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  inputs: ['dataSource', 'columnSource'],
+  inputs: ['dataSource', 'columnSource', 'stateCd', 'routeType'],
 })
 class MockTableComponent {}
 
@@ -329,5 +329,55 @@ describe('MemberDetail', () => {
       'ca',
       '456',
     );
+  });
+
+  it('should render mat-card with header, title, and actions', () => {
+    expect(component.chamber()).toBe('Senate');
+    expect(component.headerTitle()).toBe('Jane Doe | Senate District 123');
+
+    const cardEl = fixture.nativeElement.querySelector('.header-card');
+    expect(cardEl).toBeTruthy();
+
+    const headshotEl = cardEl.querySelector('mat-card-header img.headshot');
+    expect(headshotEl).toBeTruthy();
+    expect(headshotEl.getAttribute('src')).toBe(
+      'https://example.com/janedoe.jpg',
+    );
+
+    const titleEl = cardEl.querySelector('mat-card-title');
+    expect(titleEl?.textContent).toContain('Jane Doe | Senate District 123');
+
+    const subtitleEl = cardEl.querySelector('mat-card-subtitle');
+    expect(subtitleEl?.textContent).toContain('Democratic Party');
+
+    const contentEl = cardEl.querySelector('mat-card-content');
+    expect(contentEl).toBeTruthy();
+
+    const addressesList = contentEl.querySelector(
+      'mat-list.member-details-addresses',
+    );
+    expect(addressesList).toBeTruthy();
+
+    const addressItems = addressesList.querySelectorAll('mat-list-item');
+    expect(addressItems.length).toBe(2);
+
+    const actionsEl = cardEl.querySelector('mat-card-actions');
+    expect(actionsEl).toBeTruthy();
+
+    const phoneBtns = actionsEl.querySelectorAll('.phone-btn');
+    expect(phoneBtns.length).toBe(2);
+
+    const emailBtn = actionsEl.querySelector('.email-btn');
+    expect(emailBtn).toBeTruthy();
+    expect(emailBtn.getAttribute('href')).toBe(
+      'mailto:jdoe@senate.example.gov',
+    );
+
+    const websiteBtn = actionsEl.querySelector('.website-btn');
+    expect(websiteBtn).toBeTruthy();
+    expect(websiteBtn.getAttribute('href')).toBe('https://janedoe.senate.gov');
+
+    const socialLinks = actionsEl.querySelectorAll('.social-links-row a');
+    expect(socialLinks.length).toBe(4);
   });
 });
