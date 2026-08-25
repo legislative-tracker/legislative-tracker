@@ -81,10 +81,38 @@
     padding-bottom: 0.5rem;
   }
 
+  .card-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .chips-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .badge-chip {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+
+    &.state-chip {
+      background: var(--mat-sys-secondary-container, #f1f5f9);
+      color: var(--mat-sys-on-secondary-container, #334155);
+    }
+  }
+
   .saved-date {
     font-size: 0.8rem;
     color: var(--mat-sys-on-surface-variant, #94a3b8);
-    margin-top: 0.25rem;
   }
 
   .bill-title {
