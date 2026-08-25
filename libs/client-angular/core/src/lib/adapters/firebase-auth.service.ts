@@ -23,6 +23,8 @@ import { Observable } from 'rxjs';
 import { AppUser } from '@legislative-tracker/shared/models';
 import { AuthService } from '../services/auth.service';
 import { OfflineStorageService } from '../services/offline-storage.service';
+import { AppResetService } from '../services/app-reset.service';
+import { FeedbackService } from '../services/feedback.service';
 import { FIREBASE_AUTH, FIREBASE_FIRESTORE } from '../firebase-tokens.token';
 
 @Injectable({ providedIn: 'root' })
@@ -30,6 +32,8 @@ export class FirebaseAuthService implements AuthService {
   private auth = inject<Auth>(FIREBASE_AUTH, { optional: true });
   private firestore = inject<Firestore>(FIREBASE_FIRESTORE, { optional: true });
   private offlineStorage = inject(OfflineStorageService, { optional: true });
+  private appResetService = inject(AppResetService, { optional: true });
+  private feedbackService = inject(FeedbackService, { optional: true });
   private router = inject(Router);
 
   private readonly authState$ = new Observable<User | null>((subscriber) => {
@@ -55,6 +59,18 @@ export class FirebaseAuthService implements AuthService {
         const token = await currentUser.getIdTokenResult();
         this.isAdmin.set(!!token.claims['admin']);
         this.fetchUserProfile(currentUser.uid);
+
+        if (this.appResetService) {
+          const restored = await this.appResetService.restorePersonalData(
+            currentUser.uid,
+          );
+          if (restored && this.feedbackService) {
+            this.feedbackService.sendFeedback(
+              'Application Reset',
+              'Your personal data has been restored successfully.',
+            );
+          }
+        }
       } else {
         if (this.profileUnsub) {
           this.profileUnsub();

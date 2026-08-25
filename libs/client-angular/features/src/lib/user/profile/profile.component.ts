@@ -11,14 +11,18 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDividerModule } from '@angular/material/divider';
 import { DatePipe } from '@angular/common';
 
 import {
   AuthService,
+  AppResetService,
   FIREBASE_FUNCTIONS,
 } from '@legislative-tracker/client-angular/core';
 import {
   AddressForm,
+  AppResetDialog,
+  AppResetDialogResult,
   ConfirmDialog,
   TableComponent,
 } from '@legislative-tracker/client-angular/ui';
@@ -35,6 +39,7 @@ import {
     MatIconModule,
     MatButtonModule,
     MatDialogModule,
+    MatDividerModule,
     AddressForm,
     MatTabsModule,
     TableComponent,
@@ -46,6 +51,7 @@ import {
 })
 export class Profile {
   private auth = inject(AuthService);
+  private appResetService = inject(AppResetService);
   private functions = inject(FIREBASE_FUNCTIONS, { optional: true });
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
@@ -54,6 +60,7 @@ export class Profile {
   legislatorCols = USER_REPS_COLS;
   isResetting = signal(false);
   isDeleting = signal(false);
+  isAppResetting = signal(false);
 
   stateCd = computed(() => 'us-ny');
 
@@ -112,6 +119,46 @@ export class Profile {
       });
     } finally {
       this.isResetting.set(false);
+    }
+  };
+
+  confirmAppReset = () => {
+    const dialogRef = this.dialog.open(AppResetDialog, {
+      data: {
+        title: 'Reset Application',
+        message:
+          'Resetting the application will purge all locally cached data, offline saved bills, notes, preferences, and service worker registrations, and reload the latest version of the app.',
+        isLoggedIn: Boolean(this.user()),
+      },
+    });
+
+    dialogRef
+      .afterClosed()
+      .subscribe(async (result: AppResetDialogResult | null) => {
+        if (result?.confirmed) {
+          await this.resetApp(result.backupPersonalData);
+        }
+      });
+  };
+
+  resetApp = async (backupPersonalData: boolean) => {
+    if (this.isAppResetting()) return;
+    this.isAppResetting.set(true);
+
+    try {
+      const currentUid = this.user()?.uid;
+      await this.appResetService.resetApp({
+        backupPersonalData,
+        userId: currentUid,
+      });
+    } catch (error: any) {
+      const errorMsg =
+        error instanceof Error ? error.message : 'Failed to reset application.';
+      this.snackBar.open(errorMsg, 'Close', {
+        duration: 5000,
+        panelClass: ['error-snackbar'],
+      });
+      this.isAppResetting.set(false);
     }
   };
 

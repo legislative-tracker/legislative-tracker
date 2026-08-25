@@ -91,23 +91,50 @@
         <mat-icon color="warn">shield</mat-icon>
         <div class="header-text">
           <h3>Account Data & Privacy</h3>
-          <p>Manage stored data and privacy preferences.</p>
+          <p>Manage stored data, local caches, and privacy preferences.</p>
         </div>
       </div>
       <div class="card-content">
-        <p>
-          Permanently delete your profile record from Firestore and wipe all
-          locally cached offline storage data (saved bills and notes).
-        </p>
-        <button
-          mat-flat-button
-          color="warn"
-          (click)="confirmDeleteAccount()"
-          [disabled]="isDeleting()"
-        >
-          <mat-icon>delete_forever</mat-icon>
-          Delete Account Data
-        </button>
+        <div class="action-item">
+          <div class="action-info">
+            <h4>App Reset</h4>
+            <p>
+              Purge local storage caches and service workers with an option to
+              temporarily sync your personal data to the cloud before reload.
+            </p>
+          </div>
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="confirmAppReset()"
+            [disabled]="isAppResetting() || isDeleting()"
+            class="app-reset-btn"
+          >
+            <mat-icon>restart_alt</mat-icon>
+            App Reset
+          </button>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="action-item danger-item">
+          <div class="action-info">
+            <h4>Delete Account Data</h4>
+            <p>
+              Permanently delete your profile record from Firestore and wipe all
+              locally cached offline storage data (saved bills and notes).
+            </p>
+          </div>
+          <button
+            mat-flat-button
+            color="warn"
+            (click)="confirmDeleteAccount()"
+            [disabled]="isDeleting() || isAppResetting()"
+          >
+            <mat-icon>delete_forever</mat-icon>
+            Delete Account Data
+          </button>
+        </div>
       </div>
     </div>
   } @else {

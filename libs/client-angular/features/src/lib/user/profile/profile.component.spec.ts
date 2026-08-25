@@ -11,11 +11,13 @@ import { Profile } from './profile.component';
 // Dependencies
 import {
   AuthService,
+  AppResetService,
   FIREBASE_FUNCTIONS,
   LegislatureService,
 } from '@legislative-tracker/client-angular/core';
 import {
   AddressForm,
+  AppResetDialog,
   ConfirmDialog,
   TableComponent,
 } from '@legislative-tracker/client-angular/ui';
@@ -84,9 +86,17 @@ describe('Profile', () => {
       photoURL: 'https://example.com/photo.jpg',
       lastLogin: mockTimestamp,
       legislators: null,
+      uid: 'test-user-123',
     }),
     resetDistricts: vi.fn(),
     deleteAccountData: vi.fn(),
+  };
+
+  const mockAppResetService = {
+    resetApp: vi.fn(),
+    backupPersonalData: vi.fn(),
+    restorePersonalData: vi.fn(),
+    performStorageWipe: vi.fn(),
   };
 
   const mockFunctions = {};
@@ -103,6 +113,7 @@ describe('Profile', () => {
       providers: [
         DatePipe,
         { provide: AuthService, useValue: mockAuthService },
+        { provide: AppResetService, useValue: mockAppResetService },
         { provide: FIREBASE_FUNCTIONS, useValue: mockFunctions },
         { provide: MatSnackBar, useValue: mockSnackBar },
         { provide: MatDialog, useValue: mockDialog },
@@ -244,6 +255,81 @@ describe('Profile', () => {
         'Close',
         expect.objectContaining({ panelClass: ['error-snackbar'] }),
       );
+    });
+  });
+
+  describe('confirmAppReset', () => {
+    it('should open AppResetDialog and call resetApp when confirmed with backup preference', async () => {
+      const dialogRefMock = {
+        afterClosed: () =>
+          of({
+            confirmed: true,
+            backupPersonalData: true,
+          }),
+      };
+      mockDialog.open.mockReturnValue(dialogRefMock);
+      mockAppResetService.resetApp.mockResolvedValue(undefined);
+
+      component.confirmAppReset();
+
+      expect(mockDialog.open).toHaveBeenCalledWith(
+        AppResetDialog,
+        expect.objectContaining({
+          data: expect.objectContaining({
+            title: 'Reset Application',
+            isLoggedIn: true,
+          }),
+        }),
+      );
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(mockAppResetService.resetApp).toHaveBeenCalledWith({
+        backupPersonalData: true,
+        userId: 'test-user-123',
+      });
+    });
+
+    it('should not call resetApp when dialog is cancelled', async () => {
+      const dialogRefMock = {
+        afterClosed: () => of(null),
+      };
+      mockDialog.open.mockReturnValue(dialogRefMock);
+
+      component.confirmAppReset();
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(mockAppResetService.resetApp).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('resetApp', () => {
+    it('should call appResetService.resetApp with backup parameter', async () => {
+      mockAppResetService.resetApp.mockResolvedValue(undefined);
+
+      await component.resetApp(false);
+
+      expect(mockAppResetService.resetApp).toHaveBeenCalledWith({
+        backupPersonalData: false,
+        userId: 'test-user-123',
+      });
+    });
+
+    it('should handle errors thrown during app reset', async () => {
+      mockAppResetService.resetApp.mockRejectedValue(
+        new Error('Failed to purge local caches'),
+      );
+
+      await component.resetApp(true);
+
+      expect(mockAppResetService.resetApp).toHaveBeenCalled();
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'Failed to purge local caches',
+        'Close',
+        expect.objectContaining({ panelClass: ['error-snackbar'] }),
+      );
+      expect(component.isAppResetting()).toBe(false);
     });
   });
 
