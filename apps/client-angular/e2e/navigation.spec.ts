@@ -6,7 +6,7 @@ test.describe('Navigation & Static Pages', () => {
     await expect(page).toHaveURL('/');
     await expect(page.locator('.branding-container')).toBeVisible();
     await expect(page.locator('h1')).toContainText('State Legislatures');
-    await expect(page.locator('.jurisdiction-card')).toBeVisible();
+    await expect(page.locator('.jurisdiction-card').first()).toBeVisible();
     await expect(page.locator('.toolbar-state-btn')).toContainText('Select...');
   });
 
