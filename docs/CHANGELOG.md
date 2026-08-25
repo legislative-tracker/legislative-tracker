@@ -1,3 +1,17 @@
+## 0.11.30 (2026-08-25)
+
+### 🚀 Features
+
+- **client-angular:** add overflow menu to toolbar on medium and small screens ([789b5a2](https://github.com/legislative-tracker/legislative-tracker/commit/789b5a2))
+
+### 🩹 Fixes
+
+- **client-angular:** fix overflow in member subtitle and privacy data cards ([135266f](https://github.com/legislative-tracker/legislative-tracker/commit/135266f))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.29 (2026-08-25)
 
 ### 🚀 Features
