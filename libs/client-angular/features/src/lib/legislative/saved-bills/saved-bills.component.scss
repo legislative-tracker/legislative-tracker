@@ -129,16 +129,7 @@
     font-size: 1.1rem;
     font-weight: 600;
     line-height: 1.4;
-
-    .bill-title-link {
-      color: var(--mat-sys-on-surface, inherit);
-      text-decoration: none;
-
-      &:hover {
-        color: var(--mat-sys-primary, #0284c7);
-        text-decoration: underline;
-      }
-    }
+    color: var(--mat-sys-on-surface, inherit);
   }
 
   .bill-summary {
