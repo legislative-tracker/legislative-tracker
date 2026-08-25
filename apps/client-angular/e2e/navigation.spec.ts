@@ -1,9 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Navigation & Static Pages', () => {
-  test('should navigate to home and redirect to /us-ny', async ({ page }) => {
+  test('should navigate to home and redirect to /states', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveURL(/\/us-ny/);
+    await expect(page).toHaveURL(/\/states/);
     await expect(page.locator('.branding-container')).toBeVisible();
   });
 

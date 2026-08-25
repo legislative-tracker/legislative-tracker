@@ -175,22 +175,12 @@
     <mat-nav-list>
       <a
         mat-list-item
-        routerLink="/"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-        (click)="onNavItemClick(drawer)"
-      >
-        <mat-icon matListItemIcon>home</mat-icon>
-        <span matListItemTitle>Home</span>
-      </a>
-      <a
-        mat-list-item
         routerLink="/states"
         routerLinkActive="active"
         (click)="onNavItemClick(drawer)"
       >
-        <mat-icon matListItemIcon>travel_explore</mat-icon>
-        <span matListItemTitle>Jurisdictions</span>
+        <mat-icon matListItemIcon>home</mat-icon>
+        <span matListItemTitle>Home</span>
       </a>
       <a
         mat-list-item
