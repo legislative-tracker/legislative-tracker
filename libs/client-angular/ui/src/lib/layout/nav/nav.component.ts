@@ -9,7 +9,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, UpperCasePipe } from '@angular/common';
 import {
   Router,
   RouterOutlet,
@@ -23,9 +23,12 @@ import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { firstValueFrom, Observable } from 'rxjs';
 import { filter, map, shareReplay, startWith } from 'rxjs/operators';
+
+import { getAllPlugins } from '@legislative-tracker/plugins-core';
 
 // App imports
 import {
@@ -52,8 +55,10 @@ import { Footer } from '../footer/footer.component';
     MatListModule,
     MatIconModule,
     MatMenuModule,
+    MatDividerModule,
     MatTooltipModule,
     AsyncPipe,
+    UpperCasePipe,
     Footer,
   ],
 })
@@ -83,6 +88,42 @@ export class NavComponent {
     ),
     { initialValue: this.router.url },
   );
+
+  availableJurisdictions = computed(() => {
+    return getAllPlugins().map((p) => ({
+      id: p.metadata.id,
+      code: p.metadata.jurisdiction.code,
+      name: p.metadata.jurisdiction.name,
+      session: p.metadata.jurisdiction.currentSession,
+    }));
+  });
+
+  activeJurisdiction = computed(() => {
+    const url = this.currentUrl();
+    const list = this.availableJurisdictions();
+    if (!list.length) return null;
+
+    if (url) {
+      const match = url.match(/^\/([a-zA-Z0-9_-]+)(?:\/|$|\?)/);
+      if (match && match[1]) {
+        const raw = match[1].toLowerCase();
+        const found = list.find(
+          (j) =>
+            j.code.toLowerCase() === raw ||
+            j.code.toLowerCase().replace(/^us-/, '') ===
+              raw.replace(/^us-/, '') ||
+            j.id.toLowerCase() === raw,
+        );
+        if (found) return found;
+      }
+    }
+
+    return list[0];
+  });
+
+  switchJurisdiction(code: string): void {
+    this.router.navigate(['/', code]);
+  }
 
   isSavedOffline = signal(false);
 

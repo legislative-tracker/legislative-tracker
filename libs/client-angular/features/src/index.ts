@@ -7,4 +7,5 @@ export * from './lib/user/profile/profile.component';
 export * from './lib/admin/admin.routes';
 export * from './lib/pages/about/about.component';
 export * from './lib/pages/privacy/privacy.component';
+export * from './lib/pages/states-directory/states-directory.component';
 export * from './lib/pages/not-found/not-found.component';

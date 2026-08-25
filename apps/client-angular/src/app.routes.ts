@@ -48,6 +48,14 @@ export const routes: Routes = [
           ),
         title: 'Offline Saved Bills | Legislative Tracker',
       },
+      {
+        path: 'states',
+        loadComponent: () =>
+          import('@legislative-tracker/client-angular/features/pages/states-directory/states-directory.component').then(
+            (m) => m.StatesDirectory,
+          ),
+        title: 'State Directory | Legislative Tracker',
+      },
 
       // --- Feature: Authentication ---
       {
