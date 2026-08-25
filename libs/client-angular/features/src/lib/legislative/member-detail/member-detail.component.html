@@ -3,157 +3,146 @@
     <mat-spinner diameter="50"></mat-spinner>
   </div>
 } @else if (member()) {
-  <div class="member-header">
-    <h1>{{ titleOrPrefix() }} {{ member()?.name }}</h1>
-    @if (userRepLabel(); as repLabel) {
-      <span class="user-rep-tag" [title]="repLabel">
-        <mat-icon class="tag-icon">how_to_reg</mat-icon>
-        <span>{{ repLabel }}</span>
-      </span>
-    }
-  </div>
-
-  <div class="contact-actions-bar">
-    @for (phone of phones(); track phone.number) {
-      <a
-        mat-flat-button
-        color="primary"
-        [href]="phone.telUrl"
-        class="contact-btn phone-btn"
-        [attr.aria-label]="phone.label"
-      >
-        <mat-icon>phone</mat-icon>
-        <span>{{ phone.label }}</span>
-      </a>
-    }
-    @if (primaryEmail()) {
-      <a
-        mat-stroked-button
-        color="primary"
-        [href]="'mailto:' + primaryEmail()"
-        class="contact-btn email-btn"
-        [attr.aria-label]="'Email ' + (member()?.name || 'Legislator')"
-      >
-        <mat-icon>email</mat-icon>
-        <span>Email Legislator</span>
-      </a>
-    }
-    @if (officialWebsiteUrl(); as govUrl) {
-      <a
-        mat-stroked-button
-        color="primary"
-        [href]="govUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="contact-btn website-btn"
-        aria-label="Official Website"
-      >
-        <mat-icon>language</mat-icon>
-        <span>Official Website</span>
-      </a>
-    }
-    @if (generalWebsiteUrl(); as webUrl) {
-      <a
-        mat-stroked-button
-        color="primary"
-        [href]="webUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="contact-btn website-btn"
-        aria-label="Website"
-      >
-        <mat-icon>public</mat-icon>
-        <span>Website</span>
-      </a>
-    }
-    @if (openStatesUrl(); as osUrl) {
-      <a
-        mat-stroked-button
-        color="primary"
-        [href]="osUrl"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="contact-btn openstates-btn"
-        aria-label="OpenStates Profile"
-      >
-        <mat-icon>open_in_new</mat-icon>
-        <span>OpenStates Profile</span>
-      </a>
-    }
-    @if (socialLinks().length) {
-      <div class="social-links-row">
-        @for (link of socialLinks(); track link.url) {
-          <a
-            mat-icon-button
-            [href]="link.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            [attr.aria-label]="link.platform"
-            [title]="
-              link.platform + (link.username ? ': ' + link.username : '')
-            "
-          >
-            <i [class]="link.icon"></i>
-          </a>
-        }
-      </div>
-    }
-  </div>
-
-  <div class="member-details-container">
-    <img
-      [src]="$safeNavigationMigration(member()?.image)"
-      alt="Headshot of {{ member()?.name }}"
-      class="headshot"
-      appFallback
-    />
-
-    <mat-list class="member-details">
-      @if (district()) {
-        <mat-list-item>
-          <mat-icon matListItemIcon>location_city</mat-icon>
-          <span matListItemTitle>District {{ district() }}</span>
-        </mat-list-item>
-      }
-      @if (member()?.party) {
-        <mat-list-item>
-          <mat-icon matListItemIcon>ballot</mat-icon>
-          <span matListItemTitle>{{ member()?.party }} Party</span>
-        </mat-list-item>
-      }
-      @if (member()?.email) {
-        <mat-list-item>
-          <mat-icon matListItemIcon>email</mat-icon>
-          <span matListItemTitle
-            ><a href="mailto:{{ member()?.email }}">{{ member()?.email }}</a>
+  <mat-card class="header-card">
+    <mat-card-header>
+      <img
+        mat-card-avatar
+        [src]="$safeNavigationMigration(member()?.image)"
+        alt="Headshot of {{ member()?.name }}"
+        class="headshot"
+        appFallback
+      />
+      <mat-card-title>
+        <span>{{ headerTitle() }}</span>
+        @if (userRepLabel(); as repLabel) {
+          <span class="user-rep-tag" [title]="repLabel">
+            <mat-icon class="tag-icon">how_to_reg</mat-icon>
+            <span>{{ repLabel }}</span>
           </span>
-        </mat-list-item>
+        }
+      </mat-card-title>
+      @if (member()?.party) {
+        <mat-card-subtitle>{{ member()?.party }} Party</mat-card-subtitle>
       }
-    </mat-list>
-    <mat-list class="member-details-addresses">
-      @if (member()?.offices?.[0]?.address) {
-        <mat-list-item>
-          <mat-icon matListItemIcon>business</mat-icon>
-          <span matListItemTitle>{{ member()?.offices?.[0]?.address }}</span>
-        </mat-list-item>
+    </mat-card-header>
+
+    @if (member()?.offices?.[0]?.address || member()?.offices?.[1]?.address) {
+      <mat-card-content>
+        <mat-list class="member-details-addresses">
+          @if (member()?.offices?.[0]?.address) {
+            <mat-list-item>
+              <mat-icon matListItemIcon>business</mat-icon>
+              <span matListItemTitle>{{
+                member()?.offices?.[0]?.address
+              }}</span>
+            </mat-list-item>
+          }
+          @if (member()?.offices?.[1]?.address) {
+            <mat-list-item>
+              <mat-icon matListItemIcon>location_on</mat-icon>
+              <span matListItemTitle
+                ><a
+                  href="https://www.google.com/maps/search/?api=1&query={{
+                    member()?.offices?.[1]?.address
+                  }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >{{ member()?.offices?.[1]?.address }}</a
+                >
+              </span>
+            </mat-list-item>
+          }
+        </mat-list>
+      </mat-card-content>
+    }
+
+    <mat-card-actions>
+      @for (phone of phones(); track phone.number) {
+        <a
+          mat-button
+          color="primary"
+          [href]="phone.telUrl"
+          class="contact-btn phone-btn"
+          [attr.aria-label]="phone.label"
+        >
+          <mat-icon>phone</mat-icon>
+          <span>{{ phone.label }}</span>
+        </a>
       }
-      @if (member()?.offices?.[1]?.address) {
-        <mat-list-item>
-          <mat-icon matListItemIcon>location_on</mat-icon>
-          <span matListItemTitle
-            ><a
-              href="https://www.google.com/maps/search/?api=1&query={{
-                member()?.offices?.[1]?.address
-              }}"
+      @if (primaryEmail()) {
+        <a
+          mat-button
+          color="primary"
+          [href]="'mailto:' + primaryEmail()"
+          class="contact-btn email-btn"
+          [attr.aria-label]="'Email ' + (member()?.name || 'Legislator')"
+        >
+          <mat-icon>email</mat-icon>
+          <span>Email Legislator</span>
+        </a>
+      }
+      @if (officialWebsiteUrl(); as govUrl) {
+        <a
+          mat-button
+          color="primary"
+          [href]="govUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="contact-btn website-btn"
+          aria-label="Official Website"
+        >
+          <mat-icon>language</mat-icon>
+          <span>Official Website</span>
+        </a>
+      }
+      @if (generalWebsiteUrl(); as webUrl) {
+        <a
+          mat-button
+          color="primary"
+          [href]="webUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="contact-btn website-btn"
+          aria-label="Website"
+        >
+          <mat-icon>public</mat-icon>
+          <span>Website</span>
+        </a>
+      }
+      @if (openStatesUrl(); as osUrl) {
+        <a
+          mat-button
+          color="primary"
+          [href]="osUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="contact-btn openstates-btn"
+          aria-label="OpenStates Profile"
+        >
+          <mat-icon>open_in_new</mat-icon>
+          <span>OpenStates Profile</span>
+        </a>
+      }
+      @if (socialLinks().length) {
+        <div class="social-links-row">
+          @for (link of socialLinks(); track link.url) {
+            <a
+              mat-icon-button
+              [href]="link.url"
               target="_blank"
               rel="noopener noreferrer"
-              >{{ member()?.offices?.[1]?.address }}</a
+              [attr.aria-label]="link.platform"
+              [title]="
+                link.platform + (link.username ? ': ' + link.username : '')
+              "
             >
-          </span>
-        </mat-list-item>
+              <i [class]="link.icon"></i>
+            </a>
+          }
+        </div>
       }
-    </mat-list>
-  </div>
+    </mat-card-actions>
+  </mat-card>
 
   <mat-tab-group>
     <mat-tab label="Sponsorships">
