@@ -1,3 +1,13 @@
+## 0.11.31 (2026-08-25)
+
+### 🚀 Features
+
+- **client-angular:** stash runtime config and add app reset action ([5f1a4b7](https://github.com/legislative-tracker/legislative-tracker/commit/5f1a4b7))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.30 (2026-08-25)
 
 ### 🚀 Features
