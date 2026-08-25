@@ -143,15 +143,6 @@
         <mat-icon matListItemIcon>info</mat-icon>
         <span matListItemTitle>About</span>
       </a>
-      <a
-        mat-list-item
-        routerLink="/saved-bills"
-        routerLinkActive="active"
-        (click)="onNavItemClick(drawer)"
-      >
-        <mat-icon matListItemIcon>bookmarks</mat-icon>
-        <span matListItemTitle>Saved Bills</span>
-      </a>
 
       @if (auth.isLoggedIn()) {
         <a
@@ -163,7 +154,19 @@
           <mat-icon matListItemIcon>person</mat-icon>
           <span matListItemTitle>Profile</span>
         </a>
+      }
 
+      <a
+        mat-list-item
+        routerLink="/saved-bills"
+        routerLinkActive="active"
+        (click)="onNavItemClick(drawer)"
+      >
+        <mat-icon matListItemIcon>bookmarks</mat-icon>
+        <span matListItemTitle>Saved</span>
+      </a>
+
+      @if (auth.isLoggedIn()) {
         @if (auth.isAdmin()) {
           <a
             mat-list-item
