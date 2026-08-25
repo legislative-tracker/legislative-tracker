@@ -154,6 +154,22 @@
       <mat-divider></mat-divider>
     }
 
+    @if (availableJurisdictions().length > 0) {
+      <button
+        mat-menu-item
+        [matMenuTriggerFor]="stateMenu"
+        class="overflow-jurisdiction-btn"
+        aria-label="Select state legislature jurisdiction"
+      >
+        <mat-icon>location_on</mat-icon>
+        <span>
+          Jurisdiction:
+          {{ activeJurisdiction()?.name || 'Select...' }}
+        </span>
+      </button>
+      <mat-divider></mat-divider>
+    }
+
     <button mat-menu-item [matMenuTriggerFor]="themeMenu">
       @switch (themeService.mode()) {
         @case ('light') {
