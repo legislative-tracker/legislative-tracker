@@ -1,3 +1,13 @@
+## 0.11.26 (2026-08-24)
+
+### 🚀 Features
+
+- **client-angular:** add bill favoriting in toolbar and update watchlist layout ([0edd924](https://github.com/legislative-tracker/legislative-tracker/commit/0edd924))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.25 (2026-08-24)
 
 ### 🚀 Features
