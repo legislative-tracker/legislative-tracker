@@ -84,7 +84,7 @@ export class NavComponent {
 
   isSavedOffline = signal(false);
 
-  currentFavoriteTarget = computed<{
+  currentBookmarkTarget = computed<{
     type: 'legislation' | 'bill';
     id: string;
     key: string;
@@ -132,38 +132,16 @@ export class NavComponent {
   });
 
   targetName = computed(() => {
-    const target = this.currentFavoriteTarget();
+    const target = this.currentBookmarkTarget();
     if (!target) return '';
     const fullTitle = this.titleService.getTitle() || '';
     const name = fullTitle.replace(/\s*\|\s*Legislative Tracker$/, '').trim();
     return name || (target.type === 'legislation' ? 'legislation' : 'bill');
   });
 
-  isFavorited = computed(() => {
-    const target = this.currentFavoriteTarget();
-    if (!target) return false;
-    const profile = this.auth.userProfile?.();
-    const favs = profile?.favorites;
-    if (!favs || !Array.isArray(favs)) return false;
-
-    const targetKey = target.key.toLowerCase();
-    const cleanId = target.id.toLowerCase();
-
-    return favs.some((fav) => {
-      const f = String(fav).toLowerCase();
-      if (target.type === 'legislation') {
-        return (
-          f === targetKey || f === `legislation:${cleanId}` || f === cleanId
-        );
-      } else {
-        return f === targetKey || f === `ocd-bill/${cleanId}` || f === cleanId;
-      }
-    });
-  });
-
   constructor() {
     effect(async () => {
-      const target = this.currentFavoriteTarget();
+      const target = this.currentBookmarkTarget();
       if (!target) {
         this.isSavedOffline.set(false);
         return;
@@ -174,7 +152,7 @@ export class NavComponent {
   }
 
   async toggleOfflineSave(): Promise<void> {
-    const target = this.currentFavoriteTarget();
+    const target = this.currentBookmarkTarget();
     if (!target) return;
     const isCurrentlySaved = this.isSavedOffline();
     if (isCurrentlySaved) {
@@ -191,12 +169,6 @@ export class NavComponent {
       });
       this.isSavedOffline.set(true);
     }
-  }
-
-  async toggleFavorite(): Promise<void> {
-    const target = this.currentFavoriteTarget();
-    if (!target || !this.auth.isLoggedIn()) return;
-    await this.auth.toggleFavorite(target.key);
   }
 
   onNavItemClick(drawer: MatSidenav) {

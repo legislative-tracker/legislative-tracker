@@ -76,10 +76,6 @@ describe('Profile', () => {
     },
   ];
 
-  const mockLegislatureService = {
-    getLegislationByState: vi.fn().mockReturnValue(of(mockLegislationList)),
-  };
-
   // Mock Services
   const mockAuthService = {
     userProfile: signal<any>({
@@ -88,7 +84,6 @@ describe('Profile', () => {
       photoURL: 'https://example.com/photo.jpg',
       lastLogin: mockTimestamp,
       legislators: null,
-      favorites: ['BILL-1'],
     }),
     resetDistricts: vi.fn(),
     deleteAccountData: vi.fn(),
@@ -103,17 +98,11 @@ describe('Profile', () => {
   };
 
   beforeEach(async () => {
-    mockLegislatureService.getLegislationByState.mockClear();
-    mockLegislatureService.getLegislationByState.mockReturnValue(
-      of(mockLegislationList),
-    );
-
     await TestBed.configureTestingModule({
       imports: [Profile],
       providers: [
         DatePipe,
         { provide: AuthService, useValue: mockAuthService },
-        { provide: LegislatureService, useValue: mockLegislatureService },
         { provide: FIREBASE_FUNCTIONS, useValue: mockFunctions },
         { provide: MatSnackBar, useValue: mockSnackBar },
         { provide: MatDialog, useValue: mockDialog },
@@ -330,69 +319,6 @@ describe('Profile', () => {
         'Close',
         expect.objectContaining({ panelClass: ['error-snackbar'] }),
       );
-    });
-  });
-
-  describe('Watchlist', () => {
-    it('should include both bills when legislation is favorited with leg: prefix', async () => {
-      mockAuthService.userProfile.set({
-        displayName: 'Test User',
-        email: 'test@example.com',
-        lastLogin: mockTimestamp,
-        favorites: ['leg:BILL-1'],
-        legislators: null,
-      });
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      expect(component.watchlistBills()).toEqual([
-        expect.objectContaining({
-          id: 'BILL-1',
-          name: 'Clean Air Act',
-          upperBillId: 'S100',
-          lowerBillId: 'A200',
-          routeType: 'legislation',
-        }),
-      ]);
-    });
-
-    it('should only include the hearted bill (omitting other chamber) when single bill is favorited with bill: prefix', async () => {
-      mockAuthService.userProfile.set({
-        displayName: 'Test User',
-        email: 'test@example.com',
-        lastLogin: mockTimestamp,
-        favorites: ['bill:S100'],
-        legislators: null,
-      });
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      expect(component.watchlistBills()).toEqual([
-        expect.objectContaining({
-          name: 'Clean Air Act',
-          upperBillId: 'S100',
-          lowerBillId: '',
-          routeType: 'ocd-bill',
-        }),
-      ]);
-    });
-
-    it('should return empty watchlistBills when user has no favorites', async () => {
-      mockAuthService.userProfile.set({
-        displayName: 'Test User',
-        email: 'test@example.com',
-        lastLogin: mockTimestamp,
-        favorites: [],
-        legislators: null,
-      });
-      fixture.detectChanges();
-      await fixture.whenStable();
-
-      expect(component.watchlistBills()).toEqual([]);
-    });
-
-    it('should provide billCols configuration', () => {
-      expect(component.billCols.length).toBeGreaterThan(0);
     });
   });
 });

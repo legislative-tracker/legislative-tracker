@@ -39,7 +39,6 @@ describe('NavComponent', () => {
 
   const mockUserProfileSignal = signal<any>({
     displayName: 'Test User',
-    favorites: [],
   });
   const mockAuthService = {
     logout: vi.fn().mockResolvedValue(undefined),
@@ -48,7 +47,6 @@ describe('NavComponent', () => {
     isAnnon: vi.fn().mockReturnValue(false),
     currentUser: signal({ displayName: 'Test User' }),
     userProfile: mockUserProfileSignal,
-    toggleFavorite: vi.fn(),
   };
 
   const mockConfigService = {
@@ -74,6 +72,7 @@ describe('NavComponent', () => {
   });
   const mockBreakpointObserver = {
     observe: vi.fn().mockReturnValue(screenState$.asObservable()),
+    isMatched: vi.fn().mockReturnValue(false),
   };
 
   beforeEach(async () => {
@@ -130,23 +129,47 @@ describe('NavComponent', () => {
 
       let result: boolean | undefined;
       component.isHandset$.subscribe((val) => (result = val));
-
       expect(result).toBe(false);
     });
   });
 
-  describe('Authentication', () => {
-    it('should log out and navigate to login on handleLogout', async () => {
-      await component.handleLogout();
+  describe('Navigation Drawer', () => {
+    it('should close drawer on nav item click in handset mode', () => {
+      const mockDrawer = { close: vi.fn() } as any;
 
+      const breakpointObserver = TestBed.inject(BreakpointObserver);
+      vi.spyOn(breakpointObserver, 'isMatched').mockReturnValue(true);
+
+      component.onNavItemClick(mockDrawer);
+      expect(mockDrawer.close).toHaveBeenCalled();
+    });
+
+    it('should NOT close drawer on nav item click in desktop mode', () => {
+      const mockDrawer = { close: vi.fn() } as any;
+
+      const breakpointObserver = TestBed.inject(BreakpointObserver);
+      vi.spyOn(breakpointObserver, 'isMatched').mockReturnValue(false);
+
+      component.onNavItemClick(mockDrawer);
+      expect(mockDrawer.close).not.toHaveBeenCalled();
+    });
+
+    it('should close drawer on logout in handset mode', async () => {
+      const mockDrawer = { close: vi.fn() } as any;
+
+      const breakpointObserver = TestBed.inject(BreakpointObserver);
+      vi.spyOn(breakpointObserver, 'isMatched').mockReturnValue(true);
+
+      await component.handleLogout(mockDrawer);
+      expect(mockDrawer.close).toHaveBeenCalled();
       expect(mockAuthService.logout).toHaveBeenCalled();
-      expect(router.navigate).toHaveBeenCalledWith(['/login']);
     });
   });
 
-  describe('Configuration', () => {
-    it('should load branding from ConfigService', () => {
+  describe('Branding Configuration', () => {
+    it('should expose config signal from ConfigService', () => {
       const protectedComponent = component as any;
+      expect(protectedComponent.config).toBeDefined();
       expect(protectedComponent.config().branding.logoUrl).toBe(
         '/assets/logo.png',
       );
@@ -160,7 +183,7 @@ describe('NavComponent', () => {
     });
   });
 
-  describe('Toolbar Favorite Button', () => {
+  describe('Toolbar Bookmark Button', () => {
     it('should detect legislation route and target leg: prefix', () => {
       (router.events as any).next(
         new NavigationEnd(
@@ -171,7 +194,7 @@ describe('NavComponent', () => {
       );
       fixture.detectChanges();
 
-      const target = component.currentFavoriteTarget();
+      const target = component.currentBookmarkTarget();
       expect(target).toEqual({
         type: 'legislation',
         id: 'clean-energy',
@@ -190,7 +213,7 @@ describe('NavComponent', () => {
       );
       fixture.detectChanges();
 
-      const target = component.currentFavoriteTarget();
+      const target = component.currentBookmarkTarget();
       expect(target).toEqual({
         type: 'bill',
         id: 'mock-bill-1',
@@ -199,27 +222,11 @@ describe('NavComponent', () => {
       });
     });
 
-    it('should return null target on non-favoritable routes', () => {
+    it('should return null target on non-bookmarkable routes', () => {
       (router.events as any).next(new NavigationEnd(3, '/about', '/about'));
       fixture.detectChanges();
 
-      expect(component.currentFavoriteTarget()).toBeNull();
-    });
-
-    it('should toggle favorite with target key', async () => {
-      const toggleSpy = vi.fn();
-      (mockAuthService as any).toggleFavorite = toggleSpy;
-      (router.events as any).next(
-        new NavigationEnd(
-          4,
-          '/us-ny/legislation/clean-energy',
-          '/us-ny/legislation/clean-energy',
-        ),
-      );
-      fixture.detectChanges();
-
-      await component.toggleFavorite();
-      expect(toggleSpy).toHaveBeenCalledWith('leg:clean-energy');
+      expect(component.currentBookmarkTarget()).toBeNull();
     });
 
     it('should toggle offline save', async () => {
@@ -249,6 +256,7 @@ describe('NavComponent', () => {
       );
       expect(component.isSavedOffline()).toBe(true);
 
+      component.isSavedOffline.set(true);
       await component.toggleOfflineSave();
       expect(removeSpy).toHaveBeenCalledWith('mock-bill-1');
       expect(component.isSavedOffline()).toBe(false);

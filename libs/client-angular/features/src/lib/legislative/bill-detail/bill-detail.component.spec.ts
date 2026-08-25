@@ -59,11 +59,9 @@ describe('BillDetail', () => {
 
   const mockUserProfileSignal = signal<any>(null);
   const mockIsLoggedInSignal = signal<boolean>(false);
-  const mockToggleFavorite = vi.fn().mockResolvedValue(undefined);
   const mockAuthService = {
     userProfile: mockUserProfileSignal,
     isLoggedIn: mockIsLoggedInSignal,
-    toggleFavorite: mockToggleFavorite,
   };
 
   const mockOfflineStorage = {

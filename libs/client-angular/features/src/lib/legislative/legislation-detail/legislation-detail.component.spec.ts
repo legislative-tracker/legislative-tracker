@@ -48,11 +48,9 @@ describe('LegislationDetail', () => {
 
   const mockUserProfileSignal = signal<any>(null);
   const mockIsLoggedInSignal = signal<boolean>(false);
-  const mockToggleFavorite = vi.fn().mockResolvedValue(undefined);
   const mockAuthService = {
     userProfile: mockUserProfileSignal,
     isLoggedIn: mockIsLoggedInSignal,
-    toggleFavorite: mockToggleFavorite,
   };
 
   beforeEach(async () => {
@@ -61,7 +59,6 @@ describe('LegislationDetail', () => {
     mockSeoService.setLegislationTags.mockClear();
     mockUserProfileSignal.set(null);
     mockIsLoggedInSignal.set(false);
-    mockToggleFavorite.mockClear();
 
     await TestBed.configureTestingModule({
       imports: [LegislationDetail],

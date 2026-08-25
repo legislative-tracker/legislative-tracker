@@ -40,7 +40,7 @@ export class Privacy {
       title: 'Usage Data',
       icon: 'dashboard',
       description:
-        'We store your list of "Favorite" bills to populate your dashboard.',
+        'Saved bills and private personal notes are stored locally on your device in offline storage.',
     },
     {
       title: 'Address & Location (Transient)',

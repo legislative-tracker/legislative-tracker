@@ -10,7 +10,6 @@ export abstract class AuthService {
 
   abstract loginWithGoogle(): Promise<any>;
   abstract logout(): Promise<void>;
-  abstract toggleFavorite(billId: string): Promise<any>;
   abstract resetDistricts(): Promise<void>;
   abstract deleteAccountData(): Promise<void>;
 }

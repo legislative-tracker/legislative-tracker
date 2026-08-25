@@ -120,21 +120,6 @@ export class FirebaseAuthService implements AuthService {
     this.router.navigate(['/']);
   }
 
-  async toggleFavorite(billId: string) {
-    const profile = this.userProfile();
-    const currentUser = this.userSig();
-
-    if (!profile || !currentUser || !this.firestore) return;
-
-    const currentFavorites = profile.favorites || [];
-    const newFavorites = currentFavorites.includes(billId)
-      ? currentFavorites.filter((id: string) => id !== billId)
-      : [...currentFavorites, billId];
-
-    const userRef = doc(this.firestore, `users/${currentUser.uid}`);
-    return setDoc(userRef, { favorites: newFavorites }, { merge: true });
-  }
-
   async resetDistricts(): Promise<void> {
     const currentUser = this.userSig();
     if (!currentUser || !this.firestore) return;
