@@ -1,4 +1,34 @@
-## 0.11.27 (2026-08-24)
+## 0.11.28 (2026-08-25)
+
+### 🚀 Features
+
+- **client-angular:** display stateCd chip in saved bills card header ([b1a0c9b](https://github.com/legislative-tracker/legislative-tracker/commit/b1a0c9b))
+- **client-angular:** update navbar button text to Saved and place below Profile ([525c6a3](https://github.com/legislative-tracker/legislative-tracker/commit/525c6a3))
+- **client-angular:** remove favorites in favor of offline saved bills and bookmarks ([22f8e73](https://github.com/legislative-tracker/legislative-tracker/commit/22f8e73))
+- **client-angular:** update personal notes description with chamber and bill identifier ([652b3e5](https://github.com/legislative-tracker/legislative-tracker/commit/652b3e5))
+- **client-angular:** make personal notes an expansion panel above sponsors table ([ed048a6](https://github.com/legislative-tracker/legislative-tracker/commit/ed048a6))
+- **client-angular:** add pwa manifest, offline saved bills view, and offline notes ui ([655f1f1](https://github.com/legislative-tracker/legislative-tracker/commit/655f1f1))
+
+### 🩹 Fixes
+
+- **client-angular:** prioritize name field on saved legislation card header ([43265d6](https://github.com/legislative-tracker/legislative-tracker/commit/43265d6))
+- **client-angular:** resolve type union on bill in nav component ([d2c67a2](https://github.com/legislative-tracker/legislative-tracker/commit/d2c67a2))
+- **client-angular:** resolve legislation and bill titles properly for saved bills ([7a1cc23](https://github.com/legislative-tracker/legislative-tracker/commit/7a1cc23))
+
+### 💅 Refactors
+
+- **client-angular:** remove chips and chips-row from saved bills card header ([26c1410](https://github.com/legislative-tracker/legislative-tracker/commit/26c1410))
+- **client-angular:** remove link in saved bills card header ([9bf0659](https://github.com/legislative-tracker/legislative-tracker/commit/9bf0659))
+
+### 📖 Documentation
+
+- **client-angular:** update privacy policy last updated date to today ([31b25de](https://github.com/legislative-tracker/legislative-tracker/commit/31b25de))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.27 (2026-08-25)
 
 ### 🚀 Features
 
