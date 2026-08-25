@@ -19,6 +19,56 @@
     <span class="title">| Legislative Tracker</span>
   </div>
 
+  @if (availableJurisdictions().length > 0) {
+    <button
+      mat-button
+      [matMenuTriggerFor]="stateMenu"
+      aria-label="Select state legislature jurisdiction"
+      class="toolbar-state-btn"
+    >
+      <mat-icon class="state-icon">location_on</mat-icon>
+      <span class="state-label">{{
+        activeJurisdiction()?.name || 'Select...'
+      }}</span>
+      @if (activeJurisdiction()) {
+        <span class="state-code-badge">{{
+          activeJurisdiction()?.code | uppercase
+        }}</span>
+      }
+      <mat-icon class="arrow-icon">arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-menu #stateMenu="matMenu" class="state-picker-menu">
+      <div class="menu-header-label">Jurisdictions</div>
+      @for (j of availableJurisdictions(); track j.code) {
+        <button
+          mat-menu-item
+          (click)="switchJurisdiction(j.code)"
+          [class.active-jurisdiction]="activeJurisdiction()?.code === j.code"
+        >
+          <mat-icon
+            [style.color]="
+              activeJurisdiction()?.code === j.code ? '#0284c7' : 'inherit'
+            "
+          >
+            {{
+              activeJurisdiction()?.code === j.code
+                ? 'check_circle'
+                : 'radio_button_unchecked'
+            }}
+          </mat-icon>
+          <span class="j-name">{{ j.name }}</span>
+          <span class="j-code">({{ j.code | uppercase }})</span>
+        </button>
+      }
+      <mat-divider></mat-divider>
+      <a mat-menu-item routerLink="/">
+        <mat-icon>travel_explore</mat-icon>
+        <span>Explore all jurisdictions</span>
+      </a>
+    </mat-menu>
+  }
+
   <span class="toolbar-spacer"></span>
 
   @if (!isOnline()) {
@@ -129,6 +179,7 @@
         mat-list-item
         routerLink="/"
         routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
         (click)="onNavItemClick(drawer)"
       >
         <mat-icon matListItemIcon>home</mat-icon>

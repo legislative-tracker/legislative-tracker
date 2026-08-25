@@ -22,6 +22,7 @@ import {
   OfflineStorageService,
   ThemeService,
 } from '@legislative-tracker/client-angular/core';
+import { LegislaturePluginRegistry } from '@legislative-tracker/plugins-core';
 
 // Create a Dummy Footer
 @Component({
@@ -77,6 +78,29 @@ describe('NavComponent', () => {
 
   beforeEach(async () => {
     screenState$.next({ matches: false, breakpoints: {} });
+
+    if (!LegislaturePluginRegistry.has('leg-us-ny')) {
+      await LegislaturePluginRegistry.register({
+        metadata: {
+          id: 'leg-us-ny',
+          name: 'New York State Legislature Plugin',
+          version: '1.0.0',
+          jurisdiction: {
+            id: 'ocd-jurisdiction/country:us/state:ny/government',
+            code: 'us-ny',
+            name: 'New York',
+            isBicameral: true,
+            chambers: {
+              upper: 'Senate',
+              lower: 'Assembly',
+            },
+            currentSession: '2025-2026',
+          },
+          capabilities: { hasApi: true },
+        },
+        calculateCurrentSession: () => '2025-2026',
+      });
+    }
 
     await TestBed.configureTestingModule({
       imports: [NavComponent],
@@ -260,6 +284,39 @@ describe('NavComponent', () => {
       await component.toggleOfflineSave();
       expect(removeSpy).toHaveBeenCalledWith('mock-bill-1');
       expect(component.isSavedOffline()).toBe(false);
+    });
+  });
+
+  describe('State Jurisdiction Selector', () => {
+    it('should list available jurisdictions from registered plugins', () => {
+      const list = component.availableJurisdictions();
+      expect(Array.isArray(list)).toBe(true);
+      if (list.length > 0) {
+        expect(list[0]).toHaveProperty('code');
+        expect(list[0]).toHaveProperty('name');
+      }
+    });
+
+    it('should determine active jurisdiction from route URL', () => {
+      (router.events as any).next(new NavigationEnd(10, '/us-ny', '/us-ny'));
+      fixture.detectChanges();
+
+      const active = component.activeJurisdiction();
+      expect(active?.code.toLowerCase()).toBe('us-ny');
+    });
+
+    it('should return null active jurisdiction when at root /', () => {
+      (router.events as any).next(new NavigationEnd(11, '/', '/'));
+      fixture.detectChanges();
+
+      const active = component.activeJurisdiction();
+      expect(active).toBeNull();
+    });
+
+    it('should navigate to selected jurisdiction when switchJurisdiction is called', () => {
+      const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
+      component.switchJurisdiction('us-ca');
+      expect(navigateSpy).toHaveBeenCalledWith(['/', 'us-ca']);
     });
   });
 });

@@ -1,0 +1,160 @@
+<div class="page-container states-directory-container">
+  <header class="page-header text-center">
+    <div class="header-icon-badge">
+      <mat-icon>travel_explore</mat-icon>
+    </div>
+    <h1 class="page-title">State Legislatures & Jurisdictions</h1>
+    <p class="page-subtitle">
+      Explore active legislative jurisdictions, track chamber proceedings, and
+      discover state plugins.
+    </p>
+  </header>
+
+  <!-- Summary Stats Row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-value">{{ stats().totalStates }}</span>
+      <span class="stat-label">Active Jurisdictions</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ stats().totalChambers }}</span>
+      <span class="stat-label">Legislative Chambers</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ stats().withApi }}</span>
+      <span class="stat-label">Direct API Integrations</span>
+    </div>
+  </div>
+
+  <!-- Search Filter -->
+  <div class="search-filter-section">
+    <mat-form-field
+      appearance="outline"
+      class="search-field"
+      subscriptSizing="dynamic"
+    >
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        placeholder="Filter jurisdictions by name, code, or chamber..."
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        aria-label="Filter jurisdictions"
+      />
+      @if (searchQuery()) {
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="searchQuery.set('')"
+          aria-label="Clear search"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+  </div>
+
+  <!-- Jurisdictions Grid -->
+  @if (filteredPlugins().length === 0) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">search_off</mat-icon>
+      <h2>No Jurisdictions Found</h2>
+      <p>No state legislature plugin matches "{{ searchQuery() }}".</p>
+      <button mat-flat-button color="primary" (click)="searchQuery.set('')">
+        Clear Filter
+      </button>
+    </div>
+  } @else {
+    <div class="jurisdictions-grid">
+      @for (plugin of filteredPlugins(); track plugin.metadata.id) {
+        <mat-card class="jurisdiction-card">
+          <mat-card-header>
+            <div class="card-header-top">
+              <span class="badge-chip state-chip">{{
+                plugin.metadata.jurisdiction.code
+              }}</span>
+              <span class="session-badge"
+                >Session:
+                {{ plugin.metadata.jurisdiction.currentSession }}</span
+              >
+            </div>
+            <mat-card-title class="jurisdiction-name">
+              {{ plugin.metadata.jurisdiction.name }}
+            </mat-card-title>
+            <mat-card-subtitle class="jurisdiction-id">
+              {{ plugin.metadata.jurisdiction.id }}
+            </mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content class="jurisdiction-content">
+            @if (plugin.metadata.description) {
+              <p class="description-text">{{ plugin.metadata.description }}</p>
+            }
+
+            <div class="metadata-grid">
+              <div class="metadata-item">
+                <mat-icon class="meta-icon">account_balance</mat-icon>
+                <div class="item-text">
+                  <span class="label">Structure</span>
+                  <span class="value">{{
+                    plugin.metadata.jurisdiction.isBicameral
+                      ? 'Bicameral'
+                      : 'Unicameral'
+                  }}</span>
+                </div>
+              </div>
+
+              @if (plugin.metadata.jurisdiction.chambers.upper) {
+                <div class="metadata-item">
+                  <mat-icon class="meta-icon">gavel</mat-icon>
+                  <div class="item-text">
+                    <span class="label">Upper Chamber</span>
+                    <span class="value">{{
+                      plugin.metadata.jurisdiction.chambers.upper
+                    }}</span>
+                  </div>
+                </div>
+              }
+
+              @if (plugin.metadata.jurisdiction.chambers.lower) {
+                <div class="metadata-item">
+                  <mat-icon class="meta-icon">groups</mat-icon>
+                  <div class="item-text">
+                    <span class="label">Lower Chamber</span>
+                    <span class="value">{{
+                      plugin.metadata.jurisdiction.chambers.lower
+                    }}</span>
+                  </div>
+                </div>
+              }
+
+              <div class="metadata-item">
+                <mat-icon class="meta-icon">extension</mat-icon>
+                <div class="item-text">
+                  <span class="label">Plugin</span>
+                  <span class="value"
+                    >{{ plugin.metadata.id }} (v{{
+                      plugin.metadata.version
+                    }})</span
+                  >
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions align="end" class="card-actions">
+            <a
+              mat-flat-button
+              color="primary"
+              [routerLink]="getJurisdictionRoute(plugin)"
+              class="explore-btn"
+            >
+              <mat-icon>explore</mat-icon>
+              Explore {{ plugin.metadata.jurisdiction.name }}
+            </a>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+</div>
