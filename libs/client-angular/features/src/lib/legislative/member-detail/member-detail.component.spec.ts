@@ -349,6 +349,7 @@ describe('MemberDetail', () => {
 
     const subtitleEl = cardEl.querySelector('mat-card-subtitle');
     expect(subtitleEl?.textContent).toContain('Democratic Party');
+    expect(subtitleEl?.getAttribute('title')).toBe('Democratic Party');
 
     const contentEl = cardEl.querySelector('mat-card-content');
     expect(contentEl).toBeTruthy();

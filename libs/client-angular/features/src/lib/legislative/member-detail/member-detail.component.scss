@@ -11,6 +11,13 @@
 
   mat-card-header {
     align-items: center;
+    min-width: 0;
+
+    .mat-mdc-card-header-text {
+      min-width: 0;
+      max-width: 100%;
+      overflow: hidden;
+    }
 
     .headshot {
       width: 72px;
@@ -21,6 +28,7 @@
       object-position: top center;
       border-radius: 50%;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+      flex-shrink: 0;
     }
 
     mat-card-title {
@@ -28,12 +36,19 @@
       align-items: center;
       gap: 1rem;
       flex-wrap: wrap;
+      max-width: 100%;
+      word-break: break-word;
     }
 
     mat-card-subtitle {
       font-size: 0.95rem;
       font-weight: 500;
       margin-top: 0.25rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+      display: block;
     }
   }
 
