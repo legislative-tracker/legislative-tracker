@@ -5,6 +5,7 @@ import { FeedbackService } from './feedback.service';
 export interface SavedBill {
   id: string;
   title: string;
+  name?: string;
   stateCd: string;
   savedAt: string;
   identifier?: string;

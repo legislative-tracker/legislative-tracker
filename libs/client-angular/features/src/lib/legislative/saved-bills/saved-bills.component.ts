@@ -18,7 +18,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
+import { firstValueFrom } from 'rxjs';
 import {
+  LegislatureService,
   OfflineStorageService,
   SavedBill,
 } from '@legislative-tracker/client-angular/core';
@@ -44,6 +46,7 @@ import {
 })
 export class SavedBills implements OnInit {
   private offlineStorage = inject(OfflineStorageService);
+  private legislatureService = inject(LegislatureService, { optional: true });
   private snackBar = inject(MatSnackBar);
 
   savedBills = signal<SavedBill[]>([]);
@@ -71,16 +74,22 @@ export class SavedBills implements OnInit {
   }
 
   getBillTitle(bill: SavedBill): string {
+    // 1. Explicit name field from Legislation model
+    if (bill.name) {
+      return bill.name;
+    }
+    if (bill.billData?.name) {
+      return bill.billData.name;
+    }
+    // 2. Meaningful title
     if (
       bill.title &&
       bill.title.toLowerCase() !== 'legislation' &&
       bill.title.toLowerCase() !== 'bill' &&
-      bill.title.toLowerCase() !== 'legislative tracker'
+      bill.title.toLowerCase() !== 'legislative tracker' &&
+      bill.title !== bill.id
     ) {
       return bill.title;
-    }
-    if (bill.billData?.name) {
-      return bill.billData.name;
     }
     if (bill.billData?.title) {
       return bill.billData.title;
@@ -88,19 +97,51 @@ export class SavedBills implements OnInit {
     if (bill.identifier) {
       return bill.identifier;
     }
-    if (bill.id) {
-      return bill.id
-        .split('-')
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-        .join(' ');
-    }
-    return 'Legislation';
+    return bill.id || 'Legislation';
   }
 
   async loadSavedBills(): Promise<void> {
     this.isLoading.set(true);
     try {
       const bills = await this.offlineStorage.getSavedBills();
+
+      // If online and service available, enrich bills with actual Legislation.name
+      if (this.legislatureService && bills.length > 0) {
+        const uniqueStates = Array.from(
+          new Set(bills.map((b) => b.stateCd || 'us-ny')),
+        );
+        for (const state of uniqueStates) {
+          try {
+            const legs = await firstValueFrom(
+              this.legislatureService.getLegislationByState(state),
+            );
+            if (legs && legs.length > 0) {
+              for (const bill of bills) {
+                if ((bill.stateCd || 'us-ny') === state) {
+                  const foundLeg = legs.find(
+                    (l) =>
+                      l.id === bill.id ||
+                      l.ocdBillIds?.upper === bill.id ||
+                      l.ocdBillIds?.lower === bill.id,
+                  );
+                  if (foundLeg && foundLeg.name) {
+                    bill.name = foundLeg.name;
+                    bill.title = foundLeg.name;
+                    if (foundLeg.description) {
+                      bill.summary = foundLeg.description;
+                    }
+                    bill.billData = foundLeg;
+                    await this.offlineStorage.saveBill(bill);
+                  }
+                }
+              }
+            }
+          } catch {
+            // Ignore offline/fetch errors
+          }
+        }
+      }
+
       for (const bill of bills) {
         const title = this.getBillTitle(bill);
         if (
@@ -114,6 +155,7 @@ export class SavedBills implements OnInit {
           await this.offlineStorage.saveBill(bill);
         }
       }
+
       // Sort newest saved first
       bills.sort(
         (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime(),

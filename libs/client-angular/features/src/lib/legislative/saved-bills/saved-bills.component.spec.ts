@@ -128,23 +128,26 @@ describe('SavedBills Component', () => {
     expect(route2).toEqual(['/', 'us-ny', 'legislation', 'clean-energy']);
   });
 
-  it('should resolve readable bill title even when saved title is generic', () => {
-    const genericBill: SavedBill = {
-      id: 'broadband-access-act',
+  it('should resolve readable bill title prioritizing name field', () => {
+    const namedBill: SavedBill = {
+      id: 'leg-12345',
+      name: 'Broadband Act',
       title: 'legislation',
       stateCd: 'us-ny',
       savedAt: '2026-08-20T12:00:00Z',
       type: 'legislation',
     };
-    expect(component.getBillTitle(genericBill)).toBe('Broadband Access Act');
+    expect(component.getBillTitle(namedBill)).toBe('Broadband Act');
 
     const billDataBill: SavedBill = {
-      id: 'broadband-access-act',
+      id: 'leg-67890',
       title: 'bill',
       stateCd: 'us-ny',
       savedAt: '2026-08-20T12:00:00Z',
-      billData: { name: 'Broadband Act' },
+      billData: { name: 'Clean Energy Infrastructure Act' },
     };
-    expect(component.getBillTitle(billDataBill)).toBe('Broadband Act');
+    expect(component.getBillTitle(billDataBill)).toBe(
+      'Clean Energy Infrastructure Act',
+    );
   });
 });
