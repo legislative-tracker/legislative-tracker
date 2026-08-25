@@ -24,13 +24,14 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { filter, map, shareReplay, startWith } from 'rxjs/operators';
 
 // App imports
 import {
   AuthService,
   ConfigService,
+  LegislatureService,
   OfflineStorageService,
   ThemeService,
 } from '@legislative-tracker/client-angular/core';
@@ -62,6 +63,7 @@ export class NavComponent {
   private router = inject(Router);
   private breakpointObserver = inject(BreakpointObserver);
   private titleService = inject(Title);
+  private legislatureService = inject(LegislatureService, { optional: true });
 
   protected offlineStorage = inject(OfflineStorageService);
   protected isOnline = this.offlineStorage.isOnline;
@@ -135,8 +137,23 @@ export class NavComponent {
     const target = this.currentBookmarkTarget();
     if (!target) return '';
     const fullTitle = this.titleService.getTitle() || '';
-    const name = fullTitle.replace(/\s*\|\s*Legislative Tracker$/, '').trim();
-    return name || (target.type === 'legislation' ? 'legislation' : 'bill');
+    const name = fullTitle
+      .replace(/\s*\|\s*Legislative Tracker$/i, '')
+      .replace(/^Legislative Tracker$/i, '')
+      .trim();
+
+    if (
+      name &&
+      name.toLowerCase() !== 'legislation' &&
+      name.toLowerCase() !== 'bill'
+    ) {
+      return name;
+    }
+
+    return target.id
+      .split('-')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
   });
 
   constructor() {
@@ -159,13 +176,67 @@ export class NavComponent {
       await this.offlineStorage.removeSavedBill(target.id);
       this.isSavedOffline.set(false);
     } else {
-      const title = this.targetName() || target.id;
+      let title = this.targetName();
+      let identifier: string | undefined;
+      let summary: string | undefined;
+      let billData: any;
+
+      if (
+        this.legislatureService &&
+        target.stateCd &&
+        (!title ||
+          title.toLowerCase() === 'legislation' ||
+          title.toLowerCase() === 'bill' ||
+          title.toLowerCase() === 'legislative tracker')
+      ) {
+        try {
+          if (target.type === 'legislation') {
+            const legs = await firstValueFrom(
+              this.legislatureService.getLegislationByState(target.stateCd),
+            );
+            const found = legs?.find((l) => l.id === target.id);
+            if (found) {
+              title = found.name;
+              summary = found.description;
+              billData = found;
+            }
+          } else {
+            const bill = await firstValueFrom(
+              this.legislatureService.getBillById(target.stateCd, target.id),
+            );
+            if (bill) {
+              title = bill.title || (bill as any).name || target.id;
+              identifier = (bill as any).identifier;
+              summary = (bill as any).abstract || bill.title;
+              billData = bill;
+            }
+          }
+        } catch {
+          // fallback to targetName
+        }
+      }
+
+      if (
+        !title ||
+        title.toLowerCase() === 'legislation' ||
+        title.toLowerCase() === 'bill' ||
+        title.toLowerCase() === 'legislative tracker'
+      ) {
+        title = target.id
+          .split('-')
+          .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+          .join(' ');
+      }
+
       await this.offlineStorage.saveBill({
         id: target.id,
         title,
+        identifier,
+        summary,
         stateCd: target.stateCd || 'us-ny',
         savedAt: new Date().toISOString(),
         type: target.type,
+        billData,
       });
       this.isSavedOffline.set(true);
     }

@@ -56,7 +56,9 @@ export class SavedBills implements OnInit {
     if (!query) return bills;
 
     return bills.filter((b) => {
-      const titleMatch = b.title?.toLowerCase().includes(query);
+      const resolvedTitle = this.getBillTitle(b).toLowerCase();
+      const titleMatch =
+        resolvedTitle.includes(query) || b.title?.toLowerCase().includes(query);
       const idMatch = b.id?.toLowerCase().includes(query);
       const identMatch = b.identifier?.toLowerCase().includes(query);
       const stateMatch = b.stateCd?.toLowerCase().includes(query);
@@ -68,10 +70,50 @@ export class SavedBills implements OnInit {
     await this.loadSavedBills();
   }
 
+  getBillTitle(bill: SavedBill): string {
+    if (
+      bill.title &&
+      bill.title.toLowerCase() !== 'legislation' &&
+      bill.title.toLowerCase() !== 'bill' &&
+      bill.title.toLowerCase() !== 'legislative tracker'
+    ) {
+      return bill.title;
+    }
+    if (bill.billData?.name) {
+      return bill.billData.name;
+    }
+    if (bill.billData?.title) {
+      return bill.billData.title;
+    }
+    if (bill.identifier) {
+      return bill.identifier;
+    }
+    if (bill.id) {
+      return bill.id
+        .split('-')
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+    }
+    return 'Legislation';
+  }
+
   async loadSavedBills(): Promise<void> {
     this.isLoading.set(true);
     try {
       const bills = await this.offlineStorage.getSavedBills();
+      for (const bill of bills) {
+        const title = this.getBillTitle(bill);
+        if (
+          title &&
+          (!bill.title ||
+            bill.title.toLowerCase() === 'legislation' ||
+            bill.title.toLowerCase() === 'bill' ||
+            bill.title.toLowerCase() === 'legislative tracker')
+        ) {
+          bill.title = title;
+          await this.offlineStorage.saveBill(bill);
+        }
+      }
       // Sort newest saved first
       bills.sort(
         (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime(),
