@@ -32,5 +32,4 @@ export interface AppUser {
     federal?: (OpenStatesPerson | UserRepresentative)[];
     state?: (OpenStatesPerson | UserRepresentative)[];
   };
-  favorites?: string[];
 }

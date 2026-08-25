@@ -11,7 +11,6 @@ const MOCK_USER: AppUser = {
   photoURL: undefined,
   phoneNumber: null,
   lastLogin: new Date(),
-  favorites: ['bill-1'],
   districts: {
     federal: '1',
     state: {
@@ -47,18 +46,6 @@ export class MockAuthService implements AuthService {
     this.userProfile.set(null);
     this.isAdmin.set(false);
     this.router.navigate(['/']);
-  }
-
-  async toggleFavorite(billId: string) {
-    const profile = this.userProfile();
-    if (!profile) return;
-
-    const currentFavorites = profile.favorites || [];
-    const newFavorites = currentFavorites.includes(billId)
-      ? currentFavorites.filter((id: string) => id !== billId)
-      : [...currentFavorites, billId];
-
-    this.userProfile.set({ ...profile, favorites: newFavorites });
   }
 
   async resetDistricts() {

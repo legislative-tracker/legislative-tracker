@@ -27,7 +27,7 @@ interface DataCategory {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Privacy {
-  readonly lastUpdated = signal<Date>(new Date('2026-01-04'));
+  readonly lastUpdated = signal<Date>(new Date('2026-08-25'));
 
   readonly dataCategories = signal<DataCategory[]>([
     {
@@ -40,7 +40,7 @@ export class Privacy {
       title: 'Usage Data',
       icon: 'dashboard',
       description:
-        'We store your list of "Favorite" bills to populate your dashboard.',
+        'Saved bills and private personal notes are stored locally on your device in offline storage.',
     },
     {
       title: 'Address & Location (Transient)',

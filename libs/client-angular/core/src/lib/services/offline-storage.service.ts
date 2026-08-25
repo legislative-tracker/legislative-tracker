@@ -5,8 +5,13 @@ import { FeedbackService } from './feedback.service';
 export interface SavedBill {
   id: string;
   title: string;
+  name?: string;
   stateCd: string;
   savedAt: string;
+  identifier?: string;
+  summary?: string;
+  type?: 'bill' | 'legislation';
+  billData?: any;
 }
 
 export interface OfflineNote {
@@ -14,6 +19,7 @@ export interface OfflineNote {
   billId: string;
   note: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 @Injectable({
@@ -49,22 +55,33 @@ export class OfflineStorageService {
   }
 
   private initDB(): Promise<IDBPDatabase> | null {
+    if (this.dbPromise) {
+      return this.dbPromise;
+    }
     if (typeof indexedDB === 'undefined') {
       return null;
     }
-    if (!this.dbPromise) {
-      this.dbPromise = openDB('legislative_tracker_db', 1, {
-        upgrade(db) {
-          if (!db.objectStoreNames.contains('saved_bills')) {
-            db.createObjectStore('saved_bills', { keyPath: 'id' });
-          }
-          if (!db.objectStoreNames.contains('offline_notes')) {
-            db.createObjectStore('offline_notes', { keyPath: 'id' });
-          }
-        },
-      });
-    }
+    this.dbPromise = openDB('legislative_tracker_db', 1, {
+      upgrade(db) {
+        if (!db.objectStoreNames.contains('saved_bills')) {
+          db.createObjectStore('saved_bills', { keyPath: 'id' });
+        }
+        if (!db.objectStoreNames.contains('offline_notes')) {
+          db.createObjectStore('offline_notes', { keyPath: 'id' });
+        }
+      },
+    });
     return this.dbPromise;
+  }
+
+  private cleanBillId(val: string): string {
+    if (!val) return '';
+    return String(val)
+      .replace(/^leg:/, '')
+      .replace(/^legislation:/, '')
+      .replace(/^bill:/, '')
+      .replace(/^ocd-bill[\/:=]/, '')
+      .trim();
   }
 
   async saveBill(bill: SavedBill): Promise<void> {
@@ -82,10 +99,43 @@ export class OfflineStorageService {
     return [];
   }
 
+  async getSavedBill(id: string): Promise<SavedBill | undefined> {
+    const db = await this.initDB();
+    if (db) {
+      const clean = this.cleanBillId(id).toLowerCase();
+      const direct = await db.get('saved_bills', id);
+      if (direct) return direct;
+      const all: SavedBill[] = await db.getAll('saved_bills');
+      return all.find(
+        (b) =>
+          this.cleanBillId(b.id).toLowerCase() === clean ||
+          (b.identifier && b.identifier.toLowerCase() === clean),
+      );
+    }
+    return undefined;
+  }
+
+  async isBillSaved(id: string): Promise<boolean> {
+    const bill = await this.getSavedBill(id);
+    return !!bill;
+  }
+
   async removeSavedBill(id: string): Promise<void> {
     const db = await this.initDB();
     if (db) {
       await db.delete('saved_bills', id);
+      const clean = this.cleanBillId(id).toLowerCase();
+      const all: SavedBill[] = await db.getAll('saved_bills');
+      const matches = all.filter(
+        (b) =>
+          this.cleanBillId(b.id).toLowerCase() === clean ||
+          (b.identifier && b.identifier.toLowerCase() === clean),
+      );
+      for (const m of matches) {
+        if (m.id !== id) {
+          await db.delete('saved_bills', m.id);
+        }
+      }
     }
   }
 
@@ -104,6 +154,24 @@ export class OfflineStorageService {
     return [];
   }
 
+  async getNotesForBill(billId: string): Promise<OfflineNote[]> {
+    const notes = await this.getOfflineNotes();
+    const cleanTarget = this.cleanBillId(billId).toLowerCase();
+    return notes
+      .filter((n) => this.cleanBillId(n.billId).toLowerCase() === cleanTarget)
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
+  }
+
+  async deleteNote(id: string): Promise<void> {
+    const db = await this.initDB();
+    if (db) {
+      await db.delete('offline_notes', id);
+    }
+  }
+
   async clearOfflineNotes(): Promise<void> {
     const db = await this.initDB();
     if (db) {
@@ -120,9 +188,6 @@ export class OfflineStorageService {
   }
 
   private async syncPendingData(): Promise<void> {
-    const notes = await this.getOfflineNotes();
-    if (notes.length > 0) {
-      await this.clearOfflineNotes();
-    }
+    // Hook for syncing offline data if a remote endpoint is configured
   }
 }

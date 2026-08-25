@@ -11,9 +11,11 @@ import { BillDetail } from './bill-detail.component';
 import {
   AuthService,
   LegislatureService,
+  OfflineStorageService,
   SeoService,
 } from '@legislative-tracker/client-angular/core';
 import { TableComponent } from '@legislative-tracker/client-angular/ui';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { signal } from '@angular/core';
 
 // Stub Child Component
@@ -22,7 +24,7 @@ import { signal } from '@angular/core';
   template: '',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  inputs: ['dataSource', 'columnSource'],
+  inputs: ['dataSource', 'columnSource', 'stateCd', 'routeType'],
 })
 class MockTableComponent {}
 
@@ -57,11 +59,19 @@ describe('BillDetail', () => {
 
   const mockUserProfileSignal = signal<any>(null);
   const mockIsLoggedInSignal = signal<boolean>(false);
-  const mockToggleFavorite = vi.fn().mockResolvedValue(undefined);
   const mockAuthService = {
     userProfile: mockUserProfileSignal,
     isLoggedIn: mockIsLoggedInSignal,
-    toggleFavorite: mockToggleFavorite,
+  };
+
+  const mockOfflineStorage = {
+    getSavedBill: vi.fn().mockResolvedValue(undefined),
+    isBillSaved: vi.fn().mockResolvedValue(false),
+    saveBill: vi.fn().mockResolvedValue(undefined),
+    removeSavedBill: vi.fn().mockResolvedValue(undefined),
+    getNotesForBill: vi.fn().mockResolvedValue([]),
+    saveNote: vi.fn().mockResolvedValue(undefined),
+    deleteNote: vi.fn().mockResolvedValue(undefined),
   };
 
   beforeEach(async () => {
@@ -69,6 +79,12 @@ describe('BillDetail', () => {
     mockSeoService.resetTags.mockClear();
     mockSeoService.setBillTags.mockClear();
     mockUserProfileSignal.set(null);
+    mockLegislatureService.getBillById.mockReset();
+    mockLegislatureService.getBillById.mockReturnValue(of(mockBillData));
+    mockOfflineStorage.getSavedBill.mockReset();
+    mockOfflineStorage.getSavedBill.mockResolvedValue(undefined);
+    mockOfflineStorage.getNotesForBill.mockReset();
+    mockOfflineStorage.getNotesForBill.mockResolvedValue([]);
 
     await TestBed.configureTestingModule({
       imports: [BillDetail],
@@ -77,6 +93,7 @@ describe('BillDetail', () => {
         { provide: LegislatureService, useValue: mockLegislatureService },
         { provide: SeoService, useValue: mockSeoService },
         { provide: AuthService, useValue: mockAuthService },
+        { provide: OfflineStorageService, useValue: mockOfflineStorage },
       ],
     })
       .overrideComponent(BillDetail, {
@@ -325,5 +342,106 @@ describe('BillDetail', () => {
       }
     }
     expect(component.userRepSponsors()).toEqual([]);
+  });
+
+  it('should toggle save offline for the bill', async () => {
+    const snackBarSpy = vi.spyOn((component as any).snackBar, 'open');
+
+    component.isSavedOffline.set(false);
+    await component.toggleSaveOffline();
+
+    expect(mockOfflineStorage.saveBill).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'BILL-123',
+        title: 'Clean Water Act',
+        identifier: 'S 123',
+        stateCd: 'ny',
+      }),
+    );
+    expect(component.isSavedOffline()).toBe(true);
+    expect(snackBarSpy).toHaveBeenCalledWith(
+      'Bill saved for offline reading',
+      'Close',
+      expect.any(Object),
+    );
+
+    await component.toggleSaveOffline();
+    expect(mockOfflineStorage.removeSavedBill).toHaveBeenCalledWith('BILL-123');
+    expect(component.isSavedOffline()).toBe(false);
+    expect(snackBarSpy).toHaveBeenCalledWith(
+      'Bill removed from offline storage',
+      'Close',
+      expect.any(Object),
+    );
+  });
+
+  it('should add and delete personal offline notes', async () => {
+    const snackBarSpy = vi.spyOn((component as any).snackBar, 'open');
+
+    mockOfflineStorage.getNotesForBill.mockResolvedValue([
+      {
+        id: 'note-1',
+        billId: 'BILL-123',
+        note: 'Important environmental legislation.',
+        createdAt: '2026-08-25T12:00:00Z',
+      },
+    ]);
+
+    component.newNoteText.set('Important environmental legislation.');
+    await component.addNote();
+
+    expect(mockOfflineStorage.saveNote).toHaveBeenCalledWith(
+      expect.objectContaining({
+        billId: 'BILL-123',
+        note: 'Important environmental legislation.',
+      }),
+    );
+    expect(component.newNoteText()).toBe('');
+    expect(component.notes().length).toBe(1);
+    expect(snackBarSpy).toHaveBeenCalledWith(
+      'Personal note saved',
+      'Close',
+      expect.any(Object),
+    );
+
+    mockOfflineStorage.getNotesForBill.mockResolvedValue([]);
+    await component.deleteNote('note-1');
+    expect(mockOfflineStorage.deleteNote).toHaveBeenCalledWith('note-1');
+    expect(component.notes().length).toBe(0);
+    expect(snackBarSpy).toHaveBeenCalledWith(
+      'Note deleted',
+      'Close',
+      expect.any(Object),
+    );
+  });
+
+  it('should use cached offline bill when live resource returns undefined', async () => {
+    const cachedBill: any = {
+      id: 'BILL-OFFLINE-ONLY',
+      identifier: 'S 999',
+      title: 'Offline Cached Bill',
+      summary: 'Read this offline',
+    };
+
+    mockLegislatureService.getBillById.mockReturnValueOnce(of(undefined));
+    fixture.componentRef.setInput('id', 'BILL-OFFLINE-ONLY');
+    component.cachedOfflineBill.set(cachedBill);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(component.bill()?.title).toBe('Offline Cached Bill');
+  });
+
+  it('should compute notesDescription with chamber name and identifier', async () => {
+    fixture.componentRef.setInput('stateCd', 'ny');
+    fixture.componentRef.setInput('id', 'BILL-123');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    // mockBillData has identifier 'S 123'
+    expect(component.chamberName()).toBe('Senate');
+    expect(component.notesDescription()).toBe(
+      'Private notes for Senate Bill S 123',
+    );
   });
 });

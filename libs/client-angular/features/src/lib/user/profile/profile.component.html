@@ -86,30 +86,6 @@
       }
     </div>
 
-    <!-- Watchlist Section (Below Representatives) -->
-    <div class="watchlist-section">
-      <div class="section-header">
-        <h2>Your Watchlist</h2>
-      </div>
-      @if (watchlistBills().length === 0) {
-        <div class="watchlist-empty-state">
-          <mat-icon class="empty-icon">favorite_border</mat-icon>
-          <h3>No favorited bills in your watchlist</h3>
-          <p>
-            Click the ❤️ heart icon in the toolbar on any bill or legislation to
-            add it to your watchlist.
-          </p>
-        </div>
-      } @else {
-        <app-table
-          [dataSource]="watchlistBills()"
-          [columnSource]="billCols"
-          routeType="legislation"
-          [stateCd]="stateCd()"
-        ></app-table>
-      }
-    </div>
-
     <div class="data-management-card">
       <div class="card-header">
         <mat-icon color="warn">shield</mat-icon>

@@ -36,25 +36,25 @@
     </div>
   }
 
-  @if (auth.isLoggedIn() && currentFavoriteTarget(); as target) {
+  @if (currentBookmarkTarget(); as target) {
     <button
       mat-icon-button
-      (click)="toggleFavorite()"
-      [class.is-favorite]="isFavorited()"
+      (click)="toggleOfflineSave()"
+      [class.is-offline-saved]="isSavedOffline()"
       [attr.aria-label]="
-        isFavorited()
-          ? 'Remove ' + targetName() + ' from favorites'
-          : 'Add ' + targetName() + ' to favorites'
+        isSavedOffline()
+          ? 'Remove ' + targetName() + ' from offline storage'
+          : 'Save ' + targetName() + ' for offline reading'
       "
       [matTooltip]="
-        isFavorited()
-          ? 'Remove ' + targetName() + ' from favorites'
-          : 'Add ' + targetName() + ' to favorites'
+        isSavedOffline()
+          ? 'Remove ' + targetName() + ' from offline storage'
+          : 'Save ' + targetName() + ' for offline reading'
       "
-      class="toolbar-favorite-btn"
+      class="toolbar-offline-btn"
     >
-      <mat-icon [style.color]="isFavorited() ? '#e11d48' : 'white'">
-        {{ isFavorited() ? 'favorite' : 'favorite_border' }}
+      <mat-icon [style.color]="isSavedOffline() ? '#38bdf8' : 'white'">
+        {{ isSavedOffline() ? 'bookmark' : 'bookmark_border' }}
       </mat-icon>
     </button>
   }
@@ -154,7 +154,19 @@
           <mat-icon matListItemIcon>person</mat-icon>
           <span matListItemTitle>Profile</span>
         </a>
+      }
 
+      <a
+        mat-list-item
+        routerLink="/saved-bills"
+        routerLinkActive="active"
+        (click)="onNavItemClick(drawer)"
+      >
+        <mat-icon matListItemIcon>bookmarks</mat-icon>
+        <span matListItemTitle>Saved</span>
+      </a>
+
+      @if (auth.isLoggedIn()) {
         @if (auth.isAdmin()) {
           <a
             mat-list-item

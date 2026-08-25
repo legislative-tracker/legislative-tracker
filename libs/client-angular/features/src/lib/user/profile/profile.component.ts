@@ -5,8 +5,6 @@ import {
   computed,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { of } from 'rxjs';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -18,7 +16,6 @@ import { DatePipe } from '@angular/common';
 import {
   AuthService,
   FIREBASE_FUNCTIONS,
-  LegislatureService,
 } from '@legislative-tracker/client-angular/core';
 import {
   AddressForm,
@@ -27,8 +24,6 @@ import {
 } from '@legislative-tracker/client-angular/ui';
 import {
   USER_REPS_COLS,
-  BILL_COLS,
-  Legislation,
   SearchAddress,
 } from '@legislative-tracker/shared/models';
 
@@ -51,145 +46,16 @@ import {
 })
 export class Profile {
   private auth = inject(AuthService);
-  private legislatureService = inject(LegislatureService, { optional: true });
   private functions = inject(FIREBASE_FUNCTIONS, { optional: true });
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
   user = this.auth.userProfile;
   legislatorCols = USER_REPS_COLS;
-  billCols = BILL_COLS;
   isResetting = signal(false);
   isDeleting = signal(false);
 
   stateCd = computed(() => 'us-ny');
-
-  legislationResource = rxResource<Legislation[], string>({
-    params: () => this.stateCd(),
-    stream: ({ params }) => {
-      if (!this.legislatureService || !params) return of([]);
-      return this.legislatureService.getLegislationByState(params);
-    },
-  });
-
-  legislationList = computed(() => this.legislationResource.value() ?? []);
-
-  watchlistBills = computed<Legislation[]>(() => {
-    const rawFavs = this.user()?.favorites ?? [];
-    if (!rawFavs.length) return [];
-
-    const favs = rawFavs.map((f) => String(f).trim());
-
-    const legFavs = new Set<string>();
-    const billFavs = new Set<string>();
-
-    for (const fav of favs) {
-      const lower = fav.toLowerCase();
-      if (lower.startsWith('leg:') || lower.startsWith('legislation:')) {
-        legFavs.add(
-          lower
-            .replace(/^leg:/, '')
-            .replace(/^legislation:/, '')
-            .trim(),
-        );
-      } else if (lower.startsWith('bill:') || lower.startsWith('ocd-bill/')) {
-        billFavs.add(
-          lower
-            .replace(/^bill:/, '')
-            .replace(/^ocd-bill[\/:=]/, '')
-            .trim(),
-        );
-      } else {
-        legFavs.add(lower);
-        billFavs.add(lower);
-      }
-    }
-
-    const results: (Legislation & { routeType?: string; targetId?: string })[] =
-      [];
-
-    for (const leg of this.legislationList()) {
-      const cleanLegId = leg.id
-        ? String(leg.id)
-            .replace(/^leg:/, '')
-            .replace(/^legislation:/, '')
-            .trim()
-            .toLowerCase()
-        : '';
-
-      const upperOcd = leg.ocdBillIds?.upper || leg.upperBillId;
-      const cleanUpperOcd = upperOcd
-        ? String(upperOcd)
-            .replace(/^bill:/, '')
-            .replace(/^ocd-bill[\/:=]/, '')
-            .trim()
-            .toLowerCase()
-        : '';
-      const cleanUpperState = leg.stateBillIds?.upper
-        ? String(leg.stateBillIds.upper).trim().toLowerCase()
-        : '';
-
-      const lowerOcd = leg.ocdBillIds?.lower || leg.lowerBillId;
-      const cleanLowerOcd = lowerOcd
-        ? String(lowerOcd)
-            .replace(/^bill:/, '')
-            .replace(/^ocd-bill[\/:=]/, '')
-            .trim()
-            .toLowerCase()
-        : '';
-      const cleanLowerState = leg.stateBillIds?.lower
-        ? String(leg.stateBillIds.lower).trim().toLowerCase()
-        : '';
-
-      const isLegFavorited = cleanLegId && legFavs.has(cleanLegId);
-
-      if (isLegFavorited) {
-        // Entire legislation page was hearted -> show both bills
-        results.push({
-          ...leg,
-          routeType: 'legislation',
-          targetId: leg.id,
-          upperBillId: leg.stateBillIds?.upper || leg.upperBillId,
-          lowerBillId: leg.stateBillIds?.lower || leg.lowerBillId,
-        });
-      } else {
-        // Individual chamber bills favorited
-        const isUpperFavorited =
-          (cleanUpperOcd && billFavs.has(cleanUpperOcd)) ||
-          (cleanUpperState && billFavs.has(cleanUpperState));
-
-        const isLowerFavorited =
-          (cleanLowerOcd && billFavs.has(cleanLowerOcd)) ||
-          (cleanLowerState && billFavs.has(cleanLowerState));
-
-        if (isUpperFavorited) {
-          results.push({
-            ...leg,
-            id: upperOcd || cleanUpperOcd,
-            routeType: 'ocd-bill',
-            targetId: upperOcd || cleanUpperOcd,
-            name: leg.name,
-            upperBillId: leg.stateBillIds?.upper || leg.upperBillId,
-            lowerBillId: '', // Omit non-hearted bill
-          });
-        }
-
-        if (isLowerFavorited) {
-          results.push({
-            ...leg,
-            id: lowerOcd || cleanLowerOcd,
-            routeType: 'ocd-bill',
-            targetId: lowerOcd || cleanLowerOcd,
-            name: leg.name,
-            upperBillId: '', // Omit non-hearted bill
-            lowerBillId: leg.stateBillIds?.lower || leg.lowerBillId,
-          });
-        }
-      }
-    }
-
-    return results as Legislation[];
-  });
 
   searchAddress = async (e: SearchAddress) => {
     let addressStr = e.address;
