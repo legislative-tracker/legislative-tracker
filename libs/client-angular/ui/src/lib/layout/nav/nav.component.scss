@@ -16,11 +16,25 @@
     align-items: center;
     gap: 10px;
     margin-left: 16px;
+    min-width: 0;
+    flex-shrink: 1;
+
+    @media (max-width: 599.98px) {
+      margin-left: 8px;
+      gap: 6px;
+    }
   }
 
   .title {
     color: var(--mat-sys-on-primary);
     font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    @media (max-width: 480px) {
+      font-size: 0.95rem;
+    }
   }
 
   .toolbar-state-btn {
@@ -34,6 +48,11 @@
     align-items: center;
     gap: 6px;
     transition: background-color 0.2s ease;
+    flex-shrink: 0;
+
+    @media (max-width: 767.98px) {
+      display: none;
+    }
 
     &:hover {
       background: rgba(255, 255, 255, 0.25);
@@ -70,6 +89,7 @@
 
   .toolbar-spacer {
     flex: 1 1 auto;
+    min-width: 8px;
   }
 
   .offline-badge {
@@ -82,11 +102,18 @@
     font-weight: 600;
     padding: 4px 10px;
     border-radius: 16px;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    @media (max-width: 599.98px) {
+      display: none;
+    }
   }
 
   .desktop-actions {
     display: flex;
     align-items: center;
+    flex-shrink: 0;
 
     @media (max-width: 1279.98px) {
       display: none;
@@ -96,6 +123,7 @@
   .toolbar-overflow-btn {
     display: none;
     margin-left: 4px;
+    flex-shrink: 0;
 
     @media (max-width: 1279.98px) {
       display: inline-flex;

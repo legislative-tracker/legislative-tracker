@@ -334,5 +334,19 @@ describe('NavComponent', () => {
         fixture.nativeElement.querySelector('.desktop-actions');
       expect(desktopActions).toBeTruthy();
     });
+
+    it('should include jurisdiction selector in overflow menu when jurisdictions exist', () => {
+      const overflowBtn = fixture.nativeElement.querySelector(
+        '.toolbar-overflow-btn',
+      );
+      overflowBtn.click();
+      fixture.detectChanges();
+
+      const jurisdictionItem = document.querySelector(
+        '.overflow-jurisdiction-btn',
+      );
+      expect(jurisdictionItem).toBeTruthy();
+      expect(jurisdictionItem?.textContent).toContain('Jurisdiction');
+    });
   });
 });
