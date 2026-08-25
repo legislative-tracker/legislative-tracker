@@ -1,0 +1,59 @@
+<div class="app-reset-dialog-container">
+  <h2 mat-dialog-title class="dialog-title">
+    <mat-icon color="warn" class="dialog-icon">restart_alt</mat-icon>
+    <span>{{ data?.title || 'Reset Application' }}</span>
+  </h2>
+
+  <mat-dialog-content class="dialog-content">
+    <p class="description">
+      {{
+        data?.message ||
+          'Resetting the application will clear all local client storage, purge service worker caches, and reload the latest version of the app.'
+      }}
+    </p>
+
+    <div class="options-section">
+      <label class="section-label">Select Reset Mode:</label>
+      <mat-radio-group
+        [ngModel]="backupChoice()"
+        (ngModelChange)="backupChoice.set($event)"
+        class="radio-group"
+      >
+        <mat-radio-button value="backup" class="radio-option">
+          <div class="option-content">
+            <span class="option-title">
+              Backup personal data to cloud (Recommended)
+            </span>
+            <span class="option-subtitle">
+              Temporarily syncs your offline saved bills, notes, and preferences
+              to the cloud so they restore automatically upon reload.
+            </span>
+          </div>
+        </mat-radio-button>
+
+        <mat-radio-button value="wipe" class="radio-option">
+          <div class="option-content">
+            <span class="option-title">Full hard wipe (No backup)</span>
+            <span class="option-subtitle">
+              Permanently purges all locally stored data, notes, and preferences
+              without restoring anything.
+            </span>
+          </div>
+        </mat-radio-button>
+      </mat-radio-group>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-button (click)="onCancel()" class="cancel-btn">Cancel</button>
+    <button
+      mat-flat-button
+      color="warn"
+      (click)="onConfirm()"
+      class="confirm-btn"
+    >
+      <mat-icon>restart_alt</mat-icon>
+      Reset Application
+    </button>
+  </mat-dialog-actions>
+</div>

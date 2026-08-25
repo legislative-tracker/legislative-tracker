@@ -1,7 +1,16 @@
 import { bootstrapApplication } from '@angular/platform-browser';
+import {
+  loadAppConfig,
+  AppConfig,
+} from '@legislative-tracker/client-angular/core';
 import { App } from './app.component';
-import { appConfig } from './app.config';
+import { getAppConfig } from './app.config';
+import configJson from '../public/assets/config.json';
 
-bootstrapApplication(App, appConfig).catch((err) =>
-  console.error('CRITICAL: Failed to bootstrap application.', err),
-);
+loadAppConfig(configJson as AppConfig)
+  .then((runtimeConfig) => {
+    return bootstrapApplication(App, getAppConfig(runtimeConfig));
+  })
+  .catch((err) =>
+    console.error('CRITICAL: Failed to bootstrap application.', err),
+  );

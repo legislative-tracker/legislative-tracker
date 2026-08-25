@@ -21,6 +21,8 @@ const GITHUB_RESOURCE: ResourceLink = {
   actionLabel: 'View Code',
 };
 
+export const RUNTIME_CONFIG_STORAGE_KEY = 'legislative_tracker_runtime_config';
+
 @Injectable({ providedIn: 'root' })
 export class FirebaseConfigService implements ConfigService {
   private readonly document = inject(DOCUMENT);
@@ -29,7 +31,7 @@ export class FirebaseConfigService implements ConfigService {
     optional: true,
   });
 
-  readonly config = signal<RuntimeConfig>(DEFAULT_CONFIG);
+  readonly config = signal<RuntimeConfig>(this.getInitialConfig());
 
   constructor() {
     effect(() => {
@@ -43,13 +45,56 @@ export class FirebaseConfigService implements ConfigService {
     });
   }
 
+  private getInitialConfig(): RuntimeConfig {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const cached = localStorage.getItem(RUNTIME_CONFIG_STORAGE_KEY);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          return {
+            ...DEFAULT_CONFIG,
+            ...parsed,
+            organization: {
+              ...DEFAULT_CONFIG.organization,
+              ...parsed?.organization,
+            },
+            branding: {
+              ...DEFAULT_CONFIG.branding,
+              ...parsed?.branding,
+            },
+          };
+        }
+      } catch (e) {
+        console.warn(
+          'Failed to read cached RuntimeConfig from localStorage',
+          e,
+        );
+      }
+    }
+    return DEFAULT_CONFIG;
+  }
+
+  private stashConfig(cfg: RuntimeConfig): void {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        localStorage.setItem(RUNTIME_CONFIG_STORAGE_KEY, JSON.stringify(cfg));
+      } catch (e) {
+        console.warn('Failed to stash RuntimeConfig in localStorage', e);
+      }
+    }
+  }
+
   async save(newConfig: Partial<RuntimeConfig>): Promise<void> {
     if (!this.firestore) return;
     try {
       const configDoc = doc(this.firestore, 'configurations/global');
       await setDoc(configDoc, newConfig, { merge: true });
 
-      this.config.update((current) => ({ ...current, ...newConfig }));
+      this.config.update((current) => {
+        const updated = { ...current, ...newConfig };
+        this.stashConfig(updated);
+        return updated;
+      });
     } catch (e) {
       console.error('Failed to save configuration', e);
       throw e;
@@ -71,7 +116,7 @@ export class FirebaseConfigService implements ConfigService {
         map((data) => data as RuntimeConfig),
         timeout(3000),
         catchError((err) => {
-          console.warn('Config fetch failed, using defaults.', err);
+          console.warn('Config fetch failed, using cached/defaults.', err);
           return of(null);
         }),
       );
@@ -84,7 +129,7 @@ export class FirebaseConfigService implements ConfigService {
               (r) => r.url !== GITHUB_RESOURCE.url,
             );
 
-            return {
+            const updated: RuntimeConfig = {
               ...current,
               organization: {
                 ...current.organization,
@@ -93,6 +138,9 @@ export class FirebaseConfigService implements ConfigService {
               branding: { ...current.branding, ...remoteConfig.branding },
               resources: [GITHUB_RESOURCE, ...uniqueDynamic],
             };
+
+            this.stashConfig(updated);
+            return updated;
           });
         }
       });

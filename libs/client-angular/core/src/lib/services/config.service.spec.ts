@@ -33,6 +33,7 @@ describe('FirebaseConfigService', () => {
   const mockFirestore = {};
 
   beforeEach(() => {
+    localStorage.clear();
     vi.resetAllMocks();
 
     mockDoc.mockReturnValue({ path: 'configurations/global' });
@@ -62,6 +63,7 @@ describe('FirebaseConfigService', () => {
   });
 
   afterEach(() => {
+    localStorage.clear();
     vi.clearAllMocks();
   });
 
@@ -71,8 +73,20 @@ describe('FirebaseConfigService', () => {
     expect(current.branding.primaryColor).toBe('#673ab7');
   });
 
+  it('should hydrate from localStorage if cached RuntimeConfig is present', () => {
+    localStorage.setItem(
+      'legislative_tracker_runtime_config',
+      JSON.stringify({ branding: { primaryColor: '#00ff00' } }),
+    );
+
+    const cachedService = TestBed.runInInjectionContext(
+      () => new FirebaseConfigService(),
+    );
+    expect(cachedService.config().branding.primaryColor).toBe('#00ff00');
+  });
+
   describe('load()', () => {
-    it('should fetch remote config and merge both organization and branding', async () => {
+    it('should fetch remote config, update localStorage, and merge both organization and branding', async () => {
       const remoteConfig = {
         organization: { name: 'Test Org', url: 'https://test.com' },
         branding: { primaryColor: '#ff0000' },
@@ -94,6 +108,9 @@ describe('FirebaseConfigService', () => {
       expect(updated.organization.name).toBe('Test Org');
       expect(updated.branding.primaryColor).toBe('#ff0000');
       expect(updated.branding.logoUrl).toContain('assets/default_logo.png');
+      expect(
+        localStorage.getItem('legislative_tracker_runtime_config'),
+      ).toContain('#ff0000');
     });
 
     it('should use defaults if Firestore fails', async () => {

@@ -9,6 +9,7 @@ import { OfflineStorageService } from './offline-storage.service';
 import { FIREBASE_AUTH, FIREBASE_FIRESTORE } from '../firebase-tokens.token';
 
 const mockSetDoc = vi.fn();
+const mockGetDoc = vi.fn().mockResolvedValue({ exists: () => false });
 const mockUpdateDoc = vi.fn();
 const mockDeleteDoc = vi.fn();
 const mockDeleteField = vi.fn(() => '__DELETE_FIELD__');
@@ -17,6 +18,7 @@ const mockOnSnapshot = vi.fn();
 
 vi.mock('firebase/firestore', () => ({
   doc: (...args: any[]) => mockDoc(...args),
+  getDoc: (...args: any[]) => mockGetDoc(...args),
   setDoc: (...args: any[]) => mockSetDoc(...args),
   updateDoc: (...args: any[]) => mockUpdateDoc(...args),
   deleteDoc: (...args: any[]) => mockDeleteDoc(...args),
