@@ -4,6 +4,7 @@ import {
   LegislativePlugin,
 } from '@legislative-tracker/plugins-core';
 import '@legislative-tracker/plugins-leg-us-ny';
+import '@legislative-tracker/plugins-leg-us-nj';
 
 /**
  * Finds a registered LegislativePlugin matching the given state identifier or jurisdiction code.

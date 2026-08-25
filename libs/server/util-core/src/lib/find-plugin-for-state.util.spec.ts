@@ -55,6 +55,34 @@ describe('findPluginForState', () => {
     expect(findPluginForState('leg-us-ny')).toEqual(mockPlugin);
   });
 
+  it('should find New Jersey plugin by various identifiers', () => {
+    const mockNjPlugin: LegislativePlugin = {
+      metadata: {
+        id: 'leg-us-nj',
+        name: 'New Jersey Legislature Plugin',
+        version: '1.0.0',
+        description: 'NJ State Plugin',
+        jurisdiction: {
+          id: 'ocd-jurisdiction/country:us/state:nj/government',
+          name: 'New Jersey',
+          code: 'us-nj',
+        },
+      },
+      calculateCurrentSession: () => '2026-2027',
+    };
+
+    vi.mocked(pluginsCore.getPlugin).mockReturnValue(undefined);
+    vi.mocked(pluginsCore.getAllPlugins).mockReturnValue([
+      mockPlugin,
+      mockNjPlugin,
+    ]);
+
+    expect(findPluginForState('nj')).toEqual(mockNjPlugin);
+    expect(findPluginForState('New Jersey')).toEqual(mockNjPlugin);
+    expect(findPluginForState('us-nj')).toEqual(mockNjPlugin);
+    expect(findPluginForState('leg-us-nj')).toEqual(mockNjPlugin);
+  });
+
   it('should return undefined if no matching plugin is registered', () => {
     vi.mocked(pluginsCore.getPlugin).mockReturnValue(undefined);
     vi.mocked(pluginsCore.getAllPlugins).mockReturnValue([mockPlugin]);
@@ -87,6 +115,28 @@ describe('getJurisdictionCode', () => {
   it('should return the plugin jurisdiction code if plugin exists', () => {
     expect(getJurisdictionCode('New York')).toBe('us-ny');
     expect(getJurisdictionCode('ny')).toBe('us-ny');
+  });
+
+  it('should return the plugin jurisdiction code for New Jersey if plugin exists', () => {
+    const mockNjPlugin: LegislativePlugin = {
+      metadata: {
+        id: 'leg-us-nj',
+        name: 'New Jersey Legislature Plugin',
+        version: '1.0.0',
+        description: 'NJ State Plugin',
+        jurisdiction: {
+          id: 'ocd-jurisdiction/country:us/state:nj/government',
+          name: 'New Jersey',
+          code: 'us-nj',
+        },
+      },
+    };
+    vi.mocked(pluginsCore.getAllPlugins).mockReturnValue([
+      mockPlugin,
+      mockNjPlugin,
+    ]);
+    expect(getJurisdictionCode('New Jersey')).toBe('us-nj');
+    expect(getJurisdictionCode('nj')).toBe('us-nj');
   });
 
   it('should fallback to lowercased state string if no plugin exists', () => {

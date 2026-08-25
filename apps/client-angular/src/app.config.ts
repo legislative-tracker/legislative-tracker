@@ -22,6 +22,7 @@ import configJson from '../public/assets/config.json';
 
 import { LegislaturePluginRegistry } from '@legislative-tracker/plugins-core';
 import { legUsNyPlugin } from '@legislative-tracker/plugins-leg-us-ny';
+import { legUsNjPlugin } from '@legislative-tracker/plugins-leg-us-nj';
 
 export const getAppConfig = (
   runtimeConfig: AppConfig = configJson as AppConfig,
@@ -48,6 +49,9 @@ export const getAppConfig = (
       provideAppInitializer(() => {
         if (!LegislaturePluginRegistry.has(legUsNyPlugin.metadata.id)) {
           LegislaturePluginRegistry.register(legUsNyPlugin);
+        }
+        if (!LegislaturePluginRegistry.has(legUsNjPlugin.metadata.id)) {
+          LegislaturePluginRegistry.register(legUsNjPlugin);
         }
         return inject(ConfigService).load();
       }),
