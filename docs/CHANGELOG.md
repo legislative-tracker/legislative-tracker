@@ -1,3 +1,13 @@
+## 0.11.34 (2026-08-25)
+
+### 🩹 Fixes
+
+- **client-angular:** include jurisdiction selector in mobile overflow menu and fix toolbar collision ([ceee40f](https://github.com/legislative-tracker/legislative-tracker/commit/ceee40f))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.33 (2026-08-25)
 
 ### 🩹 Fixes
