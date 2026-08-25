@@ -319,4 +319,20 @@ describe('NavComponent', () => {
       expect(navigateSpy).toHaveBeenCalledWith(['/', 'us-ca']);
     });
   });
+
+  describe('Toolbar Overflow Menu', () => {
+    it('should render overflow menu trigger button with accessible label', () => {
+      const overflowBtn = fixture.nativeElement.querySelector(
+        '.toolbar-overflow-btn',
+      );
+      expect(overflowBtn).toBeTruthy();
+      expect(overflowBtn.getAttribute('aria-label')).toBe('More options');
+    });
+
+    it('should render desktop-actions container in the toolbar', () => {
+      const desktopActions =
+        fixture.nativeElement.querySelector('.desktop-actions');
+      expect(desktopActions).toBeTruthy();
+    });
+  });
 });

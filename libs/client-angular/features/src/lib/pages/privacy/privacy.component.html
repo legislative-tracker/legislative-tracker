@@ -19,7 +19,7 @@
     <mat-card appearance="outlined" class="data-card">
       <mat-list>
         @for (item of dataCategories(); track item.title; let last = $last) {
-          <mat-list-item lines="3">
+          <mat-list-item>
             <mat-icon matListItemIcon class="category-icon">{{
               item.icon
             }}</mat-icon>

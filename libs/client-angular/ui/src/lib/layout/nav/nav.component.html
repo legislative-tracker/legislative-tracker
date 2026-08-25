@@ -86,48 +86,105 @@
     </div>
   }
 
-  @if (currentBookmarkTarget(); as target) {
+  <div class="desktop-actions">
+    @if (currentBookmarkTarget(); as target) {
+      <button
+        mat-icon-button
+        (click)="toggleOfflineSave()"
+        [class.is-offline-saved]="isSavedOffline()"
+        [attr.aria-label]="
+          isSavedOffline()
+            ? 'Remove ' + targetName() + ' from offline storage'
+            : 'Save ' + targetName() + ' for offline reading'
+        "
+        [matTooltip]="
+          isSavedOffline()
+            ? 'Remove ' + targetName() + ' from offline storage'
+            : 'Save ' + targetName() + ' for offline reading'
+        "
+        class="toolbar-offline-btn"
+      >
+        <mat-icon [style.color]="isSavedOffline() ? '#38bdf8' : 'white'">
+          {{ isSavedOffline() ? 'bookmark' : 'bookmark_border' }}
+        </mat-icon>
+      </button>
+    }
+
     <button
       mat-icon-button
-      (click)="toggleOfflineSave()"
-      [class.is-offline-saved]="isSavedOffline()"
-      [attr.aria-label]="
-        isSavedOffline()
-          ? 'Remove ' + targetName() + ' from offline storage'
-          : 'Save ' + targetName() + ' for offline reading'
-      "
-      [matTooltip]="
-        isSavedOffline()
-          ? 'Remove ' + targetName() + ' from offline storage'
-          : 'Save ' + targetName() + ' for offline reading'
-      "
-      class="toolbar-offline-btn"
+      [matMenuTriggerFor]="themeMenu"
+      aria-label="Select theme mode"
+      [matTooltip]="'Theme: ' + themeService.mode()"
+      class="theme-toggle-btn"
     >
-      <mat-icon [style.color]="isSavedOffline() ? '#38bdf8' : 'white'">
-        {{ isSavedOffline() ? 'bookmark' : 'bookmark_border' }}
-      </mat-icon>
+      @switch (themeService.mode()) {
+        @case ('light') {
+          <mat-icon style="color: white">light_mode</mat-icon>
+        }
+        @case ('dark') {
+          <mat-icon style="color: white">dark_mode</mat-icon>
+        }
+        @default {
+          <mat-icon style="color: white">brightness_auto</mat-icon>
+        }
+      }
     </button>
-  }
+  </div>
 
+  <!-- Overflow menu button for medium and small screens -->
   <button
     mat-icon-button
-    [matMenuTriggerFor]="themeMenu"
-    aria-label="Select theme mode"
-    [matTooltip]="'Theme: ' + themeService.mode()"
-    class="theme-toggle-btn"
+    [matMenuTriggerFor]="overflowMenu"
+    aria-label="More options"
+    class="toolbar-overflow-btn"
   >
-    @switch (themeService.mode()) {
-      @case ('light') {
-        <mat-icon style="color: white">light_mode</mat-icon>
-      }
-      @case ('dark') {
-        <mat-icon style="color: white">dark_mode</mat-icon>
-      }
-      @default {
-        <mat-icon style="color: white">brightness_auto</mat-icon>
-      }
-    }
+    <mat-icon style="color: white">more_vert</mat-icon>
   </button>
+
+  <mat-menu #overflowMenu="matMenu" class="toolbar-overflow-menu">
+    @if (currentBookmarkTarget(); as target) {
+      <button mat-menu-item (click)="toggleOfflineSave()">
+        <mat-icon [style.color]="isSavedOffline() ? '#0284c7' : 'inherit'">
+          {{ isSavedOffline() ? 'bookmark' : 'bookmark_border' }}
+        </mat-icon>
+        <span>{{
+          isSavedOffline() ? 'Remove from Offline' : 'Save for Offline'
+        }}</span>
+      </button>
+      <mat-divider></mat-divider>
+    }
+
+    <button mat-menu-item [matMenuTriggerFor]="themeMenu">
+      @switch (themeService.mode()) {
+        @case ('light') {
+          <mat-icon>light_mode</mat-icon>
+        }
+        @case ('dark') {
+          <mat-icon>dark_mode</mat-icon>
+        }
+        @default {
+          <mat-icon>brightness_auto</mat-icon>
+        }
+      }
+      <span>Theme: {{ themeService.mode() | titlecase }}</span>
+    </button>
+
+    @if (!isOnline()) {
+      <mat-divider></mat-divider>
+      <div mat-menu-item disabled class="menu-offline-status">
+        <mat-icon style="color: var(--mat-sys-error)">wifi_off</mat-icon>
+        <span>Offline Mode</span>
+      </div>
+    }
+
+    @if (availableJurisdictions().length > 0) {
+      <mat-divider></mat-divider>
+      <a mat-menu-item routerLink="/">
+        <mat-icon>travel_explore</mat-icon>
+        <span>Explore all jurisdictions</span>
+      </a>
+    }
+  </mat-menu>
 
   <mat-menu #themeMenu="matMenu">
     <button

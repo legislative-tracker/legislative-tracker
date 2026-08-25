@@ -36,6 +36,32 @@ describe('Privacy Component', () => {
     expect(warningEl.nativeElement.textContent).toContain('We do NOT store');
   });
 
+  it('should render full description for all categories', () => {
+    fixture.detectChanges();
+    const categories = component.dataCategories();
+    const listItems = fixture.debugElement.queryAll(By.css('mat-list-item'));
+
+    expect(listItems.length).toBe(categories.length);
+
+    listItems.forEach((itemEl, idx) => {
+      const category = categories[idx];
+      const descEl = itemEl.query(By.css('.category-desc'));
+      expect(descEl).toBeTruthy();
+      expect(descEl.nativeElement.textContent).toContain(category.description);
+
+      // Verify no restrictive lines attribute is set on mat-list-item
+      expect(itemEl.nativeElement.getAttribute('lines')).toBeNull();
+
+      if (category.importantNote) {
+        const noteEl = itemEl.query(By.css('.highlight-note'));
+        expect(noteEl).toBeTruthy();
+        expect(noteEl.nativeElement.textContent).toContain(
+          category.importantNote,
+        );
+      }
+    });
+  });
+
   it('should have secure external links', () => {
     const links = fixture.debugElement.queryAll(By.css('a[href^="http"]'));
     links.forEach((linkDebugEl) => {

@@ -9,7 +9,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { AsyncPipe, UpperCasePipe } from '@angular/common';
+import { AsyncPipe, UpperCasePipe, TitleCasePipe } from '@angular/common';
 import {
   Router,
   RouterOutlet,
@@ -59,6 +59,7 @@ import { Footer } from '../footer/footer.component';
     MatTooltipModule,
     AsyncPipe,
     UpperCasePipe,
+    TitleCasePipe,
     Footer,
   ],
 })
