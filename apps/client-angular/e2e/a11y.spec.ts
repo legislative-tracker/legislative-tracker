@@ -31,4 +31,14 @@ test.describe('Accessibility (a11y) Audits', () => {
       .analyze();
     expect(accessibilityScanResults.violations).toEqual([]);
   });
+
+  test('states directory page should satisfy WCAG 2.1 AA accessibility standards', async ({
+    page,
+  }) => {
+    await page.goto('/states');
+    const accessibilityScanResults = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa'])
+      .analyze();
+    expect(accessibilityScanResults.violations).toEqual([]);
+  });
 });

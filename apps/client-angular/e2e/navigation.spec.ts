@@ -25,6 +25,24 @@ test.describe('Navigation & Static Pages', () => {
     await expect(page.getByRole('button', { name: /Google/i })).toBeVisible();
   });
 
+  test('should display States Directory page', async ({ page }) => {
+    await page.goto('/states');
+    await expect(page).toHaveURL('/states');
+    await expect(page.locator('h1')).toContainText('State Legislatures');
+    await expect(page.locator('.jurisdiction-card')).toBeVisible();
+  });
+
+  test('should display Toolbar State Picker and navigate on click', async ({
+    page,
+  }) => {
+    await page.goto('/us-ny');
+    const stateBtn = page.locator('.toolbar-state-btn');
+    await expect(stateBtn).toBeVisible();
+    await expect(stateBtn).toContainText('New York');
+    await stateBtn.click();
+    await expect(page.locator('.state-picker-menu')).toBeVisible();
+  });
+
   test('should render 404 page for invalid route', async ({ page }) => {
     await page.goto('/invalid-route-xyz');
     await expect(page).toHaveURL('/404');
