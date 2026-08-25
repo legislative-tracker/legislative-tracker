@@ -39,6 +39,15 @@
     border-radius: 16px;
   }
 
+  .toolbar-favorite-btn {
+    margin-right: 4px;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
   .theme-toggle-btn {
     margin-left: 8px;
   }

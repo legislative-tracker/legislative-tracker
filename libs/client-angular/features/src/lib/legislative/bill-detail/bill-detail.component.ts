@@ -8,13 +8,15 @@ import {
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatListModule } from '@angular/material/list';
-import { MatExpansionModule } from '@angular/material/expansion';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 // App Imports
 import {
@@ -31,14 +33,16 @@ import {
 @Component({
   selector: 'app-bill-detail',
   imports: [
-    MatTabsModule,
-    TableComponent,
-    MatProgressSpinnerModule,
-    MatListModule,
-    MatExpansionModule,
+    MatButtonModule,
     MatCardModule,
     MatDividerModule,
+    MatExpansionModule,
     MatIconModule,
+    MatListModule,
+    MatProgressSpinnerModule,
+    MatTabsModule,
+    MatTooltipModule,
+    TableComponent,
   ],
   templateUrl: './bill-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

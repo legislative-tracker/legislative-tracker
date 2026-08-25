@@ -7,9 +7,11 @@ import { of } from 'rxjs';
 
 import { LegislationDetail } from './legislation-detail.component';
 import {
+  AuthService,
   LegislatureService,
   SeoService,
 } from '@legislative-tracker/client-angular/core';
+import { signal } from '@angular/core';
 
 describe('LegislationDetail', () => {
   let component: LegislationDetail;
@@ -44,10 +46,22 @@ describe('LegislationDetail', () => {
     setLegislationTags: vi.fn(),
   };
 
+  const mockUserProfileSignal = signal<any>(null);
+  const mockIsLoggedInSignal = signal<boolean>(false);
+  const mockToggleFavorite = vi.fn().mockResolvedValue(undefined);
+  const mockAuthService = {
+    userProfile: mockUserProfileSignal,
+    isLoggedIn: mockIsLoggedInSignal,
+    toggleFavorite: mockToggleFavorite,
+  };
+
   beforeEach(async () => {
     mockSeoService.updateTags.mockClear();
     mockSeoService.resetTags.mockClear();
     mockSeoService.setLegislationTags.mockClear();
+    mockUserProfileSignal.set(null);
+    mockIsLoggedInSignal.set(false);
+    mockToggleFavorite.mockClear();
 
     await TestBed.configureTestingModule({
       imports: [LegislationDetail],
@@ -56,6 +70,7 @@ describe('LegislationDetail', () => {
         provideRouter([]),
         { provide: LegislatureService, useValue: mockLegislatureService },
         { provide: SeoService, useValue: mockSeoService },
+        { provide: AuthService, useValue: mockAuthService },
       ],
     }).compileComponents();
 

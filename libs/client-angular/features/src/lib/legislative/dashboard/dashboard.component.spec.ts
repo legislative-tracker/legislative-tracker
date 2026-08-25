@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -7,7 +7,10 @@ import { of } from 'rxjs';
 import { Dashboard } from './dashboard.component';
 
 // Dependencies
-import { LegislatureService } from '@legislative-tracker/client-angular/core';
+import {
+  AuthService,
+  LegislatureService,
+} from '@legislative-tracker/client-angular/core';
 import { TableComponent } from '@legislative-tracker/client-angular/ui';
 
 // Stub Child Components
@@ -25,7 +28,13 @@ describe('Dashboard', () => {
   let fixture: ComponentFixture<Dashboard>;
 
   const mockBills = [
-    { id: 'BILL-1', title: 'Education Reform', session: '2024' },
+    {
+      id: 'BILL-1',
+      title: 'Education Reform',
+      session: '2024',
+      upperBillId: 'S100',
+      lowerBillId: 'A200',
+    },
     { id: 'BILL-2', title: 'Infrastructure', session: '2024' },
   ];
 
@@ -58,12 +67,25 @@ describe('Dashboard', () => {
     getMembersByState: vi.fn().mockReturnValue(of(mockMembers)),
   };
 
+  const mockUserProfileSignal = signal<any>(null);
+  const mockIsLoggedInSignal = signal<boolean>(false);
+  const mockAuthService = {
+    userProfile: mockUserProfileSignal,
+    isLoggedIn: mockIsLoggedInSignal,
+  };
+
   beforeEach(async () => {
+    mockLegislatureService.getLegislationByState.mockClear();
+    mockLegislatureService.getMembersByState.mockClear();
+    mockUserProfileSignal.set(null);
+    mockIsLoggedInSignal.set(false);
+
     await TestBed.configureTestingModule({
       imports: [Dashboard],
       providers: [
         provideNoopAnimations(),
         { provide: LegislatureService, useValue: mockLegislatureService },
+        { provide: AuthService, useValue: mockAuthService },
       ],
     })
       .overrideComponent(Dashboard, {

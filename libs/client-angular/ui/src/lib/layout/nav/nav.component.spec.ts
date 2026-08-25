@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
-import { Router, provideRouter } from '@angular/router';
+import { Router, provideRouter, NavigationEnd } from '@angular/router';
 import {
   BreakpointObserver,
   Breakpoints,
@@ -36,13 +36,18 @@ describe('NavComponent', () => {
   let fixture: ComponentFixture<NavComponent>;
   let router: Router;
 
-  // Mock Services
+  const mockUserProfileSignal = signal<any>({
+    displayName: 'Test User',
+    favorites: [],
+  });
   const mockAuthService = {
     logout: vi.fn().mockResolvedValue(undefined),
     isLoggedIn: vi.fn().mockReturnValue(true),
     isAdmin: vi.fn().mockReturnValue(true),
     isAnnon: vi.fn().mockReturnValue(false),
     currentUser: signal({ displayName: 'Test User' }),
+    userProfile: mockUserProfileSignal,
+    toggleFavorite: vi.fn(),
   };
 
   const mockConfigService = {
@@ -151,6 +156,67 @@ describe('NavComponent', () => {
     it('should expose themeService', () => {
       expect(component.themeService).toBeDefined();
       expect(component.themeService.mode()).toBe('system');
+    });
+  });
+
+  describe('Toolbar Favorite Button', () => {
+    it('should detect legislation route and target leg: prefix', () => {
+      (router.events as any).next(
+        new NavigationEnd(
+          1,
+          '/us-ny/legislation/clean-energy',
+          '/us-ny/legislation/clean-energy',
+        ),
+      );
+      fixture.detectChanges();
+
+      const target = component.currentFavoriteTarget();
+      expect(target).toEqual({
+        type: 'legislation',
+        id: 'clean-energy',
+        key: 'leg:clean-energy',
+      });
+    });
+
+    it('should detect ocd-bill route and target bill: prefix', () => {
+      (router.events as any).next(
+        new NavigationEnd(
+          2,
+          '/us-ny/ocd-bill/mock-bill-1',
+          '/us-ny/ocd-bill/mock-bill-1',
+        ),
+      );
+      fixture.detectChanges();
+
+      const target = component.currentFavoriteTarget();
+      expect(target).toEqual({
+        type: 'bill',
+        id: 'mock-bill-1',
+        key: 'bill:mock-bill-1',
+      });
+    });
+
+    it('should return null target on non-favoritable routes', () => {
+      (router.events as any).next(new NavigationEnd(3, '/about', '/about'));
+      fixture.detectChanges();
+
+      expect(component.currentFavoriteTarget()).toBeNull();
+    });
+
+    it('should toggle favorite with target key', async () => {
+      const toggleSpy = vi.fn();
+      (mockAuthService as any).toggleFavorite = toggleSpy;
+      (router.events as any).next(
+        new NavigationEnd(
+          4,
+          '/us-ny/legislation/clean-energy',
+          '/us-ny/legislation/clean-energy',
+        ),
+      );
+      fixture.detectChanges();
+
+      await component.toggleFavorite();
+      expect(toggleSpy).toHaveBeenCalledWith('leg:clean-energy');
     });
   });
 });

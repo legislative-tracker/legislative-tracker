@@ -84,7 +84,7 @@
       mat-row
       *matRowDef="let row; columns: displayedColumns()"
       (click)="onRowClick(row)"
-      [routerLink]="['/', stateCd(), routeType(), getRowTargetId(row)]"
+      [routerLink]="getRowRoute(row)"
       class="clickable-row"
       [class.user-rep-row]="row.repBadge || row.badge || row.isUserRep"
     ></tr>
