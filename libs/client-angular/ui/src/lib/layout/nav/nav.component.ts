@@ -205,9 +205,10 @@ export class NavComponent {
               this.legislatureService.getBillById(target.stateCd, target.id),
             );
             if (bill) {
-              title = bill.title || (bill as any).name || target.id;
-              identifier = (bill as any).identifier;
-              summary = (bill as any).abstract || bill.title;
+              const b = bill as any;
+              title = b.title || b.name || target.id;
+              identifier = b.identifier;
+              summary = b.abstract || b.title || b.description;
               billData = bill;
             }
           }
