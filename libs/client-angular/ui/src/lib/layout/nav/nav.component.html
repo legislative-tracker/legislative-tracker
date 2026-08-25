@@ -36,6 +36,29 @@
     </div>
   }
 
+  @if (auth.isLoggedIn() && currentFavoriteTarget(); as target) {
+    <button
+      mat-icon-button
+      (click)="toggleFavorite()"
+      [class.is-favorite]="isFavorited()"
+      [attr.aria-label]="
+        isFavorited()
+          ? 'Remove ' + targetName() + ' from favorites'
+          : 'Add ' + targetName() + ' to favorites'
+      "
+      [matTooltip]="
+        isFavorited()
+          ? 'Remove ' + targetName() + ' from favorites'
+          : 'Add ' + targetName() + ' to favorites'
+      "
+      class="toolbar-favorite-btn"
+    >
+      <mat-icon [style.color]="isFavorited() ? '#e11d48' : 'white'">
+        {{ isFavorited() ? 'favorite' : 'favorite_border' }}
+      </mat-icon>
+    </button>
+  }
+
   <button
     mat-icon-button
     [matMenuTriggerFor]="themeMenu"

@@ -24,11 +24,50 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   margin-bottom: 0.5rem;
 
   h2 {
     margin: 0;
+  }
+}
+
+.representatives-section {
+  margin-top: 1.5rem;
+}
+
+.watchlist-section {
+  margin-top: 2rem;
+}
+
+.watchlist-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+
+  .empty-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
+    color: var(--mat-sys-outline, rgba(0, 0, 0, 0.4));
+  }
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-weight: 500;
+    font-size: 1.25rem;
+    color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
+  }
+
+  p {
+    margin: 0;
+    max-width: 400px;
+    line-height: 1.5;
   }
 }
 

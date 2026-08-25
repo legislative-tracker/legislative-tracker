@@ -243,4 +243,20 @@ describe('TableComponent', () => {
       false,
     );
   });
+
+  describe('getRowRoute', () => {
+    it('should use default routeType and id when row does not specify custom route', () => {
+      const route = component.getRowRoute({ id: '123' });
+      expect(route).toEqual(['/', 'ny', 'bill', '123']);
+    });
+
+    it('should use custom routeType and targetId when row specifies them', () => {
+      const route = component.getRowRoute({
+        id: '123',
+        targetId: 'ocd-bill/custom-bill-id',
+        routeType: 'ocd-bill',
+      } as any);
+      expect(route).toEqual(['/', 'ny', 'ocd-bill', 'custom-bill-id']);
+    });
+  });
 });

@@ -46,6 +46,7 @@ export class Dashboard {
   selectedTabIndex = signal<DashboardTab>(DashboardTab.Bills);
 
   Tab = DashboardTab;
+
   billCols = computed(() => {
     const code = this.stateCd().toLowerCase();
     const plugins = getAllPlugins();
