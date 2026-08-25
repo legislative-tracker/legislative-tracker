@@ -1,4 +1,14 @@
-## 0.11.26 (2026-08-24)
+## 0.11.27 (2026-08-24)
+
+### 🚀 Features
+
+- **client-angular:** convert member header and contact actions into unified mat-card ([63a8fdf](https://github.com/legislative-tracker/legislative-tracker/commit/63a8fdf))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.26 (2026-08-25)
 
 ### 🚀 Features
 
