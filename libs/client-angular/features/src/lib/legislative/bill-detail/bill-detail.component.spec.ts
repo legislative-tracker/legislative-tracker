@@ -433,4 +433,17 @@ describe('BillDetail', () => {
 
     expect(component.bill()?.title).toBe('Offline Cached Bill');
   });
+
+  it('should compute notesDescription with chamber name and identifier', async () => {
+    fixture.componentRef.setInput('stateCd', 'ny');
+    fixture.componentRef.setInput('id', 'BILL-123');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    // mockBillData has identifier 'S 123'
+    expect(component.chamberName()).toBe('Senate');
+    expect(component.notesDescription()).toBe(
+      'Private notes for Senate Bill S 123',
+    );
+  });
 });

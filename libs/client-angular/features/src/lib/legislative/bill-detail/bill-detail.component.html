@@ -74,7 +74,7 @@
                 {{ notes().length }} note{{ notes().length === 1 ? '' : 's' }}
               </span>
             } @else {
-              <span class="action-preview-text">Private offline notes</span>
+              <span class="action-preview-text">{{ notesDescription() }}</span>
             }
           }
         </mat-panel-description>

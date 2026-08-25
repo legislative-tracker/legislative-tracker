@@ -24,6 +24,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
+import { getPlugin, getAllPlugins } from '@legislative-tracker/plugins-core';
+
 // App Imports
 import {
   AuthService,
@@ -215,6 +217,69 @@ export class BillDetail {
       return b.abstracts[0].abstract;
     }
     return (b as any).text ?? b.title ?? '';
+  });
+
+  chamberName = computed(() => {
+    const b = this.bill();
+    const code = this.stateCd().toLowerCase();
+    const plugins = getAllPlugins();
+    const plugin =
+      getPlugin(code) ||
+      plugins.find((p) => {
+        const jCode = p.metadata?.jurisdiction?.code?.toLowerCase();
+        const pId = p.metadata?.id?.toLowerCase();
+        return (
+          jCode === code ||
+          pId === code ||
+          jCode?.replace(/^us-/, '') === code.replace(/^us-/, '')
+        );
+      }) ||
+      (plugins.length === 1 ? plugins[0] : undefined);
+
+    const chambers = plugin?.metadata?.jurisdiction?.chambers;
+    const upperName = chambers?.upper ?? 'Senate';
+    const lowerName = chambers?.lower ?? 'Assembly';
+
+    if (!b) return upperName;
+
+    const orgClass = String(
+      b.from_organization?.classification ?? b.from_organization?.name ?? '',
+    ).toLowerCase();
+
+    if (orgClass.includes('upper') || orgClass.includes('senat')) {
+      return upperName;
+    }
+    if (
+      orgClass.includes('lower') ||
+      orgClass.includes('assembly') ||
+      orgClass.includes('house')
+    ) {
+      return lowerName;
+    }
+
+    const id = String(b.identifier ?? b.id ?? '')
+      .trim()
+      .toUpperCase();
+    if (
+      id.startsWith('S') &&
+      !id.startsWith('SCR') &&
+      !id.startsWith('SJR') &&
+      !id.startsWith('STATE')
+    ) {
+      return upperName;
+    }
+    if (id.startsWith('A') || id.startsWith('HR') || id.startsWith('H.R.')) {
+      return lowerName;
+    }
+
+    return upperName;
+  });
+
+  notesDescription = computed(() => {
+    const chamber = this.chamberName();
+    const b = this.bill();
+    const identifier = b?.identifier || this.id();
+    return `Private notes for ${chamber} Bill ${identifier}`;
   });
 
   private getRepresentativeBadge(sponsor: {
