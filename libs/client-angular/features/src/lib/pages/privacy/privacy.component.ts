@@ -27,7 +27,7 @@ interface DataCategory {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Privacy {
-  readonly lastUpdated = signal<Date>(new Date('2026-01-04'));
+  readonly lastUpdated = signal<Date>(new Date('2026-08-25'));
 
   readonly dataCategories = signal<DataCategory[]>([
     {
