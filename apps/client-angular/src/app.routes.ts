@@ -13,7 +13,11 @@ export const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'states',
+        loadComponent: () =>
+          import('@legislative-tracker/client-angular/features/pages/states-directory/states-directory.component').then(
+            (m) => m.StatesDirectory,
+          ),
+        title: 'State Directory | Legislative Tracker',
       },
       // --- Public Static Pages ---
       {
@@ -47,14 +51,6 @@ export const routes: Routes = [
             (m) => m.SavedBills,
           ),
         title: 'Offline Saved Bills | Legislative Tracker',
-      },
-      {
-        path: 'states',
-        loadComponent: () =>
-          import('@legislative-tracker/client-angular/features/pages/states-directory/states-directory.component').then(
-            (m) => m.StatesDirectory,
-          ),
-        title: 'State Directory | Legislative Tracker',
       },
 
       // --- Feature: Authentication ---

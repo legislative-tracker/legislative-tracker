@@ -60,7 +60,7 @@
         </button>
       }
       <mat-divider></mat-divider>
-      <a mat-menu-item routerLink="/states">
+      <a mat-menu-item routerLink="/">
         <mat-icon>travel_explore</mat-icon>
         <span>Explore all jurisdictions</span>
       </a>
@@ -175,8 +175,9 @@
     <mat-nav-list>
       <a
         mat-list-item
-        routerLink="/states"
+        routerLink="/"
         routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
         (click)="onNavItemClick(drawer)"
       >
         <mat-icon matListItemIcon>home</mat-icon>

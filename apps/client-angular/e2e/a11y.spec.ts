@@ -35,7 +35,7 @@ test.describe('Accessibility (a11y) Audits', () => {
   test('states directory page should satisfy WCAG 2.1 AA accessibility standards', async ({
     page,
   }) => {
-    await page.goto('/states');
+    await page.goto('/');
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa'])
       .analyze();
