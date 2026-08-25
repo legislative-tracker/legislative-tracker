@@ -9,7 +9,15 @@
       <h1>Hello, {{ u['displayName'] }}!</h1>
     </div>
 
-    <p>Your last login was {{ u['lastLogin'].toDate() | date: 'medium' }}</p>
+    @if (u['lastLogin']) {
+      <p>
+        Your last login was
+        {{
+          (u['lastLogin']?.toDate ? u['lastLogin'].toDate() : u['lastLogin'])
+            | date: 'medium'
+        }}
+      </p>
+    }
     <mat-list>
       <mat-list-item>
         <mat-icon matListItemIcon>person</mat-icon>
@@ -20,57 +28,87 @@
         <span matListItemTitle>{{ u['email'] }}</span>
       </mat-list-item>
     </mat-list>
-    @if (!u['legislators']) {
-      <p>
-        We don't currently have your legislative districts or representatives
-        stored; would you like to input your address so we can fetch them?
-      </p>
-      <p>
-        <b>Your address information will never be stored in our system</b>, once
-        the fetch is complete we'll discard the address and only keep the
-        districts & representatives.
-      </p>
-      <app-address-form
-        formType="search"
-        (formSubmit)="searchAddress($event)"
-      ></app-address-form>
-    } @else {
-      <div class="section-header">
-        <h2>Your Representatives</h2>
-        <button
-          mat-stroked-button
-          color="primary"
-          (click)="resetDistricts()"
-          [disabled]="isResetting()"
-        >
-          <mat-icon>refresh</mat-icon>
-          Reset Districts
-        </button>
-      </div>
+    <!-- Representatives Section (Above Watchlist) -->
+    <div class="representatives-section">
+      @if (!u['legislators']) {
+        <div class="section-header">
+          <h2>Your Representatives</h2>
+        </div>
+        <p>
+          We don't currently have your legislative districts or representatives
+          stored; would you like to input your address so we can fetch them?
+        </p>
+        <p>
+          <b>Your address information will never be stored in our system</b>,
+          once the fetch is complete we'll discard the address and only keep the
+          districts & representatives.
+        </p>
+        <app-address-form
+          formType="search"
+          (formSubmit)="searchAddress($event)"
+        ></app-address-form>
+      } @else {
+        <div class="section-header">
+          <h2>Your Representatives</h2>
+          <button
+            mat-stroked-button
+            color="primary"
+            (click)="resetDistricts()"
+            [disabled]="isResetting()"
+          >
+            <mat-icon>refresh</mat-icon>
+            Reset Districts
+          </button>
+        </div>
 
-      <mat-tab-group>
-        <mat-tab label="State">
-          <ng-template matTabContent>
-            <app-table
-              [dataSource]="u['legislators'].state"
-              [columnSource]="legislatorCols"
-              routeType="ocd-person"
-              stateCd="us-ny"
-            ></app-table>
-          </ng-template>
-        </mat-tab>
-        <mat-tab label="Federal">
-          <ng-template matTabContent>
-            <app-table
-              [dataSource]="u['legislators'].federal"
-              [columnSource]="legislatorCols"
-              routeType="ocd-person"
-              stateCd="us"
-            ></app-table>
-          </ng-template>
-        </mat-tab>
-      </mat-tab-group>
-    }
+        <mat-tab-group animationDuration="0ms">
+          <mat-tab label="State">
+            <ng-template matTabContent>
+              <app-table
+                [dataSource]="u['legislators'].state"
+                [columnSource]="legislatorCols"
+                routeType="ocd-person"
+                stateCd="us-ny"
+              ></app-table>
+            </ng-template>
+          </mat-tab>
+          <mat-tab label="Federal">
+            <ng-template matTabContent>
+              <app-table
+                [dataSource]="u['legislators'].federal"
+                [columnSource]="legislatorCols"
+                routeType="ocd-person"
+                stateCd="us"
+              ></app-table>
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
+      }
+    </div>
+
+    <!-- Watchlist Section (Below Representatives) -->
+    <div class="watchlist-section">
+      <div class="section-header">
+        <h2>Your Watchlist</h2>
+      </div>
+      @if (watchlistBills().length === 0) {
+        <div class="watchlist-empty-state">
+          <mat-icon class="empty-icon">favorite_border</mat-icon>
+          <h3>No favorited bills in your watchlist</h3>
+          <p>
+            Click the ❤️ heart icon in the toolbar on any bill or legislation to
+            add it to your watchlist.
+          </p>
+        </div>
+      } @else {
+        <app-table
+          [dataSource]="watchlistBills()"
+          [columnSource]="billCols"
+          routeType="legislation"
+          [stateCd]="stateCd()"
+        ></app-table>
+      }
+    </div>
 
     <div class="data-management-card">
       <div class="card-header">

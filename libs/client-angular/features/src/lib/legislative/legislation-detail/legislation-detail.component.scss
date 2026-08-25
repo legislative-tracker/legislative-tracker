@@ -18,6 +18,32 @@
 
 .header-card {
   margin-bottom: 1.5rem;
+
+  .card-header-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1rem 1rem 0 0;
+
+    mat-card-header {
+      flex: 1;
+    }
+
+    .favorite-btn {
+      color: var(--mat-sys-outline, rgba(0, 0, 0, 0.6));
+      transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+
+      &.is-favorite {
+        color: #e11d48;
+      }
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
 }
 
 .chamber-tabs {

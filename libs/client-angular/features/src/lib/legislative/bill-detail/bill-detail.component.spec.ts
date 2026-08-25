@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { By } from '@angular/platform-browser';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -55,8 +56,12 @@ describe('BillDetail', () => {
   };
 
   const mockUserProfileSignal = signal<any>(null);
+  const mockIsLoggedInSignal = signal<boolean>(false);
+  const mockToggleFavorite = vi.fn().mockResolvedValue(undefined);
   const mockAuthService = {
     userProfile: mockUserProfileSignal,
+    isLoggedIn: mockIsLoggedInSignal,
+    toggleFavorite: mockToggleFavorite,
   };
 
   beforeEach(async () => {

@@ -129,10 +129,19 @@ export class TableComponent<T> {
     this.rowClick.emit(row);
   }
 
+  getRowRoute(row: T): (string | undefined)[] {
+    if (!row) return ['/', this.stateCd()];
+    const r = row as Record<string, any>;
+    const targetRoute = r['routeType'] || this.routeType();
+    const targetId = this.getRowTargetId(row);
+    return ['/', this.stateCd(), targetRoute, targetId];
+  }
+
   getRowTargetId(row: T): string {
     if (!row) return '';
     const r = row as Record<string, any>;
     const rawId =
+      r['targetId'] ||
       r['id'] ||
       r['legislationId'] ||
       r['ocdId'] ||
