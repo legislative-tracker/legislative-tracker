@@ -1,0 +1,10 @@
+{
+  "name": "@legislative-tracker/client-angular/features",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "sideEffects": [
+    "**/*.scss",
+    "**/*.css"
+  ]
+}

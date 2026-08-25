@@ -2,256 +2,249 @@
   max-width: 1000px;
   margin: 0 auto;
   padding: 2rem 1.5rem 4rem;
+}
 
-  .page-header {
-    margin-bottom: 2rem;
+.page-header {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .header-icon-badge {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-primary);
     display: flex;
-    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
 
-    .header-icon-badge {
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
-      background: var(--mat-sys-primary-container, #e0f2fe);
-      color: var(--mat-sys-primary, #0284c7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1rem;
-
-      mat-icon {
-        font-size: 32px;
-        width: 32px;
-        height: 32px;
-      }
-    }
-
-    .page-title {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin: 0 0 0.5rem;
-      color: var(--mat-sys-on-surface, #0f172a);
-    }
-
-    .page-subtitle {
-      font-size: 1.05rem;
-      color: var(--mat-sys-on-surface-variant, #64748b);
-      max-width: 620px;
-      margin: 0;
-      line-height: 1.5;
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
     }
   }
 
-  .stats-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
+  .page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.5rem;
+    color: var(--mat-sys-on-surface);
+  }
 
-    .stat-card {
-      background: var(--mat-sys-surface-container-low, #f8fafc);
-      border: 1px solid var(--mat-sys-outline-variant, #e2e8f0);
-      border-radius: 12px;
-      padding: 1.25rem 1rem;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.25rem;
+  .page-subtitle {
+    font-size: 1.05rem;
+    color: var(--mat-sys-on-surface-variant);
+    max-width: 620px;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
 
-      .stat-value {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--mat-sys-primary, #0284c7);
-      }
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
 
-      .stat-label {
-        font-size: 0.85rem;
-        font-weight: 500;
-        color: var(--mat-sys-on-surface-variant, #64748b);
-      }
+.stat-card {
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--mat-sys-primary);
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.search-filter-section {
+  margin-bottom: 2rem;
+
+  .search-field {
+    width: 100%;
+  }
+}
+
+.jurisdictions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+.jurisdiction-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 16px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-lowest);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.card-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  .badge-chip {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+
+    &.state-chip {
+      background: var(--mat-sys-secondary-container);
+      color: var(--mat-sys-on-secondary-container);
     }
   }
 
-  .search-filter-section {
-    margin-bottom: 2rem;
+  .session-badge {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
 
-    .search-field {
-      width: 100%;
-    }
+.jurisdiction-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--mat-sys-on-surface, inherit);
+}
+
+.jurisdiction-id {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant);
+  word-break: break-all;
+  margin-top: 0.25rem;
+}
+
+.jurisdiction-content {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 0.5rem;
+
+  .description-text {
+    font-size: 0.9rem;
+    color: var(--mat-sys-on-surface-variant);
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+.metadata-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  background: var(--mat-sys-surface-container-low);
+  padding: 0.75rem;
+  border-radius: 10px;
+}
+
+.metadata-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .meta-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--mat-sys-primary);
+    flex-shrink: 0;
   }
 
-  .jurisdictions-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .jurisdiction-card {
+  .item-text {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    border-radius: 16px;
-    border: 1px solid var(--mat-sys-outline-variant, #e2e8f0);
-    background: var(--mat-sys-surface-container-lowest, #ffffff);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
+    overflow: hidden;
 
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--mat-sys-on-surface-variant);
+      letter-spacing: 0.05em;
     }
 
-    mat-card-header {
-      display: flex;
-      flex-direction: column;
-      padding-bottom: 0.5rem;
-
-      .card-header-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        margin-bottom: 0.5rem;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-
-        .badge-chip {
-          font-size: 0.75rem;
-          font-weight: 600;
-          padding: 2px 8px;
-          border-radius: 6px;
-          text-transform: uppercase;
-
-          &.state-chip {
-            background: var(--mat-sys-secondary-container, #f1f5f9);
-            color: var(--mat-sys-on-secondary-container, #334155);
-          }
-        }
-
-        .session-badge {
-          font-size: 0.8rem;
-          font-weight: 500;
-          color: var(--mat-sys-on-surface-variant, #64748b);
-        }
-      }
-
-      .jurisdiction-name {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--mat-sys-on-surface, inherit);
-      }
-
-      .jurisdiction-id {
-        font-size: 0.75rem;
-        color: var(--mat-sys-on-surface-variant, #64748b);
-        word-break: break-all;
-        margin-top: 0.25rem;
-      }
-    }
-
-    .jurisdiction-content {
-      flex: 1 1 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      padding-top: 0.5rem;
-
-      .description-text {
-        font-size: 0.9rem;
-        color: var(--mat-sys-on-surface-variant, #64748b);
-        line-height: 1.5;
-        margin: 0;
-      }
-
-      .metadata-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75rem;
-        background: var(--mat-sys-surface-container-low, #f8fafc);
-        padding: 0.75rem;
-        border-radius: 10px;
-
-        .metadata-item {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-
-          .meta-icon {
-            font-size: 20px;
-            width: 20px;
-            height: 20px;
-            color: var(--mat-sys-primary, #0284c7);
-            flex-shrink: 0;
-          }
-
-          .item-text {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-
-            .label {
-              font-size: 0.7rem;
-              text-transform: uppercase;
-              font-weight: 600;
-              color: var(--mat-sys-on-surface-variant, #64748b);
-              letter-spacing: 0.05em;
-            }
-
-            .value {
-              font-size: 0.85rem;
-              font-weight: 600;
-              color: var(--mat-sys-on-surface, #334155);
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
-            }
-          }
-        }
-      }
-    }
-
-    .card-actions {
-      padding: 0.75rem 1rem;
-      border-top: 1px solid var(--mat-sys-outline-variant, #f1f5f9);
-
-      .explore-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
+    .value {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--mat-sys-on-surface);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
+}
 
-  .empty-state {
-    text-align: center;
-    padding: 4rem 1.5rem;
-    background: var(--mat-sys-surface-container-low, #f8fafc);
-    border-radius: 16px;
-    border: 1px dashed var(--mat-sys-outline-variant, #cbd5e1);
-    margin-top: 1rem;
+.card-actions {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--mat-sys-outline-variant);
 
-    .empty-icon {
-      font-size: 48px;
-      width: 48px;
-      height: 48px;
-      color: var(--mat-sys-on-surface-variant, #94a3b8);
-      margin-bottom: 0.75rem;
-    }
+  .explore-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
 
-    h2 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin: 0 0 0.5rem;
-    }
+.empty-state {
+  text-align: center;
+  padding: 4rem 1.5rem;
+  background: var(--mat-sys-surface-container-low);
+  border-radius: 16px;
+  border: 1px dashed var(--mat-sys-outline-variant);
+  margin-top: 1rem;
 
-    p {
-      color: var(--mat-sys-on-surface-variant, #64748b);
-      margin: 0 0 1.5rem;
-    }
+  .empty-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: var(--mat-sys-on-surface-variant);
+    margin-bottom: 0.75rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem;
+  }
+
+  p {
+    color: var(--mat-sys-on-surface-variant);
+    margin: 0 0 1.5rem;
   }
 }
