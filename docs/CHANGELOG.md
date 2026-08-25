@@ -1,3 +1,20 @@
+## 0.11.29 (2026-08-25)
+
+### 🚀 Features
+
+- **client-angular:** display Select... in toolbar state button at root route ([f41b3f3](https://github.com/legislative-tracker/legislative-tracker/commit/f41b3f3))
+- **client-angular:** load states directory directly on base route ([6b74168](https://github.com/legislative-tracker/legislative-tracker/commit/6b74168))
+- **client-angular:** update home link to route to states directory ([4c372ad](https://github.com/legislative-tracker/legislative-tracker/commit/4c372ad))
+- **client-angular:** add multi-jurisdiction state selector and exploration directory ([0af4e07](https://github.com/legislative-tracker/legislative-tracker/commit/0af4e07))
+
+### 🩹 Fixes
+
+- **client-angular:** resolve color contrast for state-code-badge and add e2e tests ([37a565d](https://github.com/legislative-tracker/legislative-tracker/commit/37a565d))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.28 (2026-08-25)
 
 ### 🚀 Features
