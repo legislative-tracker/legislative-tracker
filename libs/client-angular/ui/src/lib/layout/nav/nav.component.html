@@ -36,6 +36,29 @@
     </div>
   }
 
+  @if (currentFavoriteTarget(); as target) {
+    <button
+      mat-icon-button
+      (click)="toggleOfflineSave()"
+      [class.is-offline-saved]="isSavedOffline()"
+      [attr.aria-label]="
+        isSavedOffline()
+          ? 'Remove ' + targetName() + ' from offline storage'
+          : 'Save ' + targetName() + ' for offline reading'
+      "
+      [matTooltip]="
+        isSavedOffline()
+          ? 'Remove ' + targetName() + ' from offline storage'
+          : 'Save ' + targetName() + ' for offline reading'
+      "
+      class="toolbar-offline-btn"
+    >
+      <mat-icon [style.color]="isSavedOffline() ? '#38bdf8' : 'white'">
+        {{ isSavedOffline() ? 'bookmark' : 'bookmark_border' }}
+      </mat-icon>
+    </button>
+  }
+
   @if (auth.isLoggedIn() && currentFavoriteTarget(); as target) {
     <button
       mat-icon-button
@@ -142,6 +165,15 @@
       >
         <mat-icon matListItemIcon>info</mat-icon>
         <span matListItemTitle>About</span>
+      </a>
+      <a
+        mat-list-item
+        routerLink="/saved-bills"
+        routerLinkActive="active"
+        (click)="onNavItemClick(drawer)"
+      >
+        <mat-icon matListItemIcon>bookmarks</mat-icon>
+        <span matListItemTitle>Saved Bills</span>
       </a>
 
       @if (auth.isLoggedIn()) {

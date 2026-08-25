@@ -1,0 +1,143 @@
+<div class="saved-bills-container">
+  <div class="header-section">
+    <div class="header-title-group">
+      <div class="title-with-icon">
+        <mat-icon class="header-icon">bookmarks</mat-icon>
+        <h1>Offline Saved Bills</h1>
+      </div>
+      <p class="header-subtitle">
+        Read cached bills and review legislation anytime, even without an
+        internet connection.
+      </p>
+    </div>
+
+    @if (savedBills().length > 0) {
+      <button
+        mat-stroked-button
+        color="warn"
+        (click)="clearAll()"
+        class="clear-all-btn"
+      >
+        <mat-icon>delete_sweep</mat-icon>
+        Clear All ({{ savedBills().length }})
+      </button>
+    }
+  </div>
+
+  @if (savedBills().length > 0) {
+    <div class="filter-toolbar">
+      <mat-form-field
+        appearance="outline"
+        class="search-field"
+        subscriptSizing="dynamic"
+      >
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          type="text"
+          placeholder="Filter saved bills by title, ID, or state..."
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+          aria-label="Filter saved bills"
+        />
+        @if (searchQuery()) {
+          <button
+            mat-icon-button
+            matSuffix
+            (click)="searchQuery.set('')"
+            aria-label="Clear search"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+    </div>
+  }
+
+  @if (!isLoading()) {
+    @if (savedBills().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon-wrapper">
+          <mat-icon class="empty-icon">bookmark_border</mat-icon>
+        </div>
+        <h2>No Saved Bills</h2>
+        <p>
+          Save bills while browsing by clicking the
+          <strong>bookmark icon</strong> in the header toolbar. Saved bills are
+          cached locally in your browser for offline reading.
+        </p>
+        <a mat-flat-button color="primary" routerLink="/" class="browse-btn">
+          <mat-icon>explore</mat-icon>
+          Browse Legislation
+        </a>
+      </div>
+    } @else if (filteredBills().length === 0) {
+      <div class="no-matches-state">
+        <mat-icon class="no-matches-icon">search_off</mat-icon>
+        <h3>No matching saved bills</h3>
+        <p>Try searching for a different bill number or title.</p>
+        <button mat-button (click)="searchQuery.set('')">Clear filter</button>
+      </div>
+    } @else {
+      <div class="bills-grid">
+        @for (bill of filteredBills(); track bill.id) {
+          <mat-card class="bill-card">
+            <mat-card-header>
+              <div class="card-header-top">
+                <div class="chips-row">
+                  @if (bill.identifier) {
+                    <span class="badge-chip identifier-chip">{{
+                      bill.identifier
+                    }}</span>
+                  }
+                  @if (bill.stateCd) {
+                    <span class="badge-chip state-chip">{{
+                      bill.stateCd | uppercase
+                    }}</span>
+                  }
+                  @if (bill.type === 'legislation') {
+                    <span class="badge-chip type-chip">Legislation</span>
+                  }
+                </div>
+                <span class="saved-date">
+                  Saved {{ bill.savedAt | date: 'mediumDate' }}
+                </span>
+              </div>
+              <mat-card-title class="bill-title">
+                <a [routerLink]="getBillRoute(bill)" class="bill-title-link">
+                  {{ bill.title }}
+                </a>
+              </mat-card-title>
+            </mat-card-header>
+
+            @if (bill.summary) {
+              <mat-card-content class="bill-summary">
+                <p>{{ bill.summary }}</p>
+              </mat-card-content>
+            }
+
+            <mat-card-actions align="end" class="card-actions">
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="removeBill(bill.id, $event)"
+                matTooltip="Remove from offline storage"
+                aria-label="Remove bill from offline storage"
+              >
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+              <a
+                mat-flat-button
+                color="primary"
+                [routerLink]="getBillRoute(bill)"
+              >
+                <mat-icon>chrome_reader_mode</mat-icon>
+                Read Bill
+              </a>
+            </mat-card-actions>
+          </mat-card>
+        }
+      </div>
+    }
+  }
+</div>

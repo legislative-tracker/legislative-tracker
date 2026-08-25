@@ -40,6 +40,14 @@ export const routes: Routes = [
           ),
         title: 'Privacy Policy | Legislative Tracker',
       },
+      {
+        path: 'saved-bills',
+        loadComponent: () =>
+          import('@legislative-tracker/client-angular/features/legislative/saved-bills/saved-bills.component').then(
+            (m) => m.SavedBills,
+          ),
+        title: 'Offline Saved Bills | Legislative Tracker',
+      },
 
       // --- Feature: Authentication ---
       {

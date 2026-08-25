@@ -2,6 +2,8 @@ import {
   Component,
   inject,
   computed,
+  effect,
+  signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -80,18 +82,22 @@ export class NavComponent {
     { initialValue: this.router.url },
   );
 
+  isSavedOffline = signal(false);
+
   currentFavoriteTarget = computed<{
     type: 'legislation' | 'bill';
     id: string;
     key: string;
+    stateCd: string;
   } | null>(() => {
     const url = this.currentUrl();
     if (!url) return null;
 
     // 1) Match /:stateCd/legislation/:id
-    const legMatch = url.match(/^\/[^/]+\/legislation\/([^/?#]+)/);
-    if (legMatch && legMatch[1]) {
-      const rawId = decodeURIComponent(legMatch[1]);
+    const legMatch = url.match(/^\/([^/]+)\/legislation\/([^/?#]+)/);
+    if (legMatch && legMatch[2]) {
+      const stateCd = decodeURIComponent(legMatch[1]);
+      const rawId = decodeURIComponent(legMatch[2]);
       const clean = rawId
         .replace(/^leg:/, '')
         .replace(/^legislation:/, '')
@@ -101,13 +107,15 @@ export class NavComponent {
         type: 'legislation',
         id: clean,
         key: `leg:${clean}`,
+        stateCd,
       };
     }
 
     // 2) Match /:stateCd/ocd-bill/:id
-    const billMatch = url.match(/^\/[^/]+\/ocd-bill\/([^/?#]+)/);
-    if (billMatch && billMatch[1]) {
-      const rawId = decodeURIComponent(billMatch[1]);
+    const billMatch = url.match(/^\/([^/]+)\/ocd-bill\/([^/?#]+)/);
+    if (billMatch && billMatch[2]) {
+      const stateCd = decodeURIComponent(billMatch[1]);
+      const rawId = decodeURIComponent(billMatch[2]);
       const clean = rawId
         .replace(/^bill:/, '')
         .replace(/^ocd-bill[\/:=]/, '')
@@ -116,6 +124,7 @@ export class NavComponent {
         type: 'bill',
         id: clean,
         key: `bill:${clean}`,
+        stateCd,
       };
     }
 
@@ -151,6 +160,38 @@ export class NavComponent {
       }
     });
   });
+
+  constructor() {
+    effect(async () => {
+      const target = this.currentFavoriteTarget();
+      if (!target) {
+        this.isSavedOffline.set(false);
+        return;
+      }
+      const saved = await this.offlineStorage.isBillSaved(target.id);
+      this.isSavedOffline.set(saved);
+    });
+  }
+
+  async toggleOfflineSave(): Promise<void> {
+    const target = this.currentFavoriteTarget();
+    if (!target) return;
+    const isCurrentlySaved = this.isSavedOffline();
+    if (isCurrentlySaved) {
+      await this.offlineStorage.removeSavedBill(target.id);
+      this.isSavedOffline.set(false);
+    } else {
+      const title = this.targetName() || target.id;
+      await this.offlineStorage.saveBill({
+        id: target.id,
+        title,
+        stateCd: target.stateCd || 'us-ny',
+        savedAt: new Date().toISOString(),
+        type: target.type,
+      });
+      this.isSavedOffline.set(true);
+    }
+  }
 
   async toggleFavorite(): Promise<void> {
     const target = this.currentFavoriteTarget();

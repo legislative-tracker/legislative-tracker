@@ -72,6 +72,85 @@
       </mat-tab>
     }
   </mat-tab-group>
+
+  <div class="notes-section">
+    <mat-card class="notes-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="notes-header-icon">edit_note</mat-icon>
+        <mat-card-title>Personal Notes</mat-card-title>
+        <mat-card-subtitle>
+          Private notes stored locally on your device (works offline)
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content class="notes-card-content">
+        <div class="add-note-form">
+          <mat-form-field
+            appearance="outline"
+            class="note-textarea-field"
+            subscriptSizing="dynamic"
+          >
+            <mat-label>Add a private note</mat-label>
+            <textarea
+              matInput
+              rows="3"
+              placeholder="Write personal thoughts, reminders, or analysis on this bill..."
+              [ngModel]="newNoteText()"
+              (ngModelChange)="newNoteText.set($event)"
+              (keydown.control.enter)="addNote()"
+              (keydown.meta.enter)="addNote()"
+              aria-label="Private note content"
+            ></textarea>
+          </mat-form-field>
+          <div class="add-note-actions">
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="addNote()"
+              [disabled]="!newNoteText().trim() || isSavingNote()"
+            >
+              <mat-icon>add_comment</mat-icon>
+              Save Note
+            </button>
+          </div>
+        </div>
+
+        @if (notes().length > 0) {
+          <mat-divider class="notes-divider"></mat-divider>
+          <div class="notes-list">
+            @for (note of notes(); track note.id) {
+              <div class="note-item">
+                <div class="note-header">
+                  <span class="note-date">
+                    <mat-icon class="note-clock-icon">schedule</mat-icon>
+                    {{ note.createdAt | date: 'medium' }}
+                  </span>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteNote(note.id)"
+                    matTooltip="Delete note"
+                    aria-label="Delete note"
+                    class="delete-note-btn"
+                  >
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </div>
+                <div class="note-body">
+                  <p>{{ note.note }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-notes-hint">
+            <mat-icon class="hint-icon">note_alt</mat-icon>
+            <span>No personal notes added yet for this bill.</span>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
 } @else {
   <div class="error-container">
     <h1>Bill Not Found</h1>

@@ -19,6 +19,7 @@ import { Footer } from '../footer/footer.component'; // Import the real footer c
 import {
   AuthService,
   ConfigService,
+  OfflineStorageService,
   ThemeService,
 } from '@legislative-tracker/client-angular/core';
 
@@ -175,6 +176,7 @@ describe('NavComponent', () => {
         type: 'legislation',
         id: 'clean-energy',
         key: 'leg:clean-energy',
+        stateCd: 'us-ny',
       });
     });
 
@@ -193,6 +195,7 @@ describe('NavComponent', () => {
         type: 'bill',
         id: 'mock-bill-1',
         key: 'bill:mock-bill-1',
+        stateCd: 'us-ny',
       });
     });
 
@@ -217,6 +220,38 @@ describe('NavComponent', () => {
 
       await component.toggleFavorite();
       expect(toggleSpy).toHaveBeenCalledWith('leg:clean-energy');
+    });
+
+    it('should toggle offline save', async () => {
+      const offlineStorage = TestBed.inject(OfflineStorageService);
+      const saveSpy = vi.spyOn(offlineStorage, 'saveBill').mockResolvedValue();
+      const removeSpy = vi
+        .spyOn(offlineStorage, 'removeSavedBill')
+        .mockResolvedValue();
+
+      (router.events as any).next(
+        new NavigationEnd(
+          5,
+          '/us-ny/ocd-bill/mock-bill-1',
+          '/us-ny/ocd-bill/mock-bill-1',
+        ),
+      );
+      fixture.detectChanges();
+
+      component.isSavedOffline.set(false);
+      await component.toggleOfflineSave();
+      expect(saveSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'mock-bill-1',
+          stateCd: 'us-ny',
+          type: 'bill',
+        }),
+      );
+      expect(component.isSavedOffline()).toBe(true);
+
+      await component.toggleOfflineSave();
+      expect(removeSpy).toHaveBeenCalledWith('mock-bill-1');
+      expect(component.isSavedOffline()).toBe(false);
     });
   });
 });

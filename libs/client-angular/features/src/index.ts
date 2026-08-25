@@ -1,5 +1,6 @@
 export * from './lib/legislative/legislative.routes';
 export * from './lib/legislative/legislation-detail/legislation-detail.component';
+export * from './lib/legislative/saved-bills/saved-bills.component';
 export * from './lib/auth/auth.routes';
 export * from './lib/auth/login/login.component';
 export * from './lib/user/profile/profile.component';

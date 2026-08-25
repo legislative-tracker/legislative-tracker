@@ -4,24 +4,33 @@ import {
   inject,
   computed,
   effect,
+  signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 // App Imports
 import {
   AuthService,
   LegislatureService,
+  OfflineStorageService,
+  OfflineNote,
+  SavedBill,
   SeoService,
 } from '@legislative-tracker/client-angular/core';
 import { TableComponent } from '@legislative-tracker/client-angular/ui';
@@ -33,15 +42,20 @@ import {
 @Component({
   selector: 'app-bill-detail',
   imports: [
+    DatePipe,
+    FormsModule,
     MatButtonModule,
     MatCardModule,
     MatDividerModule,
     MatExpansionModule,
+    MatFormFieldModule,
     MatIconModule,
+    MatInputModule,
     MatListModule,
     MatProgressSpinnerModule,
     MatTabsModule,
     MatTooltipModule,
+    MatSnackBarModule,
     TableComponent,
   ],
   templateUrl: './bill-detail.component.html',
@@ -56,7 +70,16 @@ export class BillDetail {
   private legislatureService = inject(LegislatureService);
   private seoService = inject(SeoService);
   private authService = inject(AuthService, { optional: true });
+  private offlineStorage = inject(OfflineStorageService);
+  private snackBar = inject(MatSnackBar);
+
   cosponsorCols = COSPONSOR_COLS;
+
+  isSavedOffline = signal(false);
+  cachedOfflineBill = signal<OpenStatesBill | undefined>(undefined);
+  notes = signal<OfflineNote[]>([]);
+  newNoteText = signal('');
+  isSavingNote = signal(false);
 
   constructor() {
     effect(() => {
@@ -71,6 +94,29 @@ export class BillDetail {
       } else {
         this.seoService.resetTags();
       }
+    });
+
+    effect(async () => {
+      const billId = this.id();
+      if (!billId) {
+        this.isSavedOffline.set(false);
+        this.notes.set([]);
+        this.cachedOfflineBill.set(undefined);
+        return;
+      }
+
+      const saved = await this.offlineStorage.getSavedBill(billId);
+      if (saved) {
+        this.isSavedOffline.set(true);
+        if (saved.billData) {
+          this.cachedOfflineBill.set(saved.billData);
+        }
+      } else {
+        this.isSavedOffline.set(false);
+      }
+
+      const billNotes = await this.offlineStorage.getNotesForBill(billId);
+      this.notes.set(billNotes);
     });
   }
 
@@ -91,8 +137,76 @@ export class BillDetail {
   });
 
   bill = computed(
-    () => this.billResource.value() as OpenStatesBill | undefined,
+    () =>
+      (this.billResource.value() as OpenStatesBill | undefined) ||
+      this.cachedOfflineBill(),
   );
+
+  async toggleSaveOffline(): Promise<void> {
+    const billId = this.id();
+    if (!billId) return;
+
+    if (this.isSavedOffline()) {
+      await this.offlineStorage.removeSavedBill(billId);
+      this.isSavedOffline.set(false);
+      this.snackBar.open('Bill removed from offline storage', 'Close', {
+        duration: 3000,
+      });
+    } else {
+      const b = this.bill();
+      const savedBill: SavedBill = {
+        id: billId,
+        title: b?.title || billId,
+        identifier: b?.identifier,
+        stateCd: this.stateCd() || 'us-ny',
+        savedAt: new Date().toISOString(),
+        summary: this.summaryText(),
+        type: 'bill',
+        billData: b,
+      };
+      await this.offlineStorage.saveBill(savedBill);
+      this.isSavedOffline.set(true);
+      if (b) {
+        this.cachedOfflineBill.set(b);
+      }
+      this.snackBar.open('Bill saved for offline reading', 'Close', {
+        duration: 3000,
+      });
+    }
+  }
+
+  async addNote(): Promise<void> {
+    const text = this.newNoteText().trim();
+    const billId = this.id();
+    if (!text || !billId || this.isSavingNote()) return;
+
+    this.isSavingNote.set(true);
+    try {
+      const note: OfflineNote = {
+        id:
+          typeof crypto !== 'undefined' && crypto.randomUUID
+            ? crypto.randomUUID()
+            : `note_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+        billId,
+        note: text,
+        createdAt: new Date().toISOString(),
+      };
+      await this.offlineStorage.saveNote(note);
+      this.newNoteText.set('');
+      const updatedNotes = await this.offlineStorage.getNotesForBill(billId);
+      this.notes.set(updatedNotes);
+      this.snackBar.open('Personal note saved', 'Close', { duration: 3000 });
+    } finally {
+      this.isSavingNote.set(false);
+    }
+  }
+
+  async deleteNote(noteId: string): Promise<void> {
+    await this.offlineStorage.deleteNote(noteId);
+    const updatedNotes = await this.offlineStorage.getNotesForBill(this.id());
+    this.notes.set(updatedNotes);
+    this.snackBar.open('Note deleted', 'Close', { duration: 3000 });
+  }
 
   summaryText = computed(() => {
     const b = this.bill();
