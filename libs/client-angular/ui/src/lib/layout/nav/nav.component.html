@@ -28,11 +28,13 @@
     >
       <mat-icon class="state-icon">location_on</mat-icon>
       <span class="state-label">{{
-        activeJurisdiction()?.name || 'Select State'
+        activeJurisdiction()?.name || 'Select...'
       }}</span>
-      <span class="state-code-badge">{{
-        activeJurisdiction()?.code | uppercase
-      }}</span>
+      @if (activeJurisdiction()) {
+        <span class="state-code-badge">{{
+          activeJurisdiction()?.code | uppercase
+        }}</span>
+      }
       <mat-icon class="arrow-icon">arrow_drop_down</mat-icon>
     </button>
 

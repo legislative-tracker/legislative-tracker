@@ -305,6 +305,14 @@ describe('NavComponent', () => {
       expect(active?.code.toLowerCase()).toBe('us-ny');
     });
 
+    it('should return null active jurisdiction when at root /', () => {
+      (router.events as any).next(new NavigationEnd(11, '/', '/'));
+      fixture.detectChanges();
+
+      const active = component.activeJurisdiction();
+      expect(active).toBeNull();
+    });
+
     it('should navigate to selected jurisdiction when switchJurisdiction is called', () => {
       const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
       component.switchJurisdiction('us-ca');

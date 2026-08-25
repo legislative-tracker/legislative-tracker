@@ -118,7 +118,7 @@ export class NavComponent {
       }
     }
 
-    return list[0];
+    return null;
   });
 
   switchJurisdiction(code: string): void {
