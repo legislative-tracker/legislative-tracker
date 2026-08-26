@@ -1,3 +1,13 @@
+## 0.11.38 (2026-08-26)
+
+### 🚀 Features
+
+- **client-angular:** update state member table columns to last name, first name, party, district ([7716ba4](https://github.com/legislative-tracker/legislative-tracker/commit/7716ba4))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.37 (2026-08-26)
 
 ### 🩹 Fixes
