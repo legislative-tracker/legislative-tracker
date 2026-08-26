@@ -1,3 +1,19 @@
+export interface ModePaletteConfig {
+  primary?: string;
+  secondary?: string;
+  tertiary?: string;
+  neutral?: string;
+  neutralVariant?: string;
+  error?: string;
+  customOverrides?: Record<string, string>;
+}
+
+export interface ThemePalettesConfig {
+  enabled: boolean;
+  light?: ModePaletteConfig;
+  dark?: ModePaletteConfig;
+}
+
 export type RuntimeConfig = {
   organization: {
     name: string;
@@ -8,6 +24,7 @@ export type RuntimeConfig = {
     logoUrl: string;
     faviconUrl: string;
     darkMode: boolean;
+    palettes?: ThemePalettesConfig;
   };
   resources: ResourceLink[];
 };

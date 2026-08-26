@@ -7,17 +7,40 @@ import { ThemeService, THEME_STORAGE_KEY } from './theme.service';
 const mockArgbFromHex = vi.fn();
 const mockThemeFromSourceColor = vi.fn();
 const mockHexFromArgb = vi.fn();
+const mockCorePaletteOf = vi.fn();
+const mockTonalPaletteFromInt = vi.fn();
+const mockSchemeLightFromCore = vi.fn();
+const mockSchemeDarkFromCore = vi.fn();
 
 vi.mock('@material/material-color-utilities', () => ({
   argbFromHex: (...args: any[]) => mockArgbFromHex(...args),
   themeFromSourceColor: (...args: any[]) => mockThemeFromSourceColor(...args),
   hexFromArgb: (...args: any[]) => mockHexFromArgb(...args),
+  CorePalette: {
+    of: (...args: any[]) => mockCorePaletteOf(...args),
+  },
+  TonalPalette: {
+    fromInt: (...args: any[]) => mockTonalPaletteFromInt(...args),
+  },
+  Scheme: {
+    lightFromCorePalette: (...args: any[]) => mockSchemeLightFromCore(...args),
+    darkFromCorePalette: (...args: any[]) => mockSchemeDarkFromCore(...args),
+  },
 }));
 
 describe('ThemeService', () => {
   let service: ThemeService;
   let documentMock: Document;
   let mockMatchMedia: ReturnType<typeof vi.fn>;
+
+  const mockCorePalette = {
+    a1: { tone: vi.fn().mockReturnValue(0x111111) },
+    a2: { tone: vi.fn().mockReturnValue(0x222222) },
+    a3: { tone: vi.fn().mockReturnValue(0x333333) },
+    n1: { tone: vi.fn().mockReturnValue(0x444444) },
+    n2: { tone: vi.fn().mockReturnValue(0x555555) },
+    error: { tone: vi.fn().mockReturnValue(0x666666) },
+  };
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -37,8 +60,16 @@ describe('ThemeService', () => {
       },
     });
 
-    documentMock = document;
-    vi.spyOn(documentMock.documentElement.style, 'setProperty');
+    mockCorePaletteOf.mockReturnValue({ ...mockCorePalette });
+    mockTonalPaletteFromInt.mockImplementation((val) => ({
+      tone: vi.fn().mockReturnValue(val),
+    }));
+    mockSchemeLightFromCore.mockReturnValue({
+      toJSON: () => ({ primary: 0xaabbcc }),
+    });
+    mockSchemeDarkFromCore.mockReturnValue({
+      toJSON: () => ({ primary: 0xddeeff }),
+    });
 
     mockMatchMedia = vi.fn().mockImplementation((query: string) => ({
       matches: false,
@@ -129,5 +160,59 @@ describe('ThemeService', () => {
   it('should allow setting primary color', () => {
     service.setPrimaryColor('#123456');
     expect(service.currentPrimaryColor()).toBe('#123456');
+  });
+
+  it('should allow setting palettes and applying custom light/dark schemes', async () => {
+    const customPalettes = {
+      enabled: true,
+      light: {
+        primary: '#112233',
+        secondary: '#223344',
+        tertiary: '#334455',
+        neutral: '#fafafa',
+        neutralVariant: '#eeeeee',
+        error: '#ff0000',
+        customOverrides: {
+          surface: '#ffffff',
+        },
+      },
+      dark: {
+        primary: '#aabbcc',
+        secondary: '#bbccdd',
+        tertiary: '#ccddee',
+        neutral: '#121212',
+        neutralVariant: '#242424',
+        error: '#ff5555',
+        customOverrides: {
+          surface: '#1e1e1e',
+        },
+      },
+    };
+
+    service.setPalettes(customPalettes, false);
+    expect(service.palettes()).toEqual(customPalettes);
+
+    await service.applyTheme('#673ab7', false);
+    expect(mockCorePaletteOf).toHaveBeenCalled();
+    expect(mockSchemeLightFromCore).toHaveBeenCalled();
+    expect(documentMock.documentElement.style.setProperty).toHaveBeenCalledWith(
+      '--mat-sys-primary',
+      '#112233',
+    );
+    expect(documentMock.documentElement.style.setProperty).toHaveBeenCalledWith(
+      '--mat-sys-surface',
+      '#ffffff',
+    );
+
+    await service.applyTheme('#673ab7', true);
+    expect(mockSchemeDarkFromCore).toHaveBeenCalled();
+    expect(documentMock.documentElement.style.setProperty).toHaveBeenCalledWith(
+      '--mat-sys-primary',
+      '#aabbcc',
+    );
+    expect(documentMock.documentElement.style.setProperty).toHaveBeenCalledWith(
+      '--mat-sys-surface',
+      '#1e1e1e',
+    );
   });
 });
