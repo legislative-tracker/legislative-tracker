@@ -46,9 +46,18 @@
     height: 36px;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
     transition: background-color 0.2s ease;
     flex-shrink: 0;
+
+    ::ng-deep .mdc-button__label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 100%;
+      line-height: 1;
+    }
 
     @media (max-width: 767.98px) {
       display: none;
@@ -62,27 +71,43 @@
       font-size: 18px;
       width: 18px;
       height: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .state-label {
       font-weight: 600;
       font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      line-height: 1;
     }
 
     .state-code-badge {
-      margin-left: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       background: transparent;
       border: 1px solid currentColor;
       color: inherit;
       font-size: 0.7rem;
       font-weight: 700;
       padding: 0 5px;
+      height: 18px;
+      box-sizing: border-box;
       border-radius: 4px;
       letter-spacing: 0.05em;
-      line-height: 1.4;
+      line-height: 1;
     }
 
     .arrow-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       margin-left: -2px;
     }
   }

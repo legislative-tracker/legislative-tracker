@@ -13,12 +13,15 @@
   padding: 32px;
   text-align: center;
   border-radius: 16px;
+  background: var(--mat-sys-surface-container-lowest, #ffffff);
+  color: var(--mat-sys-on-surface, #1d1b20);
+  border: 1px solid var(--mat-sys-outline-variant, #cac4d0);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 .hint-text {
   margin: 16px 0 24px;
-  color: #555;
+  color: var(--mat-sys-on-surface-variant, #49454f);
   font-size: 0.95rem;
   line-height: 1.5;
 }
@@ -156,6 +159,6 @@
 
 .footer-note {
   font-size: 0.75rem;
-  color: #777;
+  color: var(--mat-sys-on-surface-variant, #49454f);
   margin-top: 24px;
 }

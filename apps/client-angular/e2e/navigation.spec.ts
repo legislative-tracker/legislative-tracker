@@ -34,7 +34,7 @@ test.describe('Navigation & Static Pages', () => {
     await page.goto('/us-ny');
     const stateBtn = page.locator('.toolbar-state-btn');
     await expect(stateBtn).toBeVisible();
-    await expect(stateBtn).toContainText('New York');
+    await expect(stateBtn).toContainText('US-NY');
     await stateBtn.click();
     await expect(page.locator('.state-picker-menu')).toBeVisible();
   });
