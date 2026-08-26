@@ -7,6 +7,11 @@ import {
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
+import {
+  ThemePalettesConfig,
+  ModePaletteConfig,
+} from '@legislative-tracker/shared/models';
+
 export type ThemeMode = 'light' | 'dark' | 'system';
 
 export const THEME_STORAGE_KEY = 'legislative_tracker_theme';
@@ -19,6 +24,7 @@ export class ThemeService {
   readonly mode = signal<ThemeMode>(this.getInitialMode());
   readonly systemIsDark = signal<boolean>(this.getSystemDarkPreference());
   readonly currentPrimaryColor = signal<string>('#673ab7');
+  readonly palettes = signal<ThemePalettesConfig | undefined>(undefined);
 
   readonly isDarkMode = computed<boolean>(() => {
     const currentMode = this.mode();
@@ -52,6 +58,13 @@ export class ThemeService {
     }
   }
 
+  setPalettes(palettes?: ThemePalettesConfig, apply = true): void {
+    this.palettes.set(palettes);
+    if (apply) {
+      this.applyTheme(this.currentPrimaryColor(), this.isDarkMode());
+    }
+  }
+
   private themeApplyVersion = 0;
 
   async applyTheme(
@@ -60,8 +73,14 @@ export class ThemeService {
   ): Promise<void> {
     const version = ++this.themeApplyVersion;
     try {
-      const { argbFromHex, themeFromSourceColor, hexFromArgb } =
-        await import('@material/material-color-utilities');
+      const {
+        argbFromHex,
+        themeFromSourceColor,
+        hexFromArgb,
+        CorePalette,
+        TonalPalette,
+        Scheme,
+      } = await import('@material/material-color-utilities');
 
       if (version !== this.themeApplyVersion) {
         return;
@@ -82,10 +101,116 @@ export class ThemeService {
         return mapping;
       };
 
-      const sourceColor = argbFromHex(hexColor);
-      const theme = themeFromSourceColor(sourceColor);
-      const scheme = isDark ? theme.schemes.dark : theme.schemes.light;
-      const properties = flattenSchemeToCssVars(scheme);
+      const palettesConfig = this.palettes();
+      let properties: Record<string, string> = {};
+
+      const modeConfig = isDark ? palettesConfig?.dark : palettesConfig?.light;
+
+      if (palettesConfig?.enabled && modeConfig) {
+        const primaryHex = modeConfig.primary || hexColor;
+        const primaryArgb = argbFromHex(primaryHex);
+        const core = CorePalette.of(primaryArgb);
+
+        if (modeConfig.secondary) {
+          core.a2 = TonalPalette.fromInt(argbFromHex(modeConfig.secondary));
+        }
+        if (modeConfig.tertiary) {
+          core.a3 = TonalPalette.fromInt(argbFromHex(modeConfig.tertiary));
+        }
+        if (modeConfig.neutral) {
+          core.n1 = TonalPalette.fromInt(argbFromHex(modeConfig.neutral));
+        }
+        if (modeConfig.neutralVariant) {
+          core.n2 = TonalPalette.fromInt(
+            argbFromHex(modeConfig.neutralVariant),
+          );
+        }
+        if (modeConfig.error) {
+          core.error = TonalPalette.fromInt(argbFromHex(modeConfig.error));
+        }
+
+        const scheme = isDark
+          ? Scheme.darkFromCorePalette(core)
+          : Scheme.lightFromCorePalette(core);
+        properties = flattenSchemeToCssVars(scheme);
+
+        const getContrastingColor = (hex: string): string => {
+          const clean = hex.replace('#', '');
+          if (clean.length !== 6) return isDark ? '#ffffff' : '#000000';
+          const r = parseInt(clean.substring(0, 2), 16) || 0;
+          const g = parseInt(clean.substring(2, 4), 16) || 0;
+          const b = parseInt(clean.substring(4, 6), 16) || 0;
+          const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+          return yiq >= 128 ? '#000000' : '#ffffff';
+        };
+
+        // Directly apply the exact user-defined hex colors
+        if (modeConfig.primary) {
+          properties['--mat-sys-primary'] = modeConfig.primary;
+          properties['--mat-sys-color-primary'] = modeConfig.primary;
+          const onColor = getContrastingColor(modeConfig.primary);
+          properties['--mat-sys-on-primary'] = onColor;
+          properties['--mat-sys-color-on-primary'] = onColor;
+        }
+        if (modeConfig.secondary) {
+          properties['--mat-sys-secondary'] = modeConfig.secondary;
+          properties['--mat-sys-color-secondary'] = modeConfig.secondary;
+          const onColor = getContrastingColor(modeConfig.secondary);
+          properties['--mat-sys-on-secondary'] = onColor;
+          properties['--mat-sys-color-on-secondary'] = onColor;
+        }
+        if (modeConfig.tertiary) {
+          properties['--mat-sys-tertiary'] = modeConfig.tertiary;
+          properties['--mat-sys-color-tertiary'] = modeConfig.tertiary;
+          const onColor = getContrastingColor(modeConfig.tertiary);
+          properties['--mat-sys-on-tertiary'] = onColor;
+          properties['--mat-sys-color-on-tertiary'] = onColor;
+        }
+        if (modeConfig.neutral) {
+          properties['--mat-sys-surface'] = modeConfig.neutral;
+          properties['--mat-sys-color-surface'] = modeConfig.neutral;
+          properties['--mat-sys-background'] = modeConfig.neutral;
+          properties['--mat-sys-color-background'] = modeConfig.neutral;
+          properties['--mat-sys-surface-container'] = modeConfig.neutral;
+          properties['--mat-sys-surface-container-low'] = modeConfig.neutral;
+          const onColor = getContrastingColor(modeConfig.neutral);
+          properties['--mat-sys-on-surface'] = onColor;
+          properties['--mat-sys-color-on-surface'] = onColor;
+        }
+        if (modeConfig.neutralVariant) {
+          properties['--mat-sys-surface-variant'] = modeConfig.neutralVariant;
+          properties['--mat-sys-color-surface-variant'] =
+            modeConfig.neutralVariant;
+          properties['--mat-sys-outline'] = modeConfig.neutralVariant;
+          properties['--mat-sys-color-outline'] = modeConfig.neutralVariant;
+          properties['--mat-sys-outline-variant'] = modeConfig.neutralVariant;
+        }
+        if (modeConfig.error) {
+          properties['--mat-sys-error'] = modeConfig.error;
+          properties['--mat-sys-color-error'] = modeConfig.error;
+          const onColor = getContrastingColor(modeConfig.error);
+          properties['--mat-sys-on-error'] = onColor;
+          properties['--mat-sys-color-on-error'] = onColor;
+        }
+
+        if (modeConfig.customOverrides) {
+          for (const [key, val] of Object.entries(modeConfig.customOverrides)) {
+            if (val) {
+              const cleanKey = key.replace(
+                /^(--mat-sys-color-|--mat-sys-)/,
+                '',
+              );
+              properties[`--mat-sys-color-${cleanKey}`] = val;
+              properties[`--mat-sys-${cleanKey}`] = val;
+            }
+          }
+        }
+      } else {
+        const sourceColor = argbFromHex(hexColor);
+        const theme = themeFromSourceColor(sourceColor);
+        const scheme = isDark ? theme.schemes.dark : theme.schemes.light;
+        properties = flattenSchemeToCssVars(scheme);
+      }
 
       const root = this.document.documentElement;
       for (const [key, value] of Object.entries(properties)) {

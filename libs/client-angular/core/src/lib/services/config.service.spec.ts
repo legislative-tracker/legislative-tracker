@@ -24,6 +24,27 @@ vi.mock('@material/material-color-utilities', () => ({
   argbFromHex: (...args: any[]) => mockArgbFromHex(...args),
   themeFromSourceColor: (...args: any[]) => mockThemeFromSourceColor(...args),
   hexFromArgb: (...args: any[]) => mockHexFromArgb(...args),
+  CorePalette: {
+    of: vi.fn().mockReturnValue({
+      a1: { tone: vi.fn().mockReturnValue(0) },
+      a2: { tone: vi.fn().mockReturnValue(0) },
+      a3: { tone: vi.fn().mockReturnValue(0) },
+      n1: { tone: vi.fn().mockReturnValue(0) },
+      n2: { tone: vi.fn().mockReturnValue(0) },
+      error: { tone: vi.fn().mockReturnValue(0) },
+    }),
+  },
+  TonalPalette: {
+    fromInt: vi.fn().mockReturnValue({ tone: vi.fn().mockReturnValue(0) }),
+  },
+  Scheme: {
+    lightFromCorePalette: vi
+      .fn()
+      .mockReturnValue({ toJSON: () => ({ primary: 0xff0000 }) }),
+    darkFromCorePalette: vi
+      .fn()
+      .mockReturnValue({ toJSON: () => ({ primary: 0x00ff00 }) }),
+  },
 }));
 
 describe('FirebaseConfigService', () => {

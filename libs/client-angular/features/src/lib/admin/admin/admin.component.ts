@@ -32,11 +32,17 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { RouterLink } from '@angular/router';
 
+import { MatTabsModule } from '@angular/material/tabs';
 import {
   RuntimeConfig,
   ResourceLink,
+  ModePaletteConfig,
+  ThemePalettesConfig,
 } from '@legislative-tracker/shared/models';
-import { ConfigService } from '@legislative-tracker/client-angular/core';
+import {
+  ConfigService,
+  ThemeService,
+} from '@legislative-tracker/client-angular/core';
 
 @Component({
   selector: 'app-admin',
@@ -56,6 +62,7 @@ import { ConfigService } from '@legislative-tracker/client-angular/core';
     MatDividerModule,
     MatCardModule,
     MatTooltipModule,
+    MatTabsModule,
   ],
   templateUrl: './admin.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -64,6 +71,7 @@ import { ConfigService } from '@legislative-tracker/client-angular/core';
 export class Admin {
   private fb = inject(FormBuilder);
   private configService = inject(ConfigService);
+  private themeService = inject(ThemeService, { optional: true });
   private snackBar = inject(MatSnackBar);
 
   readonly panelOpenState = signal(false);
@@ -82,12 +90,29 @@ export class Admin {
       logoUrl: ['', Validators.required],
       faviconUrl: ['favicon.ico'],
       darkMode: [false],
+      palettes: this.fb.group({
+        enabled: [false],
+        light: this.createModePaletteGroup(),
+        dark: this.createModePaletteGroup(),
+      }),
     }),
     resources: this.fb.array([]),
   });
 
   get resourcesArray() {
     return this.form.get('resources') as FormArray;
+  }
+
+  get palettesGroup() {
+    return this.form.get('branding.palettes') as FormGroup;
+  }
+
+  get lightPaletteGroup() {
+    return this.form.get('branding.palettes.light') as FormGroup;
+  }
+
+  get darkPaletteGroup() {
+    return this.form.get('branding.palettes.dark') as FormGroup;
   }
 
   constructor() {
@@ -97,7 +122,14 @@ export class Admin {
         this.form.patchValue(
           {
             organization: config.organization,
-            branding: config.branding,
+            branding: {
+              ...config.branding,
+              palettes: {
+                enabled: config.branding?.palettes?.enabled ?? false,
+                light: config.branding?.palettes?.light ?? {},
+                dark: config.branding?.palettes?.dark ?? {},
+              },
+            },
           },
           { emitEvent: false },
         );
@@ -111,6 +143,97 @@ export class Admin {
         });
       }
     });
+
+    this.form.get('branding')?.valueChanges.subscribe((brandingVal) => {
+      if (this.themeService && brandingVal) {
+        if (brandingVal.palettes) {
+          this.themeService.setPalettes(brandingVal.palettes as any, false);
+        }
+        if (
+          brandingVal.primaryColor &&
+          /^#[0-9A-F]{6}$/i.test(brandingVal.primaryColor)
+        ) {
+          const isDark =
+            brandingVal.darkMode !== undefined
+              ? Boolean(brandingVal.darkMode)
+              : this.themeService.isDarkMode();
+          this.themeService.applyTheme(brandingVal.primaryColor, isDark);
+        }
+      }
+    });
+  }
+
+  private createModePaletteGroup(data?: ModePaletteConfig): FormGroup {
+    return this.fb.group({
+      primary: [
+        data?.primary || '',
+        [Validators.pattern(/^$|^#[0-9A-F]{6}$/i)],
+      ],
+      secondary: [
+        data?.secondary || '',
+        [Validators.pattern(/^$|^#[0-9A-F]{6}$/i)],
+      ],
+      tertiary: [
+        data?.tertiary || '',
+        [Validators.pattern(/^$|^#[0-9A-F]{6}$/i)],
+      ],
+      neutral: [
+        data?.neutral || '',
+        [Validators.pattern(/^$|^#[0-9A-F]{6}$/i)],
+      ],
+      neutralVariant: [
+        data?.neutralVariant || '',
+        [Validators.pattern(/^$|^#[0-9A-F]{6}$/i)],
+      ],
+      error: [data?.error || '', [Validators.pattern(/^$|^#[0-9A-F]{6}$/i)]],
+    });
+  }
+
+  async generatePaletteFromPrimary(mode: 'light' | 'dark' | 'both' = 'both') {
+    const primaryHex =
+      this.form.get('branding.primaryColor')?.value || '#673ab7';
+    try {
+      const { argbFromHex, CorePalette, hexFromArgb } =
+        await import('@material/material-color-utilities');
+      const argb = argbFromHex(primaryHex);
+      const core = CorePalette.of(argb);
+
+      const lightPalette: ModePaletteConfig = {
+        primary: hexFromArgb(core.a1.tone(40)),
+        secondary: hexFromArgb(core.a2.tone(40)),
+        tertiary: hexFromArgb(core.a3.tone(40)),
+        neutral: hexFromArgb(core.n1.tone(98)),
+        neutralVariant: hexFromArgb(core.n2.tone(90)),
+        error: hexFromArgb(core.error.tone(40)),
+      };
+
+      const darkPalette: ModePaletteConfig = {
+        primary: hexFromArgb(core.a1.tone(80)),
+        secondary: hexFromArgb(core.a2.tone(80)),
+        tertiary: hexFromArgb(core.a3.tone(80)),
+        neutral: hexFromArgb(core.n1.tone(10)),
+        neutralVariant: hexFromArgb(core.n2.tone(30)),
+        error: hexFromArgb(core.error.tone(80)),
+      };
+
+      const palettesGroup = this.form.get('branding.palettes') as FormGroup;
+      if (mode === 'light' || mode === 'both') {
+        palettesGroup.get('light')?.patchValue(lightPalette);
+      }
+      if (mode === 'dark' || mode === 'both') {
+        palettesGroup.get('dark')?.patchValue(darkPalette);
+      }
+      this.form.markAsDirty();
+      this.snackBar.open(
+        'Generated palette swatches from primary color.',
+        'Close',
+        {
+          duration: 3000,
+        },
+      );
+    } catch (e) {
+      console.error('Failed to generate palette from primary', e);
+    }
   }
 
   private createResourceGroup(data?: ResourceLink): FormGroup {

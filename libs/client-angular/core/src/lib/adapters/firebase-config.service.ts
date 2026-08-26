@@ -8,6 +8,7 @@ import {
   RuntimeConfig,
   ResourceLink,
   DEFAULT_CONFIG,
+  ThemePalettesConfig,
 } from '@legislative-tracker/shared/models';
 import { ConfigService } from '../services/config.service';
 import { ThemeService } from '../services/theme.service';
@@ -41,7 +42,7 @@ export class FirebaseConfigService implements ConfigService {
         this.updateFavicon(branding.faviconUrl);
       }
 
-      this.applyAngularMaterialTheme(branding.primaryColor);
+      this.applyAngularMaterialTheme(branding.primaryColor, branding.palettes);
     });
   }
 
@@ -61,6 +62,7 @@ export class FirebaseConfigService implements ConfigService {
             branding: {
               ...DEFAULT_CONFIG.branding,
               ...parsed?.branding,
+              palettes: parsed?.branding?.palettes,
             },
           };
         }
@@ -164,8 +166,12 @@ export class FirebaseConfigService implements ConfigService {
     link.href = url;
   }
 
-  private async applyAngularMaterialTheme(hexColor: string) {
+  private async applyAngularMaterialTheme(
+    hexColor: string,
+    palettes?: ThemePalettesConfig,
+  ) {
     if (this.themeService) {
+      this.themeService.setPalettes(palettes, false);
       this.themeService.setPrimaryColor(hexColor);
       return;
     }

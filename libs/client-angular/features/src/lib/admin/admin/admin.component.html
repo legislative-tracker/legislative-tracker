@@ -138,6 +138,356 @@
               ></mat-slide-toggle>
             </div>
           </div>
+
+          <div class="form-stack-item" formGroupName="palettes">
+            <div class="toggle-card">
+              <div>
+                <strong>Custom Material Palettes (Light & Dark)</strong>
+                <div class="text-hint">
+                  Define individual palette seed colors for Light and Dark modes
+                </div>
+              </div>
+              <mat-slide-toggle
+                formControlName="enabled"
+                color="primary"
+              ></mat-slide-toggle>
+            </div>
+
+            @if (palettesGroup.get('enabled')?.value) {
+              <div class="palette-studio-card">
+                <div class="palette-studio-header">
+                  <div>
+                    <h4 class="palette-title">Material 3 Color Studio</h4>
+                    <p class="palette-subtitle">
+                      Configure tone seeds or auto-generate balanced schemes
+                      from your primary color.
+                    </p>
+                  </div>
+                  <button
+                    mat-stroked-button
+                    color="primary"
+                    type="button"
+                    (click)="generatePaletteFromPrimary('both')"
+                  >
+                    <mat-icon>auto_fix_high</mat-icon> Auto-generate Both
+                  </button>
+                </div>
+
+                <mat-tab-group
+                  animationDuration="0ms"
+                  class="palette-tab-group"
+                >
+                  <mat-tab label="Light Mode Palette">
+                    <div class="palette-tab-content" formGroupName="light">
+                      <div class="tab-action-bar">
+                        <span class="mode-badge light-badge"
+                          >Light Mode Tones</span
+                        >
+                        <button
+                          mat-button
+                          color="primary"
+                          type="button"
+                          (click)="generatePaletteFromPrimary('light')"
+                        >
+                          <mat-icon>refresh</mat-icon> Derive Light Tones
+                        </button>
+                      </div>
+
+                      <div class="palette-grid">
+                        <div class="palette-grid-item">
+                          <label class="field-label">Primary</label>
+                          <div class="color-picker-row">
+                            <input
+                              type="color"
+                              formControlName="primary"
+                              class="color-input"
+                            />
+                            <mat-form-field
+                              appearance="outline"
+                              class="flex-grow"
+                            >
+                              <mat-label>Primary Hex</mat-label>
+                              <input
+                                matInput
+                                formControlName="primary"
+                                placeholder="#673ab7"
+                              />
+                            </mat-form-field>
+                          </div>
+                        </div>
+
+                        <div class="palette-grid-item">
+                          <label class="field-label">Secondary</label>
+                          <div class="color-picker-row">
+                            <input
+                              type="color"
+                              formControlName="secondary"
+                              class="color-input"
+                            />
+                            <mat-form-field
+                              appearance="outline"
+                              class="flex-grow"
+                            >
+                              <mat-label>Secondary Hex</mat-label>
+                              <input
+                                matInput
+                                formControlName="secondary"
+                                placeholder="#625b71"
+                              />
+                            </mat-form-field>
+                          </div>
+                        </div>
+
+                        <div class="palette-grid-item">
+                          <label class="field-label">Tertiary</label>
+                          <div class="color-picker-row">
+                            <input
+                              type="color"
+                              formControlName="tertiary"
+                              class="color-input"
+                            />
+                            <mat-form-field
+                              appearance="outline"
+                              class="flex-grow"
+                            >
+                              <mat-label>Tertiary Hex</mat-label>
+                              <input
+                                matInput
+                                formControlName="tertiary"
+                                placeholder="#7d5260"
+                              />
+                            </mat-form-field>
+                          </div>
+                        </div>
+
+                        <div class="palette-grid-item">
+                          <label class="field-label">Neutral / Surface</label>
+                          <div class="color-picker-row">
+                            <input
+                              type="color"
+                              formControlName="neutral"
+                              class="color-input"
+                            />
+                            <mat-form-field
+                              appearance="outline"
+                              class="flex-grow"
+                            >
+                              <mat-label>Neutral Hex</mat-label>
+                              <input
+                                matInput
+                                formControlName="neutral"
+                                placeholder="#fffbfe"
+                              />
+                            </mat-form-field>
+                          </div>
+                        </div>
+
+                        <div class="palette-grid-item">
+                          <label class="field-label"
+                            >Neutral Variant / Outline</label
+                          >
+                          <div class="color-picker-row">
+                            <input
+                              type="color"
+                              formControlName="neutralVariant"
+                              class="color-input"
+                            />
+                            <mat-form-field
+                              appearance="outline"
+                              class="flex-grow"
+                            >
+                              <mat-label>Neutral Variant Hex</mat-label>
+                              <input
+                                matInput
+                                formControlName="neutralVariant"
+                                placeholder="#e7e0ec"
+                              />
+                            </mat-form-field>
+                          </div>
+                        </div>
+
+                        <div class="palette-grid-item">
+                          <label class="field-label">Error</label>
+                          <div class="color-picker-row">
+                            <input
+                              type="color"
+                              formControlName="error"
+                              class="color-input"
+                            />
+                            <mat-form-field
+                              appearance="outline"
+                              class="flex-grow"
+                            >
+                              <mat-label>Error Hex</mat-label>
+                              <input
+                                matInput
+                                formControlName="error"
+                                placeholder="#ba1a1a"
+                              />
+                            </mat-form-field>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </mat-tab>
+
+                  <mat-tab label="Dark Mode Palette">
+                    <div class="palette-tab-content" formGroupName="dark">
+                      <div class="tab-action-bar">
+                        <span class="mode-badge dark-badge"
+                          >Dark Mode Tones</span
+                        >
+                        <button
+                          mat-button
+                          color="primary"
+                          type="button"
+                          (click)="generatePaletteFromPrimary('dark')"
+                        >
+                          <mat-icon>refresh</mat-icon> Derive Dark Tones
+                        </button>
+                      </div>
+
+                      <div class="palette-grid">
+                        <div class="palette-grid-item">
+                          <label class="field-label">Primary</label>
+                          <div class="color-picker-row">
+                            <input
+                              type="color"
+                              formControlName="primary"
+                              class="color-input"
+                            />
+                            <mat-form-field
+                              appearance="outline"
+                              class="flex-grow"
+                            >
+                              <mat-label>Primary Hex</mat-label>
+                              <input
+                                matInput
+                                formControlName="primary"
+                                placeholder="#d0bcff"
+                              />
+                            </mat-form-field>
+                          </div>
+                        </div>
+
+                        <div class="palette-grid-item">
+                          <label class="field-label">Secondary</label>
+                          <div class="color-picker-row">
+                            <input
+                              type="color"
+                              formControlName="secondary"
+                              class="color-input"
+                            />
+                            <mat-form-field
+                              appearance="outline"
+                              class="flex-grow"
+                            >
+                              <mat-label>Secondary Hex</mat-label>
+                              <input
+                                matInput
+                                formControlName="secondary"
+                                placeholder="#ccc2dc"
+                              />
+                            </mat-form-field>
+                          </div>
+                        </div>
+
+                        <div class="palette-grid-item">
+                          <label class="field-label">Tertiary</label>
+                          <div class="color-picker-row">
+                            <input
+                              type="color"
+                              formControlName="tertiary"
+                              class="color-input"
+                            />
+                            <mat-form-field
+                              appearance="outline"
+                              class="flex-grow"
+                            >
+                              <mat-label>Tertiary Hex</mat-label>
+                              <input
+                                matInput
+                                formControlName="tertiary"
+                                placeholder="#efb8c8"
+                              />
+                            </mat-form-field>
+                          </div>
+                        </div>
+
+                        <div class="palette-grid-item">
+                          <label class="field-label">Neutral / Surface</label>
+                          <div class="color-picker-row">
+                            <input
+                              type="color"
+                              formControlName="neutral"
+                              class="color-input"
+                            />
+                            <mat-form-field
+                              appearance="outline"
+                              class="flex-grow"
+                            >
+                              <mat-label>Neutral Hex</mat-label>
+                              <input
+                                matInput
+                                formControlName="neutral"
+                                placeholder="#1c1b1f"
+                              />
+                            </mat-form-field>
+                          </div>
+                        </div>
+
+                        <div class="palette-grid-item">
+                          <label class="field-label"
+                            >Neutral Variant / Outline</label
+                          >
+                          <div class="color-picker-row">
+                            <input
+                              type="color"
+                              formControlName="neutralVariant"
+                              class="color-input"
+                            />
+                            <mat-form-field
+                              appearance="outline"
+                              class="flex-grow"
+                            >
+                              <mat-label>Neutral Variant Hex</mat-label>
+                              <input
+                                matInput
+                                formControlName="neutralVariant"
+                                placeholder="#49454f"
+                              />
+                            </mat-form-field>
+                          </div>
+                        </div>
+
+                        <div class="palette-grid-item">
+                          <label class="field-label">Error</label>
+                          <div class="color-picker-row">
+                            <input
+                              type="color"
+                              formControlName="error"
+                              class="color-input"
+                            />
+                            <mat-form-field
+                              appearance="outline"
+                              class="flex-grow"
+                            >
+                              <mat-label>Error Hex</mat-label>
+                              <input
+                                matInput
+                                formControlName="error"
+                                placeholder="#ffb4ab"
+                              />
+                            </mat-form-field>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </mat-tab>
+                </mat-tab-group>
+              </div>
+            }
+          </div>
         </div>
 
         <mat-divider class="section-divider"></mat-divider>

@@ -12,6 +12,36 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 
+vi.mock('@material/material-color-utilities', () => ({
+  argbFromHex: vi.fn().mockReturnValue(12345),
+  hexFromArgb: vi
+    .fn()
+    .mockImplementation(
+      (val) => '#' + Number(val).toString(16).padStart(6, '0'),
+    ),
+  CorePalette: {
+    of: vi.fn().mockReturnValue({
+      a1: { tone: vi.fn().mockReturnValue(0x673ab7) },
+      a2: { tone: vi.fn().mockReturnValue(0x625b71) },
+      a3: { tone: vi.fn().mockReturnValue(0x7d5260) },
+      n1: { tone: vi.fn().mockReturnValue(0xfffbfe) },
+      n2: { tone: vi.fn().mockReturnValue(0xe7e0ec) },
+      error: { tone: vi.fn().mockReturnValue(0xba1a1a) },
+    }),
+  },
+  TonalPalette: {
+    fromInt: vi.fn().mockReturnValue({ tone: vi.fn().mockReturnValue(0) }),
+  },
+  Scheme: {
+    lightFromCorePalette: vi
+      .fn()
+      .mockReturnValue({ toJSON: () => ({ primary: 0xff0000 }) }),
+    darkFromCorePalette: vi
+      .fn()
+      .mockReturnValue({ toJSON: () => ({ primary: 0x00ff00 }) }),
+  },
+}));
+
 describe('Admin', () => {
   let component: Admin;
   let fixture: ComponentFixture<Admin>;
@@ -190,5 +220,58 @@ describe('Admin', () => {
     expect(hrefs).toContain('/admin/addBill');
     expect(hrefs).toContain('/admin/removeAdmin');
     expect(hrefs).toContain('/admin/addAdmin');
+  });
+
+  it('should generate light and dark palettes from primary color', async () => {
+    component.form.patchValue({
+      branding: {
+        primaryColor: '#673ab7',
+      },
+    });
+
+    await component.generatePaletteFromPrimary('both');
+
+    const palettes = component.form.get('branding.palettes')?.value;
+    expect(palettes.light.primary).toBeTruthy();
+    expect(palettes.light.secondary).toBeTruthy();
+    expect(palettes.light.neutral).toBeTruthy();
+    expect(palettes.dark.primary).toBeTruthy();
+    expect(palettes.dark.secondary).toBeTruthy();
+    expect(palettes.dark.neutral).toBeTruthy();
+    expect(component.form.dirty).toBe(true);
+    expect(snackBarSpy.open).toHaveBeenCalledWith(
+      expect.stringContaining('Generated palette'),
+      'Close',
+      expect.any(Object),
+    );
+  });
+
+  it('should save configuration including custom palettes', async () => {
+    component.form.patchValue({
+      organization: { name: 'Org With Palettes', url: 'http://example.com' },
+      branding: {
+        primaryColor: '#673ab7',
+        logoUrl: 'assets/logo.png',
+        palettes: {
+          enabled: true,
+          light: {
+            primary: '#112233',
+            secondary: '#223344',
+          },
+          dark: {
+            primary: '#aabbcc',
+            secondary: '#bbccdd',
+          },
+        },
+      },
+    });
+
+    await component.saveConfig();
+
+    expect(configServiceSpy.save).toHaveBeenCalled();
+    const captured = configServiceSpy.save.mock.calls[0][0];
+    expect(captured.branding.palettes.enabled).toBe(true);
+    expect(captured.branding.palettes.light.primary).toBe('#112233');
+    expect(captured.branding.palettes.dark.primary).toBe('#aabbcc');
   });
 });
