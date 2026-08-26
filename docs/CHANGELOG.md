@@ -1,3 +1,13 @@
+## 0.11.40 (2026-08-26)
+
+### 🚀 Features
+
+- **client-angular:** refine states directory card header responsive layout and alignment ([9c94337](https://github.com/legislative-tracker/legislative-tracker/commit/9c94337))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.39 (2026-08-26)
 
 ### 🚀 Features
