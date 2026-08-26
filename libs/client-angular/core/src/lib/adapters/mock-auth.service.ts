@@ -1,7 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppUser } from '@legislative-tracker/shared/models';
-import { AuthService } from '../services/auth.service';
+import { AuthService, AuthProviderType } from '../services/auth.service';
 import { OfflineStorageService } from '../services/offline-storage.service';
 
 const MOCK_USER: AppUser = {
@@ -34,11 +34,15 @@ export class MockAuthService implements AuthService {
   readonly userProfile = signal<AppUser | null>(MOCK_USER);
   readonly isAdmin = signal<boolean>(true);
 
-  async loginWithGoogle() {
-    this.userSig.set(MOCK_USER);
-    this.userProfile.set(MOCK_USER);
+  async loginWithProvider(provider: AuthProviderType = 'google') {
+    const user = {
+      ...MOCK_USER,
+      displayName: `Mock User (${provider})`,
+    };
+    this.userSig.set(user);
+    this.userProfile.set(user);
     this.isAdmin.set(true);
-    return { user: MOCK_USER };
+    return { user };
   }
 
   async logout() {
