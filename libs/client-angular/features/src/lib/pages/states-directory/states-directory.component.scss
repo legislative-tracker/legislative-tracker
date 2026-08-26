@@ -1,5 +1,5 @@
 .states-directory-container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1.5rem 4rem;
 }
@@ -86,7 +86,7 @@
 
 .jurisdictions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
   gap: 1.5rem;
 }
 
@@ -98,6 +98,8 @@
   border: 1px solid var(--mat-sys-outline-variant);
   background: var(--mat-sys-surface-container-lowest);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+  box-sizing: border-box;
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease;
@@ -108,45 +110,75 @@
   }
 }
 
-.card-header-top {
+.jurisdiction-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  align-items: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1.25rem 1.25rem 0.5rem;
 
-  .badge-chip {
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 6px;
-    text-transform: uppercase;
+  .mat-mdc-card-header-text {
+    flex: 1 1 auto;
+    margin: 0;
+    min-width: 0;
+    padding: 0;
+  }
 
-    &.state-chip {
-      background: var(--mat-sys-secondary-container);
-      color: var(--mat-sys-on-secondary-container);
+  .jurisdiction-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface, inherit);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+
+    .badge-chip {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+
+      &.state-chip {
+        background: var(--mat-sys-secondary-container);
+        color: var(--mat-sys-on-secondary-container);
+      }
     }
+  }
+
+  .jurisdiction-id {
+    font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant);
+    margin-top: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
   }
 
   .session-badge {
     font-size: 0.8rem;
     font-weight: 500;
     color: var(--mat-sys-on-surface-variant);
+    background: var(--mat-sys-surface-container-high);
+    border-radius: 6px;
+    padding: 2px 8px;
+    white-space: nowrap;
+    margin-left: 1rem;
+    flex-shrink: 0;
   }
-}
 
-.jurisdiction-name {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--mat-sys-on-surface, inherit);
-}
+  @media (max-width: 1279.98px) {
+    flex-direction: column;
+    align-items: flex-start;
 
-.jurisdiction-id {
-  font-size: 0.75rem;
-  color: var(--mat-sys-on-surface-variant);
-  word-break: break-all;
-  margin-top: 0.25rem;
+    .session-badge {
+      margin-left: 0;
+      margin-top: 0.5rem;
+    }
+  }
 }
 
 .jurisdiction-content {

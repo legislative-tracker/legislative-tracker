@@ -68,22 +68,19 @@
     <div class="jurisdictions-grid">
       @for (plugin of filteredPlugins(); track plugin.metadata.id) {
         <mat-card class="jurisdiction-card">
-          <mat-card-header>
-            <div class="card-header-top">
+          <mat-card-header class="jurisdiction-card-header">
+            <mat-card-title class="jurisdiction-name">
+              <span>{{ plugin.metadata.jurisdiction.name }}</span>
               <span class="badge-chip state-chip">{{
                 plugin.metadata.jurisdiction.code
               }}</span>
-              <span class="session-badge"
-                >Session:
-                {{ plugin.metadata.jurisdiction.currentSession }}</span
-              >
-            </div>
-            <mat-card-title class="jurisdiction-name">
-              {{ plugin.metadata.jurisdiction.name }}
             </mat-card-title>
             <mat-card-subtitle class="jurisdiction-id">
               {{ plugin.metadata.jurisdiction.id }}
             </mat-card-subtitle>
+            <span class="session-badge"
+              >Session: {{ plugin.metadata.jurisdiction.currentSession }}</span
+            >
           </mat-card-header>
 
           <mat-card-content class="jurisdiction-content">
