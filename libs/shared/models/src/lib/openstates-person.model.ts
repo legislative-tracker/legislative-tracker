@@ -43,4 +43,5 @@ export interface OpenStatesPerson {
   sources?: OpenStatesLink[];
   offices?: OpenStatesOffice[];
   sponsorships?: PersonSponsorship[];
+  district?: string;
 }

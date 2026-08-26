@@ -244,6 +244,37 @@ describe('TableComponent', () => {
     );
   });
 
+  it('should correctly access sorting values for numeric and string properties', () => {
+    const accessor = component.matDataSource.sortingDataAccessor;
+    expect(accessor({ id: '1', name: 'Alice' }, 'id')).toBe(1);
+    expect(accessor({ id: '10', name: 'Bob' }, 'id')).toBe(10);
+    expect(accessor({ id: '1', name: 'Alice' }, 'name')).toBe('alice');
+    expect(accessor({ id: '1' }, 'title')).toBe('');
+  });
+
+  it('should render rep badge when column is family_name and repBadge is present', async () => {
+    const customCols: ColumnConfig<any>[] = [
+      { key: 'family_name', label: 'Last Name' },
+      { key: 'given_name', label: 'First Name' },
+    ];
+    const customData = [
+      {
+        id: '1',
+        family_name: 'Doe',
+        given_name: 'Jane',
+        repBadge: 'Your Senator',
+      },
+    ];
+    fixture.componentRef.setInput('columnSource', customCols);
+    fixture.componentRef.setInput('dataSource', customData);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const badgeDebug = fixture.debugElement.query(By.css('.rep-badge'));
+    expect(badgeDebug).toBeTruthy();
+    expect(badgeDebug.nativeElement.textContent).toContain('Your Senator');
+  });
+
   describe('getRowRoute', () => {
     it('should use default routeType and id when row does not specify custom route', () => {
       const route = component.getRowRoute({ id: '123' });

@@ -13,10 +13,10 @@ export interface ChamberInfo {
 }
 
 export const MEMBER_COLS: ColumnConfig<OpenStatesPerson>[] = [
-  { key: 'name', label: 'Name' },
   { key: 'family_name', label: 'Last Name' },
   { key: 'given_name', label: 'First Name' },
   { key: 'party', label: 'Party' },
+  { key: 'district', label: 'District' },
 ];
 
 export const USER_REPS_COLS: ColumnConfig<any>[] = [
