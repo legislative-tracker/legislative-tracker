@@ -1,3 +1,17 @@
+## 0.11.41 (2026-08-26)
+
+### 🚀 Features
+
+- **client-angular:** show only jurisdiction code badge in toolbar state button ([ab5aa60](https://github.com/legislative-tracker/legislative-tracker/commit/ab5aa60))
+
+### 🩹 Fixes
+
+- **client-angular:** ensure WCAG 2.1 AA color contrast compliance on login footer and hint text ([48b7a1a](https://github.com/legislative-tracker/legislative-tracker/commit/48b7a1a))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.40 (2026-08-26)
 
 ### 🚀 Features
