@@ -8,15 +8,20 @@
 
 .header-card {
   margin-bottom: 1.5rem;
+  overflow: hidden;
+  max-width: 100%;
 
   mat-card-header {
     align-items: center;
     min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
 
-    .mat-mdc-card-header-text {
+    ::ng-deep .mat-mdc-card-header-text {
       min-width: 0;
       max-width: 100%;
       overflow: hidden;
+      flex: 1 1 auto;
     }
 
     .headshot {
@@ -38,8 +43,17 @@
       flex-wrap: wrap;
       max-width: 100%;
       word-break: break-word;
+      min-width: 0;
+
+      .member-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: normal;
+        word-break: break-word;
+      }
     }
 
+    ::ng-deep .mat-mdc-card-subtitle,
     mat-card-subtitle {
       font-size: 0.95rem;
       font-weight: 500;
@@ -48,7 +62,16 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       max-width: 100%;
+      min-width: 0;
       display: block;
+
+      .party-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+        display: block;
+      }
     }
   }
 
@@ -66,6 +89,8 @@
     border: 1px solid
       color-mix(in srgb, var(--mat-sys-primary, #1976d2) 35%, transparent);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    white-space: nowrap;
+    flex-shrink: 0;
 
     .tag-icon {
       font-size: 16px !important;
@@ -78,12 +103,38 @@
 
   mat-card-content {
     padding-top: 0.5rem;
+    max-width: 100%;
+    overflow: hidden;
 
     .member-details-addresses {
       padding: 0;
+      max-width: 100%;
 
       mat-list-item {
         font-size: 0.9rem;
+        max-width: 100%;
+
+        ::ng-deep .mdc-list-item__content {
+          min-width: 0;
+          overflow: hidden;
+        }
+
+        ::ng-deep .mat-mdc-list-item-title {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          max-width: 100%;
+          display: block;
+
+          a {
+            display: inline-block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            vertical-align: bottom;
+          }
+        }
       }
     }
   }
@@ -94,6 +145,7 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0 1rem 1rem 1rem;
+    max-width: 100%;
 
     .contact-btn {
       display: inline-flex;
@@ -101,12 +153,21 @@
       gap: 0.5rem;
       font-weight: 500;
       text-decoration: none;
+      max-width: 100%;
+      min-width: 0;
 
       mat-icon {
         font-size: 18px;
         width: 18px;
         height: 18px;
         line-height: 18px;
+        flex-shrink: 0;
+      }
+
+      .btn-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
 
@@ -117,6 +178,7 @@
       gap: 0.35rem;
       margin-left: auto;
       padding: 0;
+      flex-shrink: 0;
 
       a[mat-icon-button] {
         display: inline-flex;

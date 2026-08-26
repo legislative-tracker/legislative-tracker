@@ -346,6 +346,9 @@ describe('MemberDetail', () => {
 
     const titleEl = cardEl.querySelector('mat-card-title');
     expect(titleEl?.textContent).toContain('Jane Doe | Senate District 123');
+    expect(titleEl?.getAttribute('title')).toBe(
+      'Jane Doe | Senate District 123',
+    );
 
     const subtitleEl = cardEl.querySelector('mat-card-subtitle');
     expect(subtitleEl?.textContent).toContain('Democratic Party');
@@ -362,21 +365,38 @@ describe('MemberDetail', () => {
     const addressItems = addressesList.querySelectorAll('mat-list-item');
     expect(addressItems.length).toBe(2);
 
+    const firstAddressTitle =
+      addressItems[0].querySelector('[matListItemTitle]');
+    expect(firstAddressTitle?.getAttribute('title')).toBe(
+      'Room 412, Capitol Building, Albany, NY',
+    );
+
+    const secondAddressTitle =
+      addressItems[1].querySelector('[matListItemTitle]');
+    expect(secondAddressTitle?.getAttribute('title')).toBe(
+      '100 Broadway, New York, NY',
+    );
+
     const actionsEl = cardEl.querySelector('mat-card-actions');
     expect(actionsEl).toBeTruthy();
 
     const phoneBtns = actionsEl.querySelectorAll('.phone-btn');
     expect(phoneBtns.length).toBe(2);
+    expect(phoneBtns[0].getAttribute('title')).toBe(
+      'Capitol Office: (518) 555-0100',
+    );
 
     const emailBtn = actionsEl.querySelector('.email-btn');
     expect(emailBtn).toBeTruthy();
     expect(emailBtn.getAttribute('href')).toBe(
       'mailto:jdoe@senate.example.gov',
     );
+    expect(emailBtn.getAttribute('title')).toBe('jdoe@senate.example.gov');
 
     const websiteBtn = actionsEl.querySelector('.website-btn');
     expect(websiteBtn).toBeTruthy();
     expect(websiteBtn.getAttribute('href')).toBe('https://janedoe.senate.gov');
+    expect(websiteBtn.getAttribute('title')).toBe('https://janedoe.senate.gov');
 
     const socialLinks = actionsEl.querySelectorAll('.social-links-row a');
     expect(socialLinks.length).toBe(4);
