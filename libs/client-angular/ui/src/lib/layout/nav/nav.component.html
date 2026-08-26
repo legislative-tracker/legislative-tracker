@@ -27,13 +27,12 @@
       class="toolbar-state-btn"
     >
       <mat-icon class="state-icon">location_on</mat-icon>
-      <span class="state-label">{{
-        activeJurisdiction()?.name || 'Select...'
-      }}</span>
       @if (activeJurisdiction()) {
         <span class="state-code-badge">{{
           activeJurisdiction()?.code | uppercase
         }}</span>
+      } @else {
+        <span class="state-label">Select...</span>
       }
       <mat-icon class="arrow-icon">arrow_drop_down</mat-icon>
     </button>
