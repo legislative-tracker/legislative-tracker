@@ -1,7 +1,7 @@
 import { Injectable, Signal } from '@angular/core';
 import { AppUser } from '@legislative-tracker/shared/models';
 
-export type AuthProviderType = 'google' | 'apple' | 'facebook';
+export type AuthProviderType = 'google' | 'apple';
 
 @Injectable()
 export abstract class AuthService {

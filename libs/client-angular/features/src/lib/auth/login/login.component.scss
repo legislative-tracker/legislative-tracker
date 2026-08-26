@@ -128,24 +128,6 @@
       transform: translateY(0);
     }
   }
-
-  // Facebook Button
-  &.btn-facebook {
-    background-color: #1877f2;
-    color: #ffffff;
-    border-color: #1877f2;
-
-    &:hover:not(:disabled) {
-      background-color: #166fe5;
-      box-shadow: 0 2px 8px rgba(24, 119, 242, 0.3);
-      transform: translateY(-1px);
-    }
-
-    &:active:not(:disabled) {
-      background-color: #1464cc;
-      transform: translateY(0);
-    }
-  }
 }
 
 .error-box {

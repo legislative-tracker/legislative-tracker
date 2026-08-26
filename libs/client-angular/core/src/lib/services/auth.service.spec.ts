@@ -29,7 +29,6 @@ vi.mock('firebase/firestore', () => ({
 const mockSignInWithPopup = vi.fn();
 const mockSignOut = vi.fn();
 const mockGoogleAuthProvider = vi.fn();
-const mockFacebookAuthProvider = vi.fn();
 const mockOAuthProvider = vi.fn();
 const mockAddScope = vi.fn();
 const mockOnAuthStateChanged = vi.fn();
@@ -39,14 +38,6 @@ vi.mock('firebase/auth', () => ({
   GoogleAuthProvider: class {
     constructor() {
       mockGoogleAuthProvider();
-    }
-  },
-  FacebookAuthProvider: class {
-    constructor() {
-      mockFacebookAuthProvider();
-    }
-    addScope(scope: string) {
-      mockAddScope(scope);
     }
   },
   OAuthProvider: class {
@@ -230,40 +221,6 @@ describe('FirebaseAuthService', () => {
           email: 'apple@example.com',
           lastLogin: expect.any(Date),
         },
-        { merge: true },
-      );
-    });
-
-    it('should sign in via Facebook popup with proper scopes', async () => {
-      const mockCredential = {
-        user: {
-          uid: 'fb-123',
-          email: 'fb@example.com',
-          displayName: 'FB User',
-          photoURL: 'https://graph.facebook.com/photo.jpg',
-          phoneNumber: '1234567890',
-        },
-      };
-      mockSignInWithPopup.mockResolvedValue(mockCredential);
-
-      await service.loginWithProvider('facebook');
-
-      expect(mockFacebookAuthProvider).toHaveBeenCalled();
-      expect(mockAddScope).toHaveBeenCalledWith('email');
-      expect(mockAddScope).toHaveBeenCalledWith('public_profile');
-      expect(mockSignInWithPopup).toHaveBeenCalled();
-      expect(mockDoc).toHaveBeenCalledWith(mockFirestore, 'users/fb-123');
-
-      expect(mockSetDoc).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          uid: 'fb-123',
-          email: 'fb@example.com',
-          displayName: 'FB User',
-          photoURL: 'https://graph.facebook.com/photo.jpg',
-          phoneNumber: '1234567890',
-          lastLogin: expect.any(Date),
-        }),
         { merge: true },
       );
     });

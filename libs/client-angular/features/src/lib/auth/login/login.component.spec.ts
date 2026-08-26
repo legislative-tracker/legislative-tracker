@@ -45,16 +45,15 @@ describe('Login', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render all 3 provider buttons in the DOM', () => {
+  it('should render all 2 provider buttons in the DOM', () => {
     const buttons = fixture.debugElement.queryAll(By.css('.auth-provider-btn'));
-    expect(buttons.length).toBe(3);
+    expect(buttons.length).toBe(2);
 
     const buttonTexts = buttons.map((b) => b.nativeElement.textContent.trim());
     expect(buttonTexts).toEqual(
       expect.arrayContaining([
         expect.stringContaining('Sign in with Google'),
         expect.stringContaining('Sign in with Apple'),
-        expect.stringContaining('Continue with Facebook'),
       ]),
     );
   });
@@ -80,16 +79,6 @@ describe('Login', () => {
     expect(component.authError()).toBeNull();
   });
 
-  it('should navigate to /profile on successful Facebook login', async () => {
-    mockAuthService.loginWithProvider.mockResolvedValue({ uid: 'fb-123' });
-
-    await component.login('facebook');
-
-    expect(mockAuthService.loginWithProvider).toHaveBeenCalledWith('facebook');
-    expect(router.navigate).toHaveBeenCalledWith(['/profile']);
-    expect(component.authError()).toBeNull();
-  });
-
   it('should set authError when login returns falsy', async () => {
     mockAuthService.loginWithProvider.mockResolvedValue(null);
 
@@ -107,7 +96,7 @@ describe('Login', () => {
       message: 'Account exists',
     });
 
-    await component.login('facebook');
+    await component.login('google');
 
     expect(component.authError()).toBe(
       'An account already exists with the same email address using a different sign-in method. Please sign in with your original provider.',
@@ -172,7 +161,7 @@ describe('Login', () => {
       message: 'Disabled',
     });
 
-    await component.login('facebook');
+    await component.login('apple');
 
     expect(component.authError()).toBe('This user account has been disabled.');
   });
