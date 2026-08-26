@@ -95,6 +95,23 @@ export class TableComponent<T> {
       }
     };
 
+    this.matDataSource.sortingDataAccessor = (
+      item: T,
+      property: string,
+    ): string | number => {
+      const val = (item as Record<string, any>)[property];
+      if (val == null) return '';
+      const num = Number(val);
+      if (
+        !isNaN(num) &&
+        typeof val !== 'boolean' &&
+        String(val).trim() !== ''
+      ) {
+        return num;
+      }
+      return String(val).toLowerCase();
+    };
+
     effect(() => {
       this.matDataSource.data = this.dataSource();
       const sortInstance = this.sort();

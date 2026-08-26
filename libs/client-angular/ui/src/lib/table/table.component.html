@@ -24,7 +24,10 @@
         <td mat-cell *matCellDef="let element">
           <div class="cell-content">
             <span class="cell-text">{{ element[col.key] }}</span>
-            @if (col.key === 'name' && (element.repBadge || element.badge)) {
+            @if (
+              (col.key === 'name' || col.key === 'family_name') &&
+              (element.repBadge || element.badge)
+            ) {
               <span
                 class="rep-badge"
                 [title]="element.repBadge || element.badge"

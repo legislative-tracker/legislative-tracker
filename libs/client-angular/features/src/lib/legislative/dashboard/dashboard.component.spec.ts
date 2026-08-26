@@ -133,7 +133,11 @@ describe('Dashboard', () => {
 
       const senate = component.senateMembers();
       expect(senate.length).toBe(2);
-      expect(senate.find((m) => m.name === 'Jane Doe')).toBeTruthy();
+      const jane = senate.find((m) => m.name === 'Jane Doe');
+      expect(jane).toBeTruthy();
+      expect(jane?.family_name).toBe('Doe');
+      expect(jane?.given_name).toBe('Jane');
+      expect(jane?.district).toBe('1');
       expect(
         senate.find(
           (m) =>
@@ -141,6 +145,15 @@ describe('Dashboard', () => {
             m.current_role?.org_classification === 'lower',
         ),
       ).toBeUndefined();
+    });
+
+    it('should have memberCols configured with Last Name, First Name, Party, and District', () => {
+      expect(component.memberCols).toEqual([
+        { key: 'family_name', label: 'Last Name' },
+        { key: 'given_name', label: 'First Name' },
+        { key: 'party', label: 'Party' },
+        { key: 'district', label: 'District' },
+      ]);
     });
 
     it('should fetch members when switching to Assembly tab (Index 2)', async () => {
@@ -155,6 +168,9 @@ describe('Dashboard', () => {
       const assembly = component.assemblyMembers();
       expect(assembly.length).toBe(1);
       expect(assembly[0].name).toBe('John Smith');
+      expect(assembly[0].family_name).toBe('Smith');
+      expect(assembly[0].given_name).toBe('John');
+      expect(assembly[0].district).toBe('2');
     });
 
     it('should stop fetching bills when switching away from Bills tab', async () => {

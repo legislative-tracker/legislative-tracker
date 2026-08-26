@@ -111,24 +111,44 @@ export class Dashboard {
   );
 
   senateMembers = computed(() =>
-    this.members().filter((m) => {
-      const org =
-        m.current_role?.org_classification?.toLowerCase() ??
-        (m as any).chamber?.toLowerCase() ??
-        '';
-      return org === 'upper' || org === 'senate';
-    }),
+    this.members()
+      .filter((m) => {
+        const org =
+          m.current_role?.org_classification?.toLowerCase() ??
+          (m as any).chamber?.toLowerCase() ??
+          '';
+        return org === 'upper' || org === 'senate';
+      })
+      .map((m) => this.formatMember(m)),
   );
 
   assemblyMembers = computed(() =>
-    this.members().filter((m) => {
-      const org =
-        m.current_role?.org_classification?.toLowerCase() ??
-        (m as any).chamber?.toLowerCase() ??
-        '';
-      return org === 'lower' || org === 'assembly' || org === 'house';
-    }),
+    this.members()
+      .filter((m) => {
+        const org =
+          m.current_role?.org_classification?.toLowerCase() ??
+          (m as any).chamber?.toLowerCase() ??
+          '';
+        return org === 'lower' || org === 'assembly' || org === 'house';
+      })
+      .map((m) => this.formatMember(m)),
   );
+
+  private formatMember(m: OpenStatesPerson): OpenStatesPerson {
+    let given_name = m.given_name;
+    let family_name = m.family_name;
+    if (!given_name && !family_name && m.name) {
+      const parts = m.name.trim().split(/\s+/);
+      given_name = parts[0] || '';
+      family_name = parts.slice(1).join(' ') || '';
+    }
+    return {
+      ...m,
+      given_name: given_name ?? '',
+      family_name: family_name ?? '',
+      district: m.district ?? m.current_role?.district ?? '',
+    };
+  }
 
   onTabChange(index: number) {
     this.selectedTabIndex.set(index as DashboardTab);
