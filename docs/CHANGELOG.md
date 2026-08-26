@@ -1,3 +1,13 @@
+## 0.11.37 (2026-08-26)
+
+### 🩹 Fixes
+
+- **client-angular:** restore local personal data during app reset ([3083795](https://github.com/legislative-tracker/legislative-tracker/commit/3083795))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.36 (2026-08-26)
 
 ### 🚀 Features
