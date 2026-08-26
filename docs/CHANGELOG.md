@@ -1,3 +1,13 @@
+## 0.11.35 (2026-08-26)
+
+### 🩹 Fixes
+
+- **client-angular:** truncate member info overflow on detail card ([0f9e5c4](https://github.com/legislative-tracker/legislative-tracker/commit/0f9e5c4))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.34 (2026-08-25)
 
 ### 🩹 Fixes
