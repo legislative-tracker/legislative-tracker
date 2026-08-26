@@ -128,7 +128,7 @@ export class Profile {
         title: 'Reset Application',
         message:
           'Resetting the application will purge all locally cached data, offline saved bills, notes, preferences, and service worker registrations, and reload the latest version of the app.',
-        isLoggedIn: Boolean(this.user()),
+        isLoggedIn: Boolean(this.user() || this.auth.userSig()),
       },
     });
 
@@ -146,7 +146,7 @@ export class Profile {
     this.isAppResetting.set(true);
 
     try {
-      const currentUid = this.user()?.uid;
+      const currentUid = this.user()?.uid || this.auth.userSig()?.uid;
       await this.appResetService.resetApp({
         backupPersonalData,
         userId: currentUid,

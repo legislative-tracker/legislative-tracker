@@ -219,7 +219,7 @@ describe('AppResetService', () => {
       await service.resetApp({ backupPersonalData: true, userId: 'user-123' });
 
       expect(backupSpy).toHaveBeenCalledWith('user-123');
-      expect(wipeSpy).toHaveBeenCalled();
+      expect(wipeSpy).toHaveBeenCalledWith({ preserveAuth: true });
     });
 
     it('should skip backup if backupPersonalData is false', async () => {
@@ -233,7 +233,58 @@ describe('AppResetService', () => {
       await service.resetApp({ backupPersonalData: false, userId: 'user-123' });
 
       expect(backupSpy).not.toHaveBeenCalled();
-      expect(wipeSpy).toHaveBeenCalled();
+      expect(wipeSpy).toHaveBeenCalledWith({ preserveAuth: false });
+    });
+
+    it('should throw an error and abort if backup fails during resetApp', async () => {
+      vi.spyOn(service, 'backupPersonalData').mockResolvedValue(false);
+      const wipeSpy = vi.spyOn(service, 'performStorageWipe');
+
+      await expect(
+        service.resetApp({ backupPersonalData: true, userId: 'user-123' }),
+      ).rejects.toThrow('Failed to backup personal data to cloud');
+
+      expect(wipeSpy).not.toHaveBeenCalled();
+    });
+
+    it('should pass preserveAuth: true to performStorageWipe when backupPersonalData is true', async () => {
+      vi.spyOn(service, 'backupPersonalData').mockResolvedValue(true);
+      const wipeSpy = vi
+        .spyOn(service, 'performStorageWipe')
+        .mockResolvedValue(undefined);
+
+      await service.resetApp({ backupPersonalData: true, userId: 'user-123' });
+
+      expect(wipeSpy).toHaveBeenCalledWith({ preserveAuth: true });
+    });
+  });
+
+  describe('Mock / Non-Firestore environment', () => {
+    let mockService: AppResetService;
+
+    beforeEach(() => {
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          AppResetService,
+          { provide: OfflineStorageService, useValue: mockOfflineStorage },
+          { provide: ThemeService, useValue: mockThemeService },
+          { provide: FIREBASE_FIRESTORE, useValue: null },
+        ],
+      });
+      mockService = TestBed.inject(AppResetService);
+    });
+
+    it('should backup and restore personal data via sessionStorage when firestore is null', async () => {
+      const backupResult =
+        await mockService.backupPersonalData('mock-user-123');
+      expect(backupResult).toBe(true);
+
+      const restoreResult =
+        await mockService.restorePersonalData('mock-user-123');
+      expect(restoreResult).toBe(true);
+      expect(mockOfflineStorage.saveBill).toHaveBeenCalled();
+      expect(mockOfflineStorage.saveNote).toHaveBeenCalled();
     });
   });
 });

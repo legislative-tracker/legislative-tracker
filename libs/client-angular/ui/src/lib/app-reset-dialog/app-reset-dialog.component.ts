@@ -44,7 +44,9 @@ export class AppResetDialog {
     optional: true,
   });
 
-  readonly backupChoice = signal<'backup' | 'wipe'>('backup');
+  readonly backupChoice = signal<'backup' | 'wipe'>(
+    this.data?.isLoggedIn === false ? 'wipe' : 'backup',
+  );
   readonly isSubmitting = signal<boolean>(false);
 
   onCancel(): void {
