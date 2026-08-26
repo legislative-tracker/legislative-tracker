@@ -1,3 +1,18 @@
+## 0.11.36 (2026-08-26)
+
+### 🚀 Features
+
+- **client-angular:** add Apple and Facebook authentication providers ([d17cb52](https://github.com/legislative-tracker/legislative-tracker/commit/d17cb52))
+
+### 💅 Refactors
+
+- **client-angular:** remove Facebook auth and retain Apple and Google sign in ([52a5494](https://github.com/legislative-tracker/legislative-tracker/commit/52a5494))
+- **client-angular:** remove login wrapper and simplify host container styling ([1c2d73f](https://github.com/legislative-tracker/legislative-tracker/commit/1c2d73f))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.35 (2026-08-26)
 
 ### 🩹 Fixes
