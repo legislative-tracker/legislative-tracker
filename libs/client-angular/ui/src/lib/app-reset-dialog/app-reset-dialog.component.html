@@ -19,14 +19,24 @@
         (ngModelChange)="backupChoice.set($event)"
         class="radio-group"
       >
-        <mat-radio-button value="backup" class="radio-option">
+        <mat-radio-button
+          value="backup"
+          class="radio-option"
+          [disabled]="data?.isLoggedIn === false"
+        >
           <div class="option-content">
             <span class="option-title">
               Backup personal data to cloud (Recommended)
             </span>
             <span class="option-subtitle">
-              Temporarily syncs your offline saved bills, notes, and preferences
-              to the cloud so they restore automatically upon reload.
+              @if (data?.isLoggedIn === false) {
+                Sign-in is required to temporarily back up personal data to the
+                cloud.
+              } @else {
+                Temporarily syncs your offline saved bills, notes, and
+                preferences to the cloud so they restore automatically upon
+                reload.
+              }
             </span>
           </div>
         </mat-radio-button>

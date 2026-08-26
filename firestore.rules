@@ -42,9 +42,13 @@ service cloud.firestore {
       }
     }
 
-    // Users collection: owner read/write, admin full access
+    // Users collection and subcollections: owner read/write, admin full access
     match /users/{userId} {
       allow read, write: if isOwner(userId) || isAdmin();
+
+      match /{allSubcollections=**} {
+        allow read, write: if isOwner(userId) || isAdmin();
+      }
     }
 
     // Configurations collection: public read, admin write

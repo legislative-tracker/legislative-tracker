@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { AppUser } from '@legislative-tracker/shared/models';
 import { AuthService, AuthProviderType } from '../services/auth.service';
 import { OfflineStorageService } from '../services/offline-storage.service';
+import { AppResetService } from '../services/app-reset.service';
+import { FeedbackService } from '../services/feedback.service';
 
 const MOCK_USER: AppUser = {
   uid: 'mock-user-123',
@@ -28,11 +30,28 @@ const MOCK_USER: AppUser = {
 export class MockAuthService implements AuthService {
   private router = inject(Router);
   private offlineStorage = inject(OfflineStorageService, { optional: true });
+  private appResetService = inject(AppResetService, { optional: true });
+  private feedbackService = inject(FeedbackService, { optional: true });
 
   readonly userSig = signal<any>(MOCK_USER);
   readonly isLoggedIn = computed(() => !!this.userSig());
   readonly userProfile = signal<AppUser | null>(MOCK_USER);
   readonly isAdmin = signal<boolean>(true);
+
+  constructor() {
+    if (this.appResetService) {
+      this.appResetService
+        .restorePersonalData(MOCK_USER.uid)
+        .then((restored) => {
+          if (restored && this.feedbackService) {
+            this.feedbackService.sendFeedback(
+              'Application Reset',
+              'Your personal data has been restored successfully.',
+            );
+          }
+        });
+    }
+  }
 
   async loginWithProvider(provider: AuthProviderType = 'google') {
     const user = {

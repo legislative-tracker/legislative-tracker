@@ -59,13 +59,21 @@ describe('AppResetDialog', () => {
     });
   });
 
-  it('should close with confirmed: true and backupPersonalData: false when wipe is selected', () => {
-    component.backupChoice.set('wipe');
-    component.onConfirm();
+  it('should default backupChoice to wipe if isLoggedIn is false', () => {
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [AppResetDialog],
+      providers: [
+        { provide: MatDialogRef, useValue: mockDialogRef },
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: { ...mockData, isLoggedIn: false },
+        },
+      ],
+    }).compileComponents();
 
-    expect(mockDialogRef.close).toHaveBeenCalledWith({
-      confirmed: true,
-      backupPersonalData: false,
-    });
+    const unauthedFixture = TestBed.createComponent(AppResetDialog);
+    const unauthedComponent = unauthedFixture.componentInstance;
+    expect(unauthedComponent.backupChoice()).toBe('wipe');
   });
 });

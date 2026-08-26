@@ -4,6 +4,8 @@ import { OfflineStorageService } from './offline-storage.service';
 import { ThemeService, ThemeMode, THEME_STORAGE_KEY } from './theme.service';
 import { FIREBASE_FIRESTORE } from '../firebase-tokens.token';
 
+export const MOCK_APP_RESET_BACKUP_KEY = '__legislative_tracker_mock_backup__';
+
 export interface UserPersonalBackup {
   savedBills: any[];
   offlineNotes: any[];
@@ -27,10 +29,10 @@ export class AppResetService {
   });
 
   /**
-   * Temporarily uploads personal data (saved bills, notes, preferences) to Firestore.
+   * Temporarily uploads personal data (saved bills, notes, preferences) to Firestore (or sessionStorage in mock mode).
    */
   async backupPersonalData(userId?: string): Promise<boolean> {
-    if (!userId || !this.firestore) {
+    if (!userId) {
       return false;
     }
 
@@ -59,11 +61,18 @@ export class AppResetService {
         timestamp: new Date().toISOString(),
       };
 
-      const backupDoc = doc(
-        this.firestore,
-        `users/${userId}/backups/app_reset`,
-      );
-      await setDoc(backupDoc, backupData);
+      if (this.firestore) {
+        const backupDoc = doc(
+          this.firestore,
+          `users/${userId}/backups/app_reset`,
+        );
+        await setDoc(backupDoc, backupData);
+      } else if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem(
+          MOCK_APP_RESET_BACKUP_KEY,
+          JSON.stringify(backupData),
+        );
+      }
       return true;
     } catch (e) {
       console.warn('Failed to backup personal data to cloud', e);
@@ -72,41 +81,57 @@ export class AppResetService {
   }
 
   /**
-   * Checks for and restores any pending personal data backup from Firestore.
+   * Checks for and restores any pending personal data backup from Firestore (or sessionStorage in mock mode).
    */
   async restorePersonalData(userId?: string): Promise<boolean> {
-    if (!userId || !this.firestore) {
+    if (!userId) {
       return false;
     }
 
     try {
-      const backupDoc = doc(
-        this.firestore,
-        `users/${userId}/backups/app_reset`,
-      );
-      const snap = await getDoc(backupDoc);
+      let backupData: UserPersonalBackup | null = null;
 
-      if (snap.exists()) {
-        const data = snap.data() as UserPersonalBackup;
+      if (this.firestore) {
+        const backupDoc = doc(
+          this.firestore,
+          `users/${userId}/backups/app_reset`,
+        );
+        const snap = await getDoc(backupDoc);
 
-        if (Array.isArray(data.savedBills)) {
-          for (const bill of data.savedBills) {
+        if (snap.exists()) {
+          backupData = snap.data() as UserPersonalBackup;
+          // Cleanup temporary cloud backup once successfully retrieved
+          await deleteDoc(backupDoc);
+        }
+      } else if (typeof sessionStorage !== 'undefined') {
+        const raw = sessionStorage.getItem(MOCK_APP_RESET_BACKUP_KEY);
+        if (raw) {
+          try {
+            backupData = JSON.parse(raw) as UserPersonalBackup;
+            sessionStorage.removeItem(MOCK_APP_RESET_BACKUP_KEY);
+          } catch (err) {
+            console.warn('Failed to parse mock backup data', err);
+          }
+        }
+      }
+
+      if (backupData) {
+        if (Array.isArray(backupData.savedBills)) {
+          for (const bill of backupData.savedBills) {
             await this.offlineStorage.saveBill(bill);
           }
         }
 
-        if (Array.isArray(data.offlineNotes)) {
-          for (const note of data.offlineNotes) {
+        if (Array.isArray(backupData.offlineNotes)) {
+          for (const note of backupData.offlineNotes) {
             await this.offlineStorage.saveNote(note);
           }
         }
 
-        if (data.theme && this.themeService) {
-          this.themeService.setThemeMode(data.theme as ThemeMode);
+        if (backupData.theme && this.themeService) {
+          this.themeService.setThemeMode(backupData.theme as ThemeMode);
         }
 
-        // Cleanup temporary cloud backup once successfully restored
-        await deleteDoc(backupDoc);
         return true;
       }
       return false;
@@ -117,18 +142,44 @@ export class AppResetService {
   }
 
   /**
-   * Completely purges all local client storage:
-   * - localStorage
-   * - sessionStorage
-   * - IndexedDB databases
+   * Purges local client storage:
+   * - localStorage (preserving auth tokens if preserveAuth is true)
+   * - sessionStorage (preserving mock backup if preserveAuth is true)
+   * - IndexedDB databases (preserving firebase auth database if preserveAuth is true)
    * - CacheStorage
    * - Service Worker registrations
    */
-  async performStorageWipe(): Promise<void> {
+  async performStorageWipe(options?: {
+    preserveAuth?: boolean;
+  }): Promise<void> {
+    const preserveAuth = options?.preserveAuth ?? false;
+
     // 1. Clear localStorage
     if (typeof localStorage !== 'undefined') {
       try {
-        localStorage.clear();
+        if (preserveAuth) {
+          const authItems: [string, string][] = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (
+              key &&
+              (key.startsWith('firebase:authUser') ||
+                key.startsWith('firebase:') ||
+                key.startsWith('firebaseui'))
+            ) {
+              const val = localStorage.getItem(key);
+              if (val !== null) {
+                authItems.push([key, val]);
+              }
+            }
+          }
+          localStorage.clear();
+          for (const [k, v] of authItems) {
+            localStorage.setItem(k, v);
+          }
+        } else {
+          localStorage.clear();
+        }
       } catch (e) {
         console.warn('Failed to clear localStorage', e);
       }
@@ -137,7 +188,15 @@ export class AppResetService {
     // 2. Clear sessionStorage
     if (typeof sessionStorage !== 'undefined') {
       try {
-        sessionStorage.clear();
+        if (preserveAuth) {
+          const mockBackup = sessionStorage.getItem(MOCK_APP_RESET_BACKUP_KEY);
+          sessionStorage.clear();
+          if (mockBackup) {
+            sessionStorage.setItem(MOCK_APP_RESET_BACKUP_KEY, mockBackup);
+          }
+        } else {
+          sessionStorage.clear();
+        }
       } catch (e) {
         console.warn('Failed to clear sessionStorage', e);
       }
@@ -150,7 +209,7 @@ export class AppResetService {
       console.warn('Failed to clear OfflineStorage stores', e);
     }
 
-    // 4. Delete all IndexedDB databases
+    // 4. Delete all IndexedDB databases (preserving auth if requested)
     if (
       typeof indexedDB !== 'undefined' &&
       typeof indexedDB.databases === 'function'
@@ -159,6 +218,14 @@ export class AppResetService {
         const dbs = await indexedDB.databases();
         for (const dbInfo of dbs) {
           if (dbInfo.name) {
+            if (
+              preserveAuth &&
+              (dbInfo.name.includes('firebaseLocalStorage') ||
+                dbInfo.name.includes('firebase-auth') ||
+                dbInfo.name.includes('firebase-heartbeat'))
+            ) {
+              continue;
+            }
             indexedDB.deleteDatabase(dbInfo.name);
           }
         }
@@ -193,10 +260,15 @@ export class AppResetService {
    */
   async resetApp(options: AppResetOptions): Promise<void> {
     if (options.backupPersonalData && options.userId) {
-      await this.backupPersonalData(options.userId);
+      const backupSucceeded = await this.backupPersonalData(options.userId);
+      if (!backupSucceeded) {
+        throw new Error(
+          'Failed to backup personal data to cloud. Reset aborted to prevent data loss.',
+        );
+      }
     }
 
-    await this.performStorageWipe();
+    await this.performStorageWipe({ preserveAuth: options.backupPersonalData });
 
     if (typeof window !== 'undefined') {
       window.location.reload();
