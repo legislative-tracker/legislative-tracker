@@ -1,0 +1,172 @@
+@if (memberResource.isLoading()) {
+  <div class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+} @else if (member()) {
+  <mat-card class="header-card">
+    <mat-card-header>
+      <img
+        mat-card-avatar
+        [src]="$safeNavigationMigration(member()?.image)"
+        alt="Headshot of {{ member()?.name }}"
+        class="headshot"
+        appFallback
+      />
+      <mat-card-title [title]="headerTitle()">
+        <span class="member-name">{{ headerTitle() }}</span>
+        @if (userRepLabel(); as repLabel) {
+          <span class="user-rep-tag" [title]="repLabel">
+            <mat-icon class="tag-icon">how_to_reg</mat-icon>
+            <span>{{ repLabel }}</span>
+          </span>
+        }
+      </mat-card-title>
+      @if (member()?.party) {
+        <mat-card-subtitle [title]="member()?.party + ' Party'">
+          <span class="party-text">{{ member()?.party }} Party</span>
+        </mat-card-subtitle>
+      }
+    </mat-card-header>
+
+    @if (member()?.offices?.[0]?.address || member()?.offices?.[1]?.address) {
+      <mat-card-content>
+        <mat-list class="member-details-addresses">
+          @if (member()?.offices?.[0]?.address) {
+            <mat-list-item>
+              <mat-icon matListItemIcon>business</mat-icon>
+              <span
+                matListItemTitle
+                [title]="member()?.offices?.[0]?.address"
+                >{{ member()?.offices?.[0]?.address }}</span
+              >
+            </mat-list-item>
+          }
+          @if (member()?.offices?.[1]?.address) {
+            <mat-list-item>
+              <mat-icon matListItemIcon>location_on</mat-icon>
+              <span matListItemTitle [title]="member()?.offices?.[1]?.address"
+                ><a
+                  href="https://www.google.com/maps/search/?api=1&query={{
+                    member()?.offices?.[1]?.address
+                  }}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  [title]="member()?.offices?.[1]?.address"
+                  >{{ member()?.offices?.[1]?.address }}</a
+                >
+              </span>
+            </mat-list-item>
+          }
+        </mat-list>
+      </mat-card-content>
+    }
+
+    <mat-card-actions>
+      @for (phone of phones(); track phone.number) {
+        <a
+          mat-button
+          color="primary"
+          [href]="phone.telUrl"
+          class="contact-btn phone-btn"
+          [attr.aria-label]="phone.label"
+          [title]="phone.label"
+        >
+          <mat-icon>phone</mat-icon>
+          <span class="btn-text">{{ phone.label }}</span>
+        </a>
+      }
+      @if (primaryEmail()) {
+        <a
+          mat-button
+          color="primary"
+          [href]="'mailto:' + primaryEmail()"
+          class="contact-btn email-btn"
+          [attr.aria-label]="'Email ' + (member()?.name || 'Legislator')"
+          [title]="primaryEmail()"
+        >
+          <mat-icon>email</mat-icon>
+          <span class="btn-text">Email Legislator</span>
+        </a>
+      }
+      @if (officialWebsiteUrl(); as govUrl) {
+        <a
+          mat-button
+          color="primary"
+          [href]="govUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="contact-btn website-btn"
+          aria-label="Official Website"
+          [title]="govUrl"
+        >
+          <mat-icon>language</mat-icon>
+          <span class="btn-text">Official Website</span>
+        </a>
+      }
+      @if (generalWebsiteUrl(); as webUrl) {
+        <a
+          mat-button
+          color="primary"
+          [href]="webUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="contact-btn website-btn"
+          aria-label="Website"
+          [title]="webUrl"
+        >
+          <mat-icon>public</mat-icon>
+          <span class="btn-text">Website</span>
+        </a>
+      }
+      @if (openStatesUrl(); as osUrl) {
+        <a
+          mat-button
+          color="primary"
+          [href]="osUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="contact-btn openstates-btn"
+          aria-label="OpenStates Profile"
+          [title]="osUrl"
+        >
+          <mat-icon>open_in_new</mat-icon>
+          <span class="btn-text">OpenStates Profile</span>
+        </a>
+      }
+      @if (socialLinks().length) {
+        <div class="social-links-row">
+          @for (link of socialLinks(); track link.url) {
+            <a
+              mat-icon-button
+              [href]="link.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              [attr.aria-label]="link.platform"
+              [title]="
+                link.platform + (link.username ? ': ' + link.username : '')
+              "
+            >
+              <i [class]="link.icon"></i>
+            </a>
+          }
+        </div>
+      }
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-tab-group>
+    <mat-tab label="Sponsorships">
+      <app-table
+        [dataSource]="sponsorships()"
+        [columnSource]="sponsorshipCols"
+        [stateCd]="stateCd()"
+        routeType="legislation"
+      ></app-table>
+    </mat-tab>
+  </mat-tab-group>
+} @else {
+  <div class="error-container">
+    <h1>Member Not Found</h1>
+    <p>We couldn't find a legislator with that ID in {{ stateCd() }}.</p>
+  </div>
+}

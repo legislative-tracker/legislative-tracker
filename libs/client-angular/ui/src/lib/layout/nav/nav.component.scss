@@ -16,15 +16,80 @@
     align-items: center;
     gap: 10px;
     margin-left: 16px;
+    min-width: 0;
+    flex-shrink: 1;
+
+    @media (max-width: 599.98px) {
+      margin-left: 8px;
+      gap: 6px;
+    }
   }
 
   .title {
     color: var(--mat-sys-on-primary);
     font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    @media (max-width: 480px) {
+      font-size: 0.95rem;
+    }
+  }
+
+  .toolbar-state-btn {
+    color: var(--mat-sys-on-primary, #ffffff);
+    margin-left: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 0 10px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+
+    @media (max-width: 767.98px) {
+      display: none;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .state-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    .state-label {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .state-code-badge {
+      margin-left: 6px;
+      background: transparent;
+      border: 1px solid currentColor;
+      color: inherit;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0 5px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+      line-height: 1.4;
+    }
+
+    .arrow-icon {
+      margin-left: -2px;
+    }
   }
 
   .toolbar-spacer {
     flex: 1 1 auto;
+    min-width: 8px;
   }
 
   .offline-badge {
@@ -37,7 +102,90 @@
     font-weight: 600;
     padding: 4px 10px;
     border-radius: 16px;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    @media (max-width: 599.98px) {
+      display: none;
+    }
   }
+
+  .desktop-actions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+
+    @media (max-width: 1279.98px) {
+      display: none;
+    }
+  }
+
+  .toolbar-overflow-btn {
+    display: none;
+    margin-left: 4px;
+    flex-shrink: 0;
+
+    @media (max-width: 1279.98px) {
+      display: inline-flex;
+    }
+  }
+
+  .toolbar-offline-btn {
+    margin-right: 4px;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  .theme-toggle-btn {
+    margin-left: 8px;
+  }
+}
+
+.menu-offline-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--mat-sys-error, #ba1a1a);
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.theme-check-icon {
+  margin-left: auto;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.active-theme {
+  font-weight: 600;
+}
+
+.menu-header-label {
+  padding: 8px 16px 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--mat-sys-on-surface-variant, #64748b);
+}
+
+.active-jurisdiction {
+  font-weight: 600;
+  background-color: var(--mat-sys-surface-container, #f1f5f9);
+
+  .j-name {
+    color: var(--mat-sys-primary, #0284c7);
+  }
+}
+
+.j-code {
+  font-size: 0.8rem;
+  color: var(--mat-sys-on-surface-variant, #94a3b8);
+  margin-left: 6px;
 }
 
 .sidenav-container {

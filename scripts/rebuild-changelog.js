@@ -26,6 +26,19 @@ const tags = execSync('git tag --sort=creatordate -l "v*"', { cwd: rootDir })
   .map((t) => t.trim())
   .filter(Boolean);
 
+const pkg = JSON.parse(
+  fs.readFileSync(path.join(rootDir, 'package.json'), 'utf8'),
+);
+const inputVersion = process.argv[2]
+  ? process.argv[2].replace(/^v/, '')
+  : undefined;
+const candidateVersion = inputVersion || pkg.version;
+const candidateTag = candidateVersion ? `v${candidateVersion}` : undefined;
+
+if (candidateTag && !tags.includes(candidateTag)) {
+  tags.push(candidateTag);
+}
+
 console.log(`Found ${tags.length} release tag(s): ${tags.join(', ')}`);
 
 if (tags.length === 0) {
@@ -41,13 +54,27 @@ for (let i = 0; i < tags.length; i++) {
   const version = currentTag.replace(/^v/, '');
   const prevTag = i > 0 ? tags[i - 1] : undefined;
 
-  const date = execSync(`git log -1 --format=%cs ${currentTag}`, {
+  let isTagOnDisk = false;
+  try {
+    isTagOnDisk =
+      execSync(`git rev-parse --verify "${currentTag}"`, {
+        cwd: rootDir,
+        stdio: ['pipe', 'pipe', 'ignore'],
+      })
+        .toString()
+        .trim().length > 0;
+  } catch {
+    isTagOnDisk = false;
+  }
+
+  const targetRef = isTagOnDisk ? currentTag : 'HEAD';
+  const date = execSync(`git log -1 --format=%cs ${targetRef}`, {
     cwd: rootDir,
   })
     .toString()
     .trim();
 
-  const range = prevTag ? `${prevTag}..${currentTag}` : currentTag;
+  const range = prevTag ? `${prevTag}..${targetRef}` : targetRef;
   const rawLog = execSync(
     `git log ${range} --pretty=format:"%H|%h|%s|%an|%ae%n%b%n---COMMIT-END---"`,
     { cwd: rootDir },

@@ -1,2 +1,2 @@
-export * from './add-admin-role';
-export * from './remove-admin-role';
+export * from './add-admin-role.trigger';
+export * from './remove-admin-role.trigger';

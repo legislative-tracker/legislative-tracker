@@ -1,7 +1,8 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppUser } from '@legislative-tracker/shared/models';
-import { AuthService, AuthProviderType } from '../services/auth.service';
+import { AuthService } from '../services/auth.service';
+import { OfflineStorageService } from '../services/offline-storage.service';
 
 const MOCK_USER: AppUser = {
   uid: 'mock-user-123',
@@ -10,7 +11,6 @@ const MOCK_USER: AppUser = {
   photoURL: undefined,
   phoneNumber: null,
   lastLogin: new Date(),
-  favorites: ['bill-1'],
   districts: {
     federal: '1',
     state: {
@@ -27,21 +27,18 @@ const MOCK_USER: AppUser = {
 @Injectable({ providedIn: 'root' })
 export class MockAuthService implements AuthService {
   private router = inject(Router);
+  private offlineStorage = inject(OfflineStorageService, { optional: true });
 
   readonly userSig = signal<any>(MOCK_USER);
   readonly isLoggedIn = computed(() => !!this.userSig());
   readonly userProfile = signal<AppUser | null>(MOCK_USER);
   readonly isAdmin = signal<boolean>(true);
 
-  async loginWithProvider(provider: AuthProviderType = 'google') {
-    const user = {
-      ...MOCK_USER,
-      displayName: `Mock User (${provider})`,
-    };
-    this.userSig.set(user);
-    this.userProfile.set(user);
+  async loginWithGoogle() {
+    this.userSig.set(MOCK_USER);
+    this.userProfile.set(MOCK_USER);
     this.isAdmin.set(true);
-    return { user };
+    return { user: MOCK_USER };
   }
 
   async logout() {
@@ -51,15 +48,20 @@ export class MockAuthService implements AuthService {
     this.router.navigate(['/']);
   }
 
-  async toggleFavorite(billId: string) {
+  async resetDistricts() {
     const profile = this.userProfile();
     if (!profile) return;
 
-    const currentFavorites = profile.favorites || [];
-    const newFavorites = currentFavorites.includes(billId)
-      ? currentFavorites.filter((id: string) => id !== billId)
-      : [...currentFavorites, billId];
+    const updated = { ...profile };
+    delete updated.districts;
+    delete updated.legislators;
+    this.userProfile.set(updated);
+  }
 
-    this.userProfile.set({ ...profile, favorites: newFavorites });
+  async deleteAccountData() {
+    if (this.offlineStorage) {
+      await this.offlineStorage.clearAll();
+    }
+    this.userProfile.set(null);
   }
 }

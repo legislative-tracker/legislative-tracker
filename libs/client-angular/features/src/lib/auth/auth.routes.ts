@@ -4,6 +4,6 @@ export const AUTH_ROUTES: Routes = [
   {
     path: 'login',
     title: 'Login | Legislative Tracker',
-    loadComponent: () => import('./login/login').then((m) => m.Login),
+    loadComponent: () => import('./login/login.component').then((m) => m.Login),
   },
 ];

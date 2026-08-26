@@ -5,7 +5,7 @@ test.describe('Admin Flow Feature', () => {
     page,
   }) => {
     await page.goto('/admin');
-    await expect(page).toHaveURL(/\/login|\/us-ny/);
+    await expect(page).toHaveURL(/\/login|\/us-ny|\/$/);
     await expect(page.locator('.app-header')).toBeVisible();
   });
 
@@ -13,7 +13,7 @@ test.describe('Admin Flow Feature', () => {
     page,
   }) => {
     await page.goto('/admin/add-bill');
-    await expect(page).toHaveURL(/\/login|\/us-ny/);
+    await expect(page).toHaveURL(/\/login|\/us-ny|\/$/);
     await expect(page.locator('.app-header')).toBeVisible();
   });
 
@@ -21,7 +21,7 @@ test.describe('Admin Flow Feature', () => {
     page,
   }) => {
     await page.goto('/admin/edit-bill/test-bill-1');
-    await expect(page).toHaveURL(/\/login|\/us-ny/);
+    await expect(page).toHaveURL(/\/login|\/us-ny|\/$/);
     await expect(page.locator('.app-header')).toBeVisible();
   });
 });

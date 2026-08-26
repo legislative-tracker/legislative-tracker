@@ -2,7 +2,10 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { doc } from 'firebase/firestore';
 import { FirebaseLegislatureService } from './firebase-legislature.service';
-import { FIREBASE_FIRESTORE, FIREBASE_FUNCTIONS } from '../firebase-tokens';
+import {
+  FIREBASE_FIRESTORE,
+  FIREBASE_FUNCTIONS,
+} from '../firebase-tokens.token';
 
 const mockHttpsCallable = vi.fn();
 
@@ -120,5 +123,37 @@ describe('FirebaseLegislatureService', () => {
     const result = await service.updateBill(updateParams);
 
     expect(result).toEqual({ success: true });
+  });
+
+  it('should call legislation-manualUpdate function on manualUpdateLegislation', async () => {
+    const mockCallable = vi
+      .fn()
+      .mockResolvedValue({ data: { status: 'success' } });
+    mockHttpsCallable.mockReturnValue(mockCallable);
+
+    const result = await service.manualUpdateLegislation();
+
+    expect(mockHttpsCallable).toHaveBeenCalledWith(
+      mockFunctions,
+      'legislation-manualUpdate',
+    );
+    expect(mockCallable).toHaveBeenCalledWith();
+    expect(result).toEqual({ data: { status: 'success' } });
+  });
+
+  it('should call legislators-manualUpdate function on manualUpdateLegislators', async () => {
+    const mockCallable = vi
+      .fn()
+      .mockResolvedValue({ data: { status: 'success' } });
+    mockHttpsCallable.mockReturnValue(mockCallable);
+
+    const result = await service.manualUpdateLegislators();
+
+    expect(mockHttpsCallable).toHaveBeenCalledWith(
+      mockFunctions,
+      'legislators-manualUpdate',
+    );
+    expect(mockCallable).toHaveBeenCalledWith();
+    expect(result).toEqual({ data: { status: 'success' } });
   });
 });

@@ -1,0 +1,145 @@
+<div class="container">
+  @if (user(); as u) {
+    <div class="header">
+      <img
+        [src]="u['photoURL'] || 'assets/account_circle_40.svg'"
+        class="user-avatar"
+        alt="User Image"
+      />
+      <h1>Hello, {{ u['displayName'] }}!</h1>
+    </div>
+
+    @if (u['lastLogin']) {
+      <p>
+        Your last login was
+        {{
+          (u['lastLogin']?.toDate ? u['lastLogin'].toDate() : u['lastLogin'])
+            | date: 'medium'
+        }}
+      </p>
+    }
+    <mat-list>
+      <mat-list-item>
+        <mat-icon matListItemIcon>person</mat-icon>
+        <span matListItemTitle>{{ u['displayName'] }}</span>
+      </mat-list-item>
+      <mat-list-item>
+        <mat-icon matListItemIcon>email</mat-icon>
+        <span matListItemTitle>{{ u['email'] }}</span>
+      </mat-list-item>
+    </mat-list>
+    <!-- Representatives Section (Above Watchlist) -->
+    <div class="representatives-section">
+      @if (!u['legislators']) {
+        <div class="section-header">
+          <h2>Your Representatives</h2>
+        </div>
+        <p>
+          We don't currently have your legislative districts or representatives
+          stored; would you like to input your address so we can fetch them?
+        </p>
+        <p>
+          <b>Your address information will never be stored in our system</b>,
+          once the fetch is complete we'll discard the address and only keep the
+          districts & representatives.
+        </p>
+        <app-address-form
+          formType="search"
+          (formSubmit)="searchAddress($event)"
+        ></app-address-form>
+      } @else {
+        <div class="section-header">
+          <h2>Your Representatives</h2>
+          <button
+            mat-stroked-button
+            color="primary"
+            (click)="resetDistricts()"
+            [disabled]="isResetting()"
+          >
+            <mat-icon>refresh</mat-icon>
+            Reset Districts
+          </button>
+        </div>
+
+        <mat-tab-group animationDuration="0ms">
+          <mat-tab label="State">
+            <ng-template matTabContent>
+              <app-table
+                [dataSource]="u['legislators'].state"
+                [columnSource]="legislatorCols"
+                routeType="ocd-person"
+                stateCd="us-ny"
+              ></app-table>
+            </ng-template>
+          </mat-tab>
+          <mat-tab label="Federal">
+            <ng-template matTabContent>
+              <app-table
+                [dataSource]="u['legislators'].federal"
+                [columnSource]="legislatorCols"
+                routeType="ocd-person"
+                stateCd="us"
+              ></app-table>
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
+      }
+    </div>
+
+    <div class="data-management-card">
+      <div class="card-header">
+        <mat-icon color="warn">shield</mat-icon>
+        <div class="header-text">
+          <h3>Account Data & Privacy</h3>
+          <p>Manage stored data, local caches, and privacy preferences.</p>
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="action-item">
+          <div class="action-info">
+            <h4>App Reset</h4>
+            <p>
+              Purge local storage caches and service workers with an option to
+              temporarily sync your personal data to the cloud before reload.
+            </p>
+          </div>
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="confirmAppReset()"
+            [disabled]="isAppResetting() || isDeleting()"
+            class="app-reset-btn"
+          >
+            <mat-icon>restart_alt</mat-icon>
+            App Reset
+          </button>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="action-item danger-item">
+          <div class="action-info">
+            <h4>Delete Account Data</h4>
+            <p>
+              Permanently delete your profile record from Firestore and wipe all
+              locally cached offline storage data (saved bills and notes).
+            </p>
+          </div>
+          <button
+            mat-flat-button
+            color="warn"
+            (click)="confirmDeleteAccount()"
+            [disabled]="isDeleting() || isAppResetting()"
+          >
+            <mat-icon>delete_forever</mat-icon>
+            Delete Account Data
+          </button>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="no-profile">
+      <p>No active user profile found. Please sign in to view your profile.</p>
+    </div>
+  }
+</div>

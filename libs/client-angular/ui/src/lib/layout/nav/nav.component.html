@@ -19,6 +19,56 @@
     <span class="title">| Legislative Tracker</span>
   </div>
 
+  @if (availableJurisdictions().length > 0) {
+    <button
+      mat-button
+      [matMenuTriggerFor]="stateMenu"
+      aria-label="Select state legislature jurisdiction"
+      class="toolbar-state-btn"
+    >
+      <mat-icon class="state-icon">location_on</mat-icon>
+      <span class="state-label">{{
+        activeJurisdiction()?.name || 'Select...'
+      }}</span>
+      @if (activeJurisdiction()) {
+        <span class="state-code-badge">{{
+          activeJurisdiction()?.code | uppercase
+        }}</span>
+      }
+      <mat-icon class="arrow-icon">arrow_drop_down</mat-icon>
+    </button>
+
+    <mat-menu #stateMenu="matMenu" class="state-picker-menu">
+      <div class="menu-header-label">Jurisdictions</div>
+      @for (j of availableJurisdictions(); track j.code) {
+        <button
+          mat-menu-item
+          (click)="switchJurisdiction(j.code)"
+          [class.active-jurisdiction]="activeJurisdiction()?.code === j.code"
+        >
+          <mat-icon
+            [style.color]="
+              activeJurisdiction()?.code === j.code ? '#0284c7' : 'inherit'
+            "
+          >
+            {{
+              activeJurisdiction()?.code === j.code
+                ? 'check_circle'
+                : 'radio_button_unchecked'
+            }}
+          </mat-icon>
+          <span class="j-name">{{ j.name }}</span>
+          <span class="j-code">({{ j.code | uppercase }})</span>
+        </button>
+      }
+      <mat-divider></mat-divider>
+      <a mat-menu-item routerLink="/">
+        <mat-icon>travel_explore</mat-icon>
+        <span>Explore all jurisdictions</span>
+      </a>
+    </mat-menu>
+  }
+
   <span class="toolbar-spacer"></span>
 
   @if (!isOnline()) {
@@ -35,6 +85,158 @@
       <span>Offline Mode</span>
     </div>
   }
+
+  <div class="desktop-actions">
+    @if (currentBookmarkTarget(); as target) {
+      <button
+        mat-icon-button
+        (click)="toggleOfflineSave()"
+        [class.is-offline-saved]="isSavedOffline()"
+        [attr.aria-label]="
+          isSavedOffline()
+            ? 'Remove ' + targetName() + ' from offline storage'
+            : 'Save ' + targetName() + ' for offline reading'
+        "
+        [matTooltip]="
+          isSavedOffline()
+            ? 'Remove ' + targetName() + ' from offline storage'
+            : 'Save ' + targetName() + ' for offline reading'
+        "
+        class="toolbar-offline-btn"
+      >
+        <mat-icon [style.color]="isSavedOffline() ? '#38bdf8' : 'white'">
+          {{ isSavedOffline() ? 'bookmark' : 'bookmark_border' }}
+        </mat-icon>
+      </button>
+    }
+
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="themeMenu"
+      aria-label="Select theme mode"
+      [matTooltip]="'Theme: ' + themeService.mode()"
+      class="theme-toggle-btn"
+    >
+      @switch (themeService.mode()) {
+        @case ('light') {
+          <mat-icon style="color: white">light_mode</mat-icon>
+        }
+        @case ('dark') {
+          <mat-icon style="color: white">dark_mode</mat-icon>
+        }
+        @default {
+          <mat-icon style="color: white">brightness_auto</mat-icon>
+        }
+      }
+    </button>
+  </div>
+
+  <!-- Overflow menu button for medium and small screens -->
+  <button
+    mat-icon-button
+    [matMenuTriggerFor]="overflowMenu"
+    aria-label="More options"
+    class="toolbar-overflow-btn"
+  >
+    <mat-icon style="color: white">more_vert</mat-icon>
+  </button>
+
+  <mat-menu #overflowMenu="matMenu" class="toolbar-overflow-menu">
+    @if (currentBookmarkTarget(); as target) {
+      <button mat-menu-item (click)="toggleOfflineSave()">
+        <mat-icon [style.color]="isSavedOffline() ? '#0284c7' : 'inherit'">
+          {{ isSavedOffline() ? 'bookmark' : 'bookmark_border' }}
+        </mat-icon>
+        <span>{{
+          isSavedOffline() ? 'Remove from Offline' : 'Save for Offline'
+        }}</span>
+      </button>
+      <mat-divider></mat-divider>
+    }
+
+    @if (availableJurisdictions().length > 0) {
+      <button
+        mat-menu-item
+        [matMenuTriggerFor]="stateMenu"
+        class="overflow-jurisdiction-btn"
+        aria-label="Select state legislature jurisdiction"
+      >
+        <mat-icon>location_on</mat-icon>
+        <span>
+          Jurisdiction:
+          {{ activeJurisdiction()?.name || 'Select...' }}
+        </span>
+      </button>
+      <mat-divider></mat-divider>
+    }
+
+    <button mat-menu-item [matMenuTriggerFor]="themeMenu">
+      @switch (themeService.mode()) {
+        @case ('light') {
+          <mat-icon>light_mode</mat-icon>
+        }
+        @case ('dark') {
+          <mat-icon>dark_mode</mat-icon>
+        }
+        @default {
+          <mat-icon>brightness_auto</mat-icon>
+        }
+      }
+      <span>Theme: {{ themeService.mode() | titlecase }}</span>
+    </button>
+
+    @if (!isOnline()) {
+      <mat-divider></mat-divider>
+      <div mat-menu-item disabled class="menu-offline-status">
+        <mat-icon style="color: var(--mat-sys-error)">wifi_off</mat-icon>
+        <span>Offline Mode</span>
+      </div>
+    }
+
+    @if (availableJurisdictions().length > 0) {
+      <mat-divider></mat-divider>
+      <a mat-menu-item routerLink="/">
+        <mat-icon>travel_explore</mat-icon>
+        <span>Explore all jurisdictions</span>
+      </a>
+    }
+  </mat-menu>
+
+  <mat-menu #themeMenu="matMenu">
+    <button
+      mat-menu-item
+      (click)="themeService.setThemeMode('light')"
+      [class.active-theme]="themeService.mode() === 'light'"
+    >
+      <mat-icon>light_mode</mat-icon>
+      <span>Light</span>
+      @if (themeService.mode() === 'light') {
+        <mat-icon class="theme-check-icon">check</mat-icon>
+      }
+    </button>
+    <button
+      mat-menu-item
+      (click)="themeService.setThemeMode('dark')"
+      [class.active-theme]="themeService.mode() === 'dark'"
+    >
+      <mat-icon>dark_mode</mat-icon>
+      <span>Dark</span>
+      @if (themeService.mode() === 'dark') {
+        <mat-icon class="theme-check-icon">check</mat-icon>
+      }
+    </button>
+    <button
+      mat-menu-item
+      (click)="themeService.setThemeMode('system')"
+      [class.active-theme]="themeService.mode() === 'system'"
+    >
+      <mat-icon>brightness_auto</mat-icon>
+      <span>System</span>
+      @if (themeService.mode() === 'system') {
+        <mat-icon class="theme-check-icon">check</mat-icon>
+      }
+    </button>
+  </mat-menu>
 </mat-toolbar>
 
 <mat-sidenav-container class="sidenav-container">
@@ -50,6 +252,7 @@
         mat-list-item
         routerLink="/"
         routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
         (click)="onNavItemClick(drawer)"
       >
         <mat-icon matListItemIcon>home</mat-icon>
@@ -75,7 +278,19 @@
           <mat-icon matListItemIcon>person</mat-icon>
           <span matListItemTitle>Profile</span>
         </a>
+      }
 
+      <a
+        mat-list-item
+        routerLink="/saved-bills"
+        routerLinkActive="active"
+        (click)="onNavItemClick(drawer)"
+      >
+        <mat-icon matListItemIcon>bookmarks</mat-icon>
+        <span matListItemTitle>Saved</span>
+      </a>
+
+      @if (auth.isLoggedIn()) {
         @if (auth.isAdmin()) {
           <a
             mat-list-item

@@ -1,3 +1,3 @@
-export * from './lib/types';
-export * from './lib/plugin-registry';
-export * from './lib/plugin-core';
+export * from './lib/types.model';
+export * from './lib/plugin-registry.service';
+export * from './lib/plugin-core.util';

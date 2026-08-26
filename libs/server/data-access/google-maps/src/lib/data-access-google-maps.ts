@@ -1,4 +1,4 @@
-import { GoogleGeocodeSuccessResponse } from './model';
+import { GoogleGeocodeSuccessResponse } from './google-maps.model';
 
 const isGeocodeSuccess = (
   res: unknown,

@@ -1,16 +1,17 @@
 import { describe, it, expect } from 'vitest';
-import { Address } from './address';
-import { getBillCols } from './column-config';
+import { SearchAddress } from './address.model';
+import { getBillCols } from './column-config.model';
 
 describe('Shared Models', () => {
   it('should construct a valid address object', () => {
-    const address: Address = {
-      street: '123 Main St',
+    const address: SearchAddress = {
+      address: '123 Main St',
+      address2: null,
       city: 'Albany',
       state: 'NY',
-      zip: '12224',
+      postalCode: 12224,
     };
-    expect(address.street).toBe('123 Main St');
+    expect(address.address).toBe('123 Main St');
     expect(address.state).toBe('NY');
   });
 

@@ -1,6 +1,282 @@
+## 0.11.35 (2026-08-26)
+
+### 🩹 Fixes
+
+- **client-angular:** truncate member info overflow on detail card ([0f9e5c4](https://github.com/legislative-tracker/legislative-tracker/commit/0f9e5c4))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.34 (2026-08-25)
+
+### 🩹 Fixes
+
+- **client-angular:** include jurisdiction selector in mobile overflow menu and fix toolbar collision ([ceee40f](https://github.com/legislative-tracker/legislative-tracker/commit/ceee40f))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.33 (2026-08-25)
+
+### 🩹 Fixes
+
+- **client-angular:** normalize workspace package names for npm compatibility (GH-124) ([a92bae2](https://github.com/legislative-tracker/legislative-tracker/commit/a92bae2))
+
+### 🔥 Performance
+
+- **client-angular:** optimize bundle chunks and calibrate build budgets (GH-124) ([685d0fe](https://github.com/legislative-tracker/legislative-tracker/commit/685d0fe))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.32 (2026-08-25)
+
+### 🚀 Features
+
+- **plugins:** scaffold and register New Jersey state plugin (GH-111) ([83d8aea](https://github.com/legislative-tracker/legislative-tracker/commit/83d8aea))
+
+### 🩹 Fixes
+
+- **client-angular:** update e2e card selector for multi-jurisdiction display ([a0f55ea](https://github.com/legislative-tracker/legislative-tracker/commit/a0f55ea))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.31 (2026-08-25)
+
+### 🚀 Features
+
+- **client-angular:** stash runtime config and add app reset action ([5f1a4b7](https://github.com/legislative-tracker/legislative-tracker/commit/5f1a4b7))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.30 (2026-08-25)
+
+### 🚀 Features
+
+- **client-angular:** add overflow menu to toolbar on medium and small screens ([789b5a2](https://github.com/legislative-tracker/legislative-tracker/commit/789b5a2))
+
+### 🩹 Fixes
+
+- **client-angular:** fix overflow in member subtitle and privacy data cards ([135266f](https://github.com/legislative-tracker/legislative-tracker/commit/135266f))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.29 (2026-08-25)
+
+### 🚀 Features
+
+- **client-angular:** display Select... in toolbar state button at root route ([f41b3f3](https://github.com/legislative-tracker/legislative-tracker/commit/f41b3f3))
+- **client-angular:** load states directory directly on base route ([6b74168](https://github.com/legislative-tracker/legislative-tracker/commit/6b74168))
+- **client-angular:** update home link to route to states directory ([4c372ad](https://github.com/legislative-tracker/legislative-tracker/commit/4c372ad))
+- **client-angular:** add multi-jurisdiction state selector and exploration directory ([0af4e07](https://github.com/legislative-tracker/legislative-tracker/commit/0af4e07))
+
+### 🩹 Fixes
+
+- **client-angular:** resolve color contrast for state-code-badge and add e2e tests ([37a565d](https://github.com/legislative-tracker/legislative-tracker/commit/37a565d))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.28 (2026-08-25)
+
+### 🚀 Features
+
+- **client-angular:** display stateCd chip in saved bills card header ([b1a0c9b](https://github.com/legislative-tracker/legislative-tracker/commit/b1a0c9b))
+- **client-angular:** update navbar button text to Saved and place below Profile ([525c6a3](https://github.com/legislative-tracker/legislative-tracker/commit/525c6a3))
+- **client-angular:** remove favorites in favor of offline saved bills and bookmarks ([22f8e73](https://github.com/legislative-tracker/legislative-tracker/commit/22f8e73))
+- **client-angular:** update personal notes description with chamber and bill identifier ([652b3e5](https://github.com/legislative-tracker/legislative-tracker/commit/652b3e5))
+- **client-angular:** make personal notes an expansion panel above sponsors table ([ed048a6](https://github.com/legislative-tracker/legislative-tracker/commit/ed048a6))
+- **client-angular:** add pwa manifest, offline saved bills view, and offline notes ui ([655f1f1](https://github.com/legislative-tracker/legislative-tracker/commit/655f1f1))
+
+### 🩹 Fixes
+
+- **client-angular:** prioritize name field on saved legislation card header ([43265d6](https://github.com/legislative-tracker/legislative-tracker/commit/43265d6))
+- **client-angular:** resolve type union on bill in nav component ([d2c67a2](https://github.com/legislative-tracker/legislative-tracker/commit/d2c67a2))
+- **client-angular:** resolve legislation and bill titles properly for saved bills ([7a1cc23](https://github.com/legislative-tracker/legislative-tracker/commit/7a1cc23))
+
+### 💅 Refactors
+
+- **client-angular:** remove chips and chips-row from saved bills card header ([26c1410](https://github.com/legislative-tracker/legislative-tracker/commit/26c1410))
+- **client-angular:** remove link in saved bills card header ([9bf0659](https://github.com/legislative-tracker/legislative-tracker/commit/9bf0659))
+
+### 📖 Documentation
+
+- **client-angular:** update privacy policy last updated date to today ([31b25de](https://github.com/legislative-tracker/legislative-tracker/commit/31b25de))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.27 (2026-08-25)
+
+### 🚀 Features
+
+- **client-angular:** convert member header and contact actions into unified mat-card ([63a8fdf](https://github.com/legislative-tracker/legislative-tracker/commit/63a8fdf))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.26 (2026-08-25)
+
+### 🚀 Features
+
+- **client-angular:** add bill favoriting in toolbar and update watchlist layout ([0edd924](https://github.com/legislative-tracker/legislative-tracker/commit/0edd924))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.25 (2026-08-24)
+
+### 🚀 Features
+
+- **client-angular:** add bill pop-out button to chamber tabs on legislation view ([b501ce0](https://github.com/legislative-tracker/legislative-tracker/commit/b501ce0))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.24 (2026-08-24)
+
+### 🚀 Features
+
+- **client-angular:** update bill detail page title to reflect bill identifier ([6b7a55e](https://github.com/legislative-tracker/legislative-tracker/commit/6b7a55e))
+
+### 💅 Refactors
+
+- **workspace:** enforce Angular 2016 filename conventions ([9b95f33](https://github.com/legislative-tracker/legislative-tracker/commit/9b95f33))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.23 (2026-08-24)
+
+### 🚀 Features
+
+- **client-angular:** restrict official website button to .gov domains and label OpenStates profile ([198b5ce](https://github.com/legislative-tracker/legislative-tracker/commit/198b5ce))
+- **client-angular:** add contact shortcuts and social links from links array in member detail ([98f372b](https://github.com/legislative-tracker/legislative-tracker/commit/98f372b))
+- **client-angular:** badge representative sponsorships and add civic banner in bill detail ([ec8361f](https://github.com/legislative-tracker/legislative-tracker/commit/ec8361f))
+- **client-angular:** support rep badges and user rep row highlighting in table component ([cd1bc26](https://github.com/legislative-tracker/legislative-tracker/commit/cd1bc26))
+
+### 🩹 Fixes
+
+- **client-angular:** support district, chamber, and name variations in rep matching ([25746ee](https://github.com/legislative-tracker/legislative-tracker/commit/25746ee))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.22 (2026-08-24)
+
+### 🚀 Features
+
+- **client-angular:** add reset districts and delete account data to profile ([88db6bc](https://github.com/legislative-tracker/legislative-tracker/commit/88db6bc))
+- **client-angular:** create ConfirmDialog component in ui library ([ac537f2](https://github.com/legislative-tracker/legislative-tracker/commit/ac537f2))
+- **core:** add clearAll storage and auth resetDistricts and deleteAccountData methods ([4ae4a9e](https://github.com/legislative-tracker/legislative-tracker/commit/4ae4a9e))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.21 (2026-08-24)
+
+### 🩹 Fixes
+
+- **client-angular:** use routerLink instead of href in admin expansion panels ([998651c](https://github.com/legislative-tracker/legislative-tracker/commit/998651c))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.20 (2026-08-24)
+
+### 🚀 Features
+
+- **client-angular:** update bill route to use ocd-bill path parameter ([4cdce5e](https://github.com/legislative-tracker/legislative-tracker/commit/4cdce5e))
+- **client-angular:** add baseline OpenGraph and Twitter meta tags to index.html ([473bc45](https://github.com/legislative-tracker/legislative-tracker/commit/473bc45))
+- **client-angular:** add dynamic social metadata for bill and member routes ([943fc67](https://github.com/legislative-tracker/legislative-tracker/commit/943fc67))
+- **client-angular:** add theme toggle button and menu to navigation header ([1d6846b](https://github.com/legislative-tracker/legislative-tracker/commit/1d6846b))
+- **core:** add SeoService and ThemeService with tests ([fd8db33](https://github.com/legislative-tracker/legislative-tracker/commit/fd8db33))
+
+### 🩹 Fixes
+
+- **core:** resolve theme toggle race condition and prevent light mode override ([7387f38](https://github.com/legislative-tracker/legislative-tracker/commit/7387f38))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.19 (2026-08-24)
+
+### 🚀 Features
+
+- **workspace:** protect manual update triggers and add admin sync UI ([908de8a](https://github.com/legislative-tracker/legislative-tracker/commit/908de8a))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.18 (2026-08-23)
+
+### 🚀 Features
+
+- **workspace:** add github issues feedback backend and client integration ([a06d414](https://github.com/legislative-tracker/legislative-tracker/commit/a06d414))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.17 (2026-08-22)
+
+### 🩹 Fixes
+
+- **server-firebase:** add project id to emulator export target ([61a6425](https://github.com/legislative-tracker/legislative-tracker/commit/61a6425))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.16 (2026-08-22)
+
+### 🩹 Fixes
+
+- **release:** use rebuild-changelog script for automated release changelogs ([b173332](https://github.com/legislative-tracker/legislative-tracker/commit/b173332))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
+## 0.11.15 (2026-08-22)
+
+### 🩹 Fixes
+
+- **server-firebase:** add openstates secret to legislation triggers ([b9cfa15](https://github.com/legislative-tracker/legislative-tracker/commit/b9cfa15))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.14 (2026-08-22)
 
-This was a version bump only for @legislative-tracker/source to align it with other projects, there were no code changes.
+### 🩹 Fixes
+
+- **client-angular:** use ocd-person routeType for dashboard member tables ([de13365](https://github.com/legislative-tracker/legislative-tracker/commit/de13365))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
 
 ## 0.11.13 (2026-08-22)
 

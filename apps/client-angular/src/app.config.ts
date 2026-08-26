@@ -4,7 +4,11 @@ import {
   inject,
   provideAppInitializer,
 } from '@angular/core';
-import { provideRouter, withComponentInputBinding } from '@angular/router';
+import {
+  provideRouter,
+  withComponentInputBinding,
+  withRouterConfig,
+} from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 
 import {
@@ -18,6 +22,7 @@ import configJson from '../public/assets/config.json';
 
 import { LegislaturePluginRegistry } from '@legislative-tracker/plugins-core';
 import { legUsNyPlugin } from '@legislative-tracker/plugins-leg-us-ny';
+import { legUsNjPlugin } from '@legislative-tracker/plugins-leg-us-nj';
 
 export const getAppConfig = (
   runtimeConfig: AppConfig = configJson as AppConfig,
@@ -28,7 +33,11 @@ export const getAppConfig = (
 
       provideZonelessChangeDetection(),
 
-      provideRouter(routes, withComponentInputBinding()),
+      provideRouter(
+        routes,
+        withComponentInputBinding(),
+        withRouterConfig({ paramsInheritanceStrategy: 'always' }),
+      ),
 
       provideServiceWorker('ngsw-worker.js', {
         enabled: true,
@@ -38,7 +47,12 @@ export const getAppConfig = (
       ...BACKEND_PROVIDERS,
 
       provideAppInitializer(() => {
-        LegislaturePluginRegistry.register(legUsNyPlugin);
+        if (!LegislaturePluginRegistry.has(legUsNyPlugin.metadata.id)) {
+          LegislaturePluginRegistry.register(legUsNyPlugin);
+        }
+        if (!LegislaturePluginRegistry.has(legUsNjPlugin.metadata.id)) {
+          LegislaturePluginRegistry.register(legUsNjPlugin);
+        }
         return inject(ConfigService).load();
       }),
     ],

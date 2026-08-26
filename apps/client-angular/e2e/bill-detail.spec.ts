@@ -10,8 +10,8 @@ test.describe('Legislative Tracker Feature', () => {
   test('should display bill detail loading or content state', async ({
     page,
   }) => {
-    await page.goto('/us-ny/bill/S1234');
-    await expect(page).toHaveURL('/us-ny/bill/S1234');
+    await page.goto('/us-ny/ocd-bill/ocd-bill-test');
+    await expect(page).toHaveURL('/us-ny/ocd-bill/ocd-bill-test');
     await expect(page.locator('.app-header')).toBeVisible();
   });
 });

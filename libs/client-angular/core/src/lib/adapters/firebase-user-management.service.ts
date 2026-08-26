@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Functions, httpsCallable } from 'firebase/functions';
 import { UserManagementService } from '../services/user-management.service';
-import { FIREBASE_FUNCTIONS } from '../firebase-tokens';
+import { FIREBASE_FUNCTIONS } from '../firebase-tokens.token';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseUserManagementService implements UserManagementService {

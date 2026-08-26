@@ -30,6 +30,9 @@
       "@legislative-tracker/server-data-access-google-maps": [
         "./libs/server/data-access/google-maps/src/index.ts"
       ],
+      "@legislative-tracker/server-data-access-github": [
+        "./libs/server/data-access/github/src/index.ts"
+      ],
       "@legislative-tracker/server-triggers-firebase": [
         "./libs/server/triggers-firebase/src/index.ts"
       ],
@@ -42,6 +45,9 @@
       "@legislative-tracker/plugins-core": ["./libs/plugins/core/src/index.ts"],
       "@legislative-tracker/plugins-leg-us-ny": [
         "./libs/plugins/leg-us-ny/src/index.ts"
+      ],
+      "@legislative-tracker/plugins-leg-us-nj": [
+        "./libs/plugins/leg-us-nj/src/index.ts"
       ],
       "@legislative-tracker/server-util-core": [
         "./libs/server/util-core/src/index.ts"

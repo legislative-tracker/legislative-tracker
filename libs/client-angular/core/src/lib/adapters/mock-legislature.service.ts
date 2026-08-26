@@ -167,4 +167,24 @@ export class MockLegislatureService extends LegislatureService {
     }
     return Promise.resolve({ data: { success: true } });
   }
+
+  async manualUpdateLegislation(): Promise<unknown> {
+    return Promise.resolve({
+      data: {
+        status: 'success',
+        timestamp: new Date().toISOString(),
+        data: [],
+      },
+    });
+  }
+
+  async manualUpdateLegislators(): Promise<unknown> {
+    return Promise.resolve({
+      data: {
+        status: 'success',
+        timestamp: new Date().toISOString(),
+        results: [],
+      },
+    });
+  }
 }

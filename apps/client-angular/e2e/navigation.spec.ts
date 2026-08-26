@@ -1,10 +1,13 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Navigation & Static Pages', () => {
-  test('should navigate to home and redirect to /us-ny', async ({ page }) => {
+  test('should display States Directory page on home /', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveURL(/\/us-ny/);
+    await expect(page).toHaveURL('/');
     await expect(page.locator('.branding-container')).toBeVisible();
+    await expect(page.locator('h1')).toContainText('State Legislatures');
+    await expect(page.locator('.jurisdiction-card').first()).toBeVisible();
+    await expect(page.locator('.toolbar-state-btn')).toContainText('Select...');
   });
 
   test('should display About page', async ({ page }) => {
@@ -23,6 +26,17 @@ test.describe('Navigation & Static Pages', () => {
     await page.goto('/login');
     await expect(page).toHaveURL('/login');
     await expect(page.getByRole('button', { name: /Google/i })).toBeVisible();
+  });
+
+  test('should display Toolbar State Picker and navigate on click', async ({
+    page,
+  }) => {
+    await page.goto('/us-ny');
+    const stateBtn = page.locator('.toolbar-state-btn');
+    await expect(stateBtn).toBeVisible();
+    await expect(stateBtn).toContainText('New York');
+    await stateBtn.click();
+    await expect(page.locator('.state-picker-menu')).toBeVisible();
   });
 
   test('should render 404 page for invalid route', async ({ page }) => {
