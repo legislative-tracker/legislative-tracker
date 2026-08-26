@@ -1,3 +1,13 @@
+## 0.11.39 (2026-08-26)
+
+### 🚀 Features
+
+- **client-angular:** add custom light and dark material palette configuration ([5aaed06](https://github.com/legislative-tracker/legislative-tracker/commit/5aaed06))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.38 (2026-08-26)
 
 ### 🚀 Features
