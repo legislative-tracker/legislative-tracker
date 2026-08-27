@@ -1,3 +1,13 @@
+## 0.11.42 (2026-08-27)
+
+### 🚀 Features
+
+- **client-angular:** add persistent jurisdiction nav button below home ([0278b60](https://github.com/legislative-tracker/legislative-tracker/commit/0278b60))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.41 (2026-08-26)
 
 ### 🚀 Features
