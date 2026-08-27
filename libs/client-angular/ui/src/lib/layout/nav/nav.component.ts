@@ -40,6 +40,15 @@ import {
 } from '@legislative-tracker/client-angular/core';
 import { Footer } from '../footer/footer.component';
 
+export const SELECTED_JURISDICTION_STORAGE_KEY = 'selected_jurisdiction';
+
+export interface NavJurisdiction {
+  id: string;
+  code: string;
+  name: string;
+  session?: string;
+}
+
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
@@ -90,7 +99,7 @@ export class NavComponent {
     { initialValue: this.router.url },
   );
 
-  availableJurisdictions = computed(() => {
+  availableJurisdictions = computed<NavJurisdiction[]>(() => {
     return getAllPlugins().map((p) => ({
       id: p.metadata.id,
       code: p.metadata.jurisdiction.code,
@@ -99,7 +108,7 @@ export class NavComponent {
     }));
   });
 
-  activeJurisdiction = computed(() => {
+  activeJurisdiction = computed<NavJurisdiction | null>(() => {
     const url = this.currentUrl();
     const list = this.availableJurisdictions();
     if (!list.length) return null;
@@ -122,7 +131,30 @@ export class NavComponent {
     return null;
   });
 
+  selectedJurisdiction = signal<NavJurisdiction | null>(null);
+
   switchJurisdiction(code: string): void {
+    const list = this.availableJurisdictions();
+    const found = list.find(
+      (j) =>
+        j.code.toLowerCase() === code.toLowerCase() ||
+        j.code.toLowerCase().replace(/^us-/, '') ===
+          code.toLowerCase().replace(/^us-/, '') ||
+        j.id.toLowerCase() === code.toLowerCase(),
+    );
+    if (found) {
+      this.selectedJurisdiction.set(found);
+      if (typeof localStorage !== 'undefined') {
+        try {
+          localStorage.setItem(SELECTED_JURISDICTION_STORAGE_KEY, found.code);
+        } catch (e) {
+          console.warn(
+            'Failed to save selected jurisdiction to localStorage',
+            e,
+          );
+        }
+      }
+    }
     this.router.navigate(['/', code]);
   }
 
@@ -199,6 +231,52 @@ export class NavComponent {
   });
 
   constructor() {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const savedCode = localStorage.getItem(
+          SELECTED_JURISDICTION_STORAGE_KEY,
+        );
+        if (savedCode) {
+          const list = this.availableJurisdictions();
+          const found = list.find(
+            (j) =>
+              j.code.toLowerCase() === savedCode.toLowerCase() ||
+              j.code.toLowerCase().replace(/^us-/, '') ===
+                savedCode.toLowerCase().replace(/^us-/, '') ||
+              j.id.toLowerCase() === savedCode.toLowerCase(),
+          );
+          if (found) {
+            this.selectedJurisdiction.set(found);
+          }
+        }
+      } catch (e) {
+        console.warn(
+          'Failed to read selected jurisdiction from localStorage',
+          e,
+        );
+      }
+    }
+
+    effect(() => {
+      const active = this.activeJurisdiction();
+      if (active) {
+        this.selectedJurisdiction.set(active);
+        if (typeof localStorage !== 'undefined') {
+          try {
+            localStorage.setItem(
+              SELECTED_JURISDICTION_STORAGE_KEY,
+              active.code,
+            );
+          } catch (e) {
+            console.warn(
+              'Failed to save selected jurisdiction to localStorage',
+              e,
+            );
+          }
+        }
+      }
+    });
+
     effect(async () => {
       const target = this.currentBookmarkTarget();
       if (!target) {
