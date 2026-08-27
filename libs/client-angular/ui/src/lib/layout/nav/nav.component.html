@@ -257,15 +257,21 @@
         <mat-icon matListItemIcon>home</mat-icon>
         <span matListItemTitle>Home</span>
       </a>
-      <a
-        mat-list-item
-        routerLink="/about"
-        routerLinkActive="active"
-        (click)="onNavItemClick(drawer)"
-      >
-        <mat-icon matListItemIcon>info</mat-icon>
-        <span matListItemTitle>About</span>
-      </a>
+
+      @if (selectedJurisdiction(); as jurisdiction) {
+        <a
+          mat-list-item
+          [routerLink]="['/', jurisdiction.code]"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="onNavItemClick(drawer)"
+          [attr.aria-label]="(jurisdiction.code | uppercase) + ' Dashboard'"
+          class="jurisdiction-nav-item"
+        >
+          <mat-icon matListItemIcon>account_balance</mat-icon>
+          <span matListItemTitle>{{ jurisdiction.code | uppercase }}</span>
+        </a>
+      }
 
       @if (auth.isLoggedIn()) {
         <a
@@ -287,6 +293,16 @@
       >
         <mat-icon matListItemIcon>bookmarks</mat-icon>
         <span matListItemTitle>Saved</span>
+      </a>
+
+      <a
+        mat-list-item
+        routerLink="/about"
+        routerLinkActive="active"
+        (click)="onNavItemClick(drawer)"
+      >
+        <mat-icon matListItemIcon>info</mat-icon>
+        <span matListItemTitle>About</span>
       </a>
 
       @if (auth.isLoggedIn()) {

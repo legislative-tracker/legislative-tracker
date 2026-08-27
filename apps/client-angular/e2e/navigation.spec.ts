@@ -39,6 +39,28 @@ test.describe('Navigation & Static Pages', () => {
     await expect(page.locator('.state-picker-menu')).toBeVisible();
   });
 
+  test('should display active jurisdiction button in sidenav and persist when navigating outside jurisdiction', async ({
+    page,
+  }) => {
+    await page.goto('/us-ny');
+    const jurisdictionNavItem = page.locator(
+      'mat-sidenav .jurisdiction-nav-item',
+    );
+    await expect(jurisdictionNavItem).toBeVisible();
+    await expect(jurisdictionNavItem).toContainText('US-NY');
+    await expect(jurisdictionNavItem).toHaveAttribute('href', '/us-ny');
+
+    // Navigate to /about (outside jurisdiction)
+    await page.goto('/about');
+    await expect(jurisdictionNavItem).toBeVisible();
+    await expect(jurisdictionNavItem).toContainText('US-NY');
+    await expect(jurisdictionNavItem).toHaveAttribute('href', '/us-ny');
+
+    // Clicking it should navigate back to /us-ny
+    await jurisdictionNavItem.click();
+    await expect(page).toHaveURL('/us-ny');
+  });
+
   test('should render 404 page for invalid route', async ({ page }) => {
     await page.goto('/invalid-route-xyz');
     await expect(page).toHaveURL('/404');

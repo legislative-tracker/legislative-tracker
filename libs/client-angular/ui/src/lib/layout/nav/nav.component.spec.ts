@@ -12,7 +12,10 @@ import { BehaviorSubject } from 'rxjs';
 import { signal } from '@angular/core';
 
 // Target Component
-import { NavComponent } from './nav.component';
+import {
+  NavComponent,
+  SELECTED_JURISDICTION_STORAGE_KEY,
+} from './nav.component';
 import { Footer } from '../footer/footer.component'; // Import the real footer class so we can reference it
 
 // Service Dependencies
@@ -77,6 +80,7 @@ describe('NavComponent', () => {
   };
 
   beforeEach(async () => {
+    localStorage.clear();
     screenState$.next({ matches: false, breakpoints: {} });
 
     if (!LegislaturePluginRegistry.has('leg-us-ny')) {
@@ -99,6 +103,29 @@ describe('NavComponent', () => {
           capabilities: { hasApi: true },
         },
         calculateCurrentSession: () => '2025-2026',
+      });
+    }
+
+    if (!LegislaturePluginRegistry.has('leg-us-nj')) {
+      await LegislaturePluginRegistry.register({
+        metadata: {
+          id: 'leg-us-nj',
+          name: 'New Jersey State Legislature Plugin',
+          version: '1.0.0',
+          jurisdiction: {
+            id: 'ocd-jurisdiction/country:us/state:nj/government',
+            code: 'us-nj',
+            name: 'New Jersey',
+            isBicameral: true,
+            chambers: {
+              upper: 'Senate',
+              lower: 'General Assembly',
+            },
+            currentSession: '2024-2025',
+          },
+          capabilities: { hasApi: true },
+        },
+        calculateCurrentSession: () => '2024-2025',
       });
     }
 
@@ -313,10 +340,105 @@ describe('NavComponent', () => {
       expect(active).toBeNull();
     });
 
-    it('should navigate to selected jurisdiction when switchJurisdiction is called', () => {
+    it('should navigate to selected jurisdiction and update selection when switchJurisdiction is called', () => {
       const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
-      component.switchJurisdiction('us-ca');
-      expect(navigateSpy).toHaveBeenCalledWith(['/', 'us-ca']);
+      component.switchJurisdiction('us-nj');
+      expect(navigateSpy).toHaveBeenCalledWith(['/', 'us-nj']);
+      expect(component.selectedJurisdiction()?.code).toBe('us-nj');
+      expect(localStorage.getItem(SELECTED_JURISDICTION_STORAGE_KEY)).toBe(
+        'us-nj',
+      );
+    });
+
+    it('should render jurisdiction button below Home when a jurisdiction is active', () => {
+      (router.events as any).next(new NavigationEnd(20, '/us-ny', '/us-ny'));
+      fixture.detectChanges();
+
+      const jurisdictionItem = fixture.nativeElement.querySelector(
+        '.jurisdiction-nav-item',
+      );
+      expect(jurisdictionItem).toBeTruthy();
+      expect(jurisdictionItem.textContent).toContain('US-NY');
+      expect(jurisdictionItem.getAttribute('href')).toBe('/us-ny');
+    });
+
+    it('should not render jurisdiction button when no jurisdiction has been selected', () => {
+      (router.events as any).next(new NavigationEnd(21, '/', '/'));
+      fixture.detectChanges();
+
+      const jurisdictionItem = fixture.nativeElement.querySelector(
+        '.jurisdiction-nav-item',
+      );
+      expect(jurisdictionItem).toBeNull();
+    });
+
+    it('should render jurisdiction button when on sub-route of jurisdiction', () => {
+      (router.events as any).next(
+        new NavigationEnd(
+          22,
+          '/us-ny/legislation/clean-energy',
+          '/us-ny/legislation/clean-energy',
+        ),
+      );
+      fixture.detectChanges();
+
+      const jurisdictionItem = fixture.nativeElement.querySelector(
+        '.jurisdiction-nav-item',
+      );
+      expect(jurisdictionItem).toBeTruthy();
+      expect(jurisdictionItem.textContent).toContain('US-NY');
+      expect(jurisdictionItem.getAttribute('href')).toBe('/us-ny');
+    });
+
+    it('should persist jurisdiction button when user navigates to a page outside of a jurisdiction', () => {
+      // 1. Visit NY
+      (router.events as any).next(new NavigationEnd(23, '/us-ny', '/us-ny'));
+      fixture.detectChanges();
+
+      expect(component.selectedJurisdiction()?.code).toBe('us-ny');
+      expect(localStorage.getItem(SELECTED_JURISDICTION_STORAGE_KEY)).toBe(
+        'us-ny',
+      );
+
+      // 2. Navigate away to /about
+      (router.events as any).next(new NavigationEnd(24, '/about', '/about'));
+      fixture.detectChanges();
+
+      const jurisdictionItemOnAbout = fixture.nativeElement.querySelector(
+        '.jurisdiction-nav-item',
+      );
+      expect(jurisdictionItemOnAbout).toBeTruthy();
+      expect(jurisdictionItemOnAbout.textContent).toContain('US-NY');
+      expect(jurisdictionItemOnAbout.getAttribute('href')).toBe('/us-ny');
+
+      // 3. Navigate away to / (Home)
+      (router.events as any).next(new NavigationEnd(25, '/', '/'));
+      fixture.detectChanges();
+
+      const jurisdictionItemOnHome = fixture.nativeElement.querySelector(
+        '.jurisdiction-nav-item',
+      );
+      expect(jurisdictionItemOnHome).toBeTruthy();
+      expect(jurisdictionItemOnHome.textContent).toContain('US-NY');
+      expect(jurisdictionItemOnHome.getAttribute('href')).toBe('/us-ny');
+    });
+
+    it('should restore selected jurisdiction from localStorage on initial creation', () => {
+      localStorage.setItem(SELECTED_JURISDICTION_STORAGE_KEY, 'us-nj');
+
+      const newFixture = TestBed.createComponent(NavComponent);
+      const newComponent = newFixture.componentInstance;
+      newFixture.detectChanges();
+
+      expect(newComponent.selectedJurisdiction()?.code).toBe('us-nj');
+      expect(newComponent.selectedJurisdiction()?.name).toBe('New Jersey');
+
+      const jurisdictionItem = newFixture.nativeElement.querySelector(
+        '.jurisdiction-nav-item',
+      );
+      expect(jurisdictionItem).toBeTruthy();
+      expect(jurisdictionItem.textContent).toContain('US-NJ');
+      expect(jurisdictionItem.getAttribute('href')).toBe('/us-nj');
     });
   });
 
