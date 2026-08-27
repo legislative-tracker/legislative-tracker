@@ -34,7 +34,7 @@ export class Privacy {
       title: 'Identity Data',
       icon: 'badge',
       description:
-        'If you sign in, we store your email address and basic profile info provided by Google Auth.',
+        'If you sign in, we store your email address and basic profile info provided by your Auth Provider (Google/Apple).',
     },
     {
       title: 'Usage Data',
@@ -46,7 +46,7 @@ export class Privacy {
       title: 'Address & Location (Transient)',
       icon: 'location_off',
       description:
-        'Used solely to find your district representatives and discarded immediately.',
+        'Used solely to find your district representatives, then discarded immediately.',
       importantNote: 'We do NOT store your street address or coordinates.',
     },
   ]);
