@@ -8,40 +8,40 @@ The system is structured as an **Nx Monorepo** combining a modern **Angular Prog
 
 ```mermaid
 graph TD
-    User([End User / Citizen / Staff]) -->|HTTPS / PWA| AngularPWA[Angular PWA Client]
+    User([End User / Citizen / Staff]) -->|HTTPS / PWA| AngularPWA["Angular PWA Client"]
     Admin([Administrator]) -->|Admin Dashboard| AngularPWA
 
-    subgraph Frontend [Client Architecture (libs/client-angular)]
-        AngularPWA --> UI[UI Layer - Material 3]
-        AngularPWA --> Features[Feature Modules]
-        Features --> CorePorts[Core Abstract Ports]
-        CorePorts --> FirebaseAdapters[Firebase Adapters]
-        CorePorts -.-> MockAdapters[Mock Adapters (Testing)]
-        AngularPWA --> IndexedDB[(IndexedDB / Service Worker)]
-        AngularPWA --> PluginRegClient[Legislature Plugin Registry]
+    subgraph Frontend ["Client Architecture (libs/client-angular)"]
+        AngularPWA --> UI["UI Layer - Material 3"]
+        AngularPWA --> Features["Feature Modules"]
+        Features --> CorePorts["Core Abstract Ports"]
+        CorePorts --> FirebaseAdapters["Firebase Adapters"]
+        CorePorts -.-> MockAdapters["Mock Adapters (Testing)"]
+        AngularPWA --> IndexedDB[("IndexedDB / Service Worker")]
+        AngularPWA --> PluginRegClient["Legislature Plugin Registry"]
     end
 
-    subgraph FirebaseCloud [Firebase Cloud Backend]
-        FirebaseAdapters -->|Real-time Subscriptions| Firestore[(Cloud Firestore)]
-        FirebaseAdapters -->|Auth Token| FirebaseAuth[Firebase Authentication]
-        FirebaseAdapters -->|HTTPS Callable| CloudFunctions[Cloud Functions v2]
+    subgraph FirebaseCloud ["Firebase Cloud Backend"]
+        FirebaseAdapters -->|Real-time Subscriptions| Firestore[("Cloud Firestore")]
+        FirebaseAdapters -->|Auth Token| FirebaseAuth["Firebase Authentication"]
+        FirebaseAdapters -->|HTTPS Callable| CloudFunctions["Cloud Functions v2"]
 
-        CloudFunctions --> TriggerLogic[Trigger & Service Layer]
-        Scheduler[Cloud Scheduler / Cron] -->|Scheduled Runs| TriggerLogic
-        Firestore -->|onDocumentWritten| SyncTrigger[Sponsorship Sync Trigger]
+        CloudFunctions --> TriggerLogic["Trigger & Service Layer"]
+        Scheduler["Cloud Scheduler / Cron"] -->|Scheduled Runs| TriggerLogic
+        Firestore -->|onDocumentWritten| SyncTrigger["Sponsorship Sync Trigger"]
         SyncTrigger --> TriggerLogic
     end
 
-    subgraph ServerCore [Server Utilities & Plugins]
-        TriggerLogic --> ServerUtil[Server Core Utilities]
-        ServerUtil --> PluginRegServer[Legislature Plugin Registry]
-        PluginRegServer --> Plugins[State Plugins: NY, NJ, ...]
+    subgraph ServerCore ["Server Utilities & Plugins"]
+        TriggerLogic --> ServerUtil["Server Core Utilities"]
+        ServerUtil --> PluginRegServer["Legislature Plugin Registry"]
+        PluginRegServer --> Plugins["State Plugins: NY, NJ, ..."]
     end
 
-    subgraph ExternalAPIs [External Data Providers]
-        ServerUtil --> OpenStatesAPI[Open States API v3 / OCD]
-        TriggerLogic --> GoogleMapsAPI[Google Maps Geocoding API]
-        TriggerLogic --> GitHubAPI[GitHub Issues API]
+    subgraph ExternalAPIs ["External Data Providers"]
+        ServerUtil --> OpenStatesAPI["Open States API v3 / OCD"]
+        TriggerLogic --> GoogleMapsAPI["Google Maps Geocoding API"]
+        TriggerLogic --> GitHubAPI["GitHub Issues API"]
     end
 ```
 
@@ -109,39 +109,39 @@ All library dependencies are referenced via TypeScript base path aliases:
 
 ```mermaid
 graph TD
-    subgraph AngularApp [Angular 22 Client (Zoneless + Signals)]
-        AppConfig[App Initialization / ConfigService]
-        Router[Angular Router with Functional Guards]
+    subgraph AngularApp ["Angular 22 Client (Zoneless + Signals)"]
+        AppConfig["App Initialization / ConfigService"]
+        Router["Angular Router with Functional Guards"]
 
-        subgraph CoreServices [Core Layer]
-            ThemeService[ThemeService - Material 3 Tokens]
-            OfflineService[OfflineStorageService - IndexedDB]
-            SeoService[SeoService - Meta / Canonical]
-            AppResetService[AppResetService - Storage Eviction]
+        subgraph CoreServices ["Core Layer"]
+            ThemeService["ThemeService - Material 3 Tokens"]
+            OfflineService["OfflineStorageService - IndexedDB"]
+            SeoService["SeoService - Meta / Canonical"]
+            AppResetService["AppResetService - Storage Eviction"]
         end
 
-        subgraph Ports [Abstract Service Ports]
-            LegService[LegislatureService]
-            AuthService[AuthService]
-            CfgService[ConfigService]
-            FeedService[FeedbackService]
-            UserMgmtService[UserManagementService]
+        subgraph Ports ["Abstract Service Ports"]
+            LegService["LegislatureService"]
+            AuthService["AuthService"]
+            CfgService["ConfigService"]
+            FeedService["FeedbackService"]
+            UserMgmtService["UserManagementService"]
         end
 
-        subgraph Adapters [Backend Adapters]
-            FBLeg[FirebaseLegislatureService]
-            FBAuth[FirebaseAuthService]
-            FBCfg[FirebaseConfigService]
-            FBFeed[FirebaseFeedbackService]
-            FBUser[FirebaseUserManagementService]
+        subgraph Adapters ["Backend Adapters"]
+            FBLeg["FirebaseLegislatureService"]
+            FBAuth["FirebaseAuthService"]
+            FBCfg["FirebaseConfigService"]
+            FBFeed["FirebaseFeedbackService"]
+            FBUser["FirebaseUserManagementService"]
         end
     end
 
     Router --> Ports
     Ports --> Adapters
-    Adapters --> FirestoreClient[(Firestore SDK)]
-    Adapters --> FunctionsClient[Firebase Functions SDK]
-    Adapters --> AuthClient[Firebase Auth SDK]
+    Adapters --> FirestoreClient[("Firestore SDK")]
+    Adapters --> FunctionsClient["Firebase Functions SDK"]
+    Adapters --> AuthClient["Firebase Auth SDK"]
 ```
 
 ### 3.1 Angular 22 & Modern Patterns
