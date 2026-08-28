@@ -14,20 +14,20 @@ The production deployment consists of:
 
 ```mermaid
 graph TD
-    User([End User / Browser]) -->|HTTPS / CDN| Hosting[Firebase Hosting]
-    Hosting -->|SPA Fallback| ClientApp[Angular 22 PWA Bundle]
+    User(["End User / Browser"]) -->|HTTPS / CDN| Hosting["Firebase Hosting"]
+    Hosting -->|SPA Fallback| ClientApp["Angular 22 PWA Bundle"]
 
-    ClientApp -->|Firebase Auth| Auth[Firebase Authentication]
-    ClientApp -->|Firestore SDK| Firestore[(Cloud Firestore Native)]
-    ClientApp -->|HTTPS onCall| CloudFunctions[Cloud Functions v2]
+    ClientApp -->|Firebase Auth| Auth["Firebase Authentication"]
+    ClientApp -->|Firestore SDK| Firestore[("Cloud Firestore Native")]
+    ClientApp -->|HTTPS onCall| CloudFunctions["Cloud Functions v2"]
 
-    CloudFunctions --> SecretManager[Google Cloud Secret Manager]
-    CloudScheduler[Cloud Scheduler] -->|Pub/Sub Trigger| CloudFunctions
+    CloudFunctions --> SecretManager["Google Cloud Secret Manager"]
+    CloudScheduler["Cloud Scheduler"] -->|Pub/Sub Trigger| CloudFunctions
     Firestore -->|onDocumentWritten| CloudFunctions
 
-    CloudFunctions --> OpenStates[Open States API v3]
-    CloudFunctions --> GoogleMaps[Google Maps Geocoding API]
-    CloudFunctions --> GitHub[GitHub API]
+    CloudFunctions --> OpenStates["Open States API v3"]
+    CloudFunctions --> GoogleMaps["Google Maps Geocoding API"]
+    CloudFunctions --> GitHub["GitHub API"]
 ```
 
 ## 2. Prerequisites & GCP Provisioning

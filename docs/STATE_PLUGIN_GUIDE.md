@@ -10,20 +10,20 @@ All state plugins implement the `LegislativePlugin` contract exported by `@legis
 
 ```mermaid
 graph TD
-    subgraph PluginCore [libs/plugins/core]
-        Interface[LegislativePlugin Interface]
-        Registry[LegislaturePluginRegistry]
+    subgraph PluginCore ["libs/plugins/core"]
+        Interface["LegislativePlugin Interface"]
+        Registry["LegislaturePluginRegistry"]
     end
 
-    subgraph StatePlugins [State Plugin Implementations]
-        NYPlugin[libs/plugins/leg-us-ny]
-        NJPlugin[libs/plugins/leg-us-nj]
-        NewPlugin[libs/plugins/leg-us-xx]
+    subgraph StatePlugins ["State Plugin Implementations"]
+        NYPlugin["libs/plugins/leg-us-ny"]
+        NJPlugin["libs/plugins/leg-us-nj"]
+        NewPlugin["libs/plugins/leg-us-xx"]
     end
 
-    subgraph Consumers [Runtime Consumers]
-        AngularApp[Angular Client PWA]
-        ServerCore[Server Triggers & Util-Core]
+    subgraph Consumers ["Runtime Consumers"]
+        AngularApp["Angular Client PWA"]
+        ServerCore["Server Triggers & Util-Core"]
     end
 
     NYPlugin --> Interface
