@@ -4,6 +4,7 @@ export * from './lib/firebase-tokens.token';
 export * from './lib/guards/admin.guard';
 export * from './lib/guards/auth.guard';
 export * from './lib/guards/state.guard';
+export * from './lib/services/app-error-handler';
 export * from './lib/services/app-reset.service';
 export * from './lib/services/auth.service';
 export * from './lib/services/config.service';
