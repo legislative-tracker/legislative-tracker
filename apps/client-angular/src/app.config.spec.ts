@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ApplicationInitStatus } from '@angular/core';
+import { ApplicationInitStatus, ErrorHandler } from '@angular/core';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { getAppConfig } from './app.config';
 import {
@@ -8,8 +8,10 @@ import {
 } from '@legislative-tracker/plugins-core';
 import {
   AppConfig,
+  AppErrorHandler,
   ConfigService,
   MockConfigService,
+  PwaUpdateService,
 } from '@legislative-tracker/client-angular/core';
 
 describe('getAppConfig', () => {
@@ -85,5 +87,39 @@ describe('getAppConfig', () => {
     expect(plugins[0].metadata.id).toBe('leg-us-ny');
     expect(LegislaturePluginRegistry.has('leg-us-ny')).toBe(true);
     expect(LegislaturePluginRegistry.has('leg-us-nj')).toBe(false);
+  });
+
+  it('should provide AppErrorHandler as the global ErrorHandler and initialize PwaUpdateService', async () => {
+    const config: AppConfig = {
+      production: false,
+      firebase: {
+        projectId: 'test',
+        appId: 'test',
+        databaseURL: '',
+        storageBucket: '',
+        apiKey: '',
+        authDomain: '',
+        messagingSenderId: '',
+        measurementId: '',
+        projectNumber: '',
+        version: '1',
+      },
+    };
+
+    const appConfig = getAppConfig(config);
+    TestBed.configureTestingModule({
+      providers: [
+        appConfig.providers,
+        { provide: ConfigService, useClass: MockConfigService },
+      ],
+    });
+
+    await TestBed.inject(ApplicationInitStatus).donePromise;
+
+    const errorHandler = TestBed.inject(ErrorHandler);
+    expect(errorHandler).toBeInstanceOf(AppErrorHandler);
+
+    const pwaService = TestBed.inject(PwaUpdateService);
+    expect(pwaService).toBeDefined();
   });
 });
