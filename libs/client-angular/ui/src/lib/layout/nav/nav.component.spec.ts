@@ -471,4 +471,36 @@ describe('NavComponent', () => {
       expect(jurisdictionItem?.textContent).toContain('Jurisdiction');
     });
   });
+
+  describe('Accessibility & Skip Navigation', () => {
+    it('should render a skip-to-content link targeting the main content landmark', () => {
+      const skipLink: HTMLAnchorElement =
+        fixture.nativeElement.querySelector('.skip-link');
+      expect(skipLink).toBeTruthy();
+      expect(skipLink.getAttribute('href')).toBe('#main-content');
+      expect(skipLink.textContent?.trim()).toBe('Skip to main content');
+    });
+
+    it('should designate the main element with id="main-content" and tabindex="-1"', () => {
+      const mainElement: HTMLElement =
+        fixture.nativeElement.querySelector('main.main-content');
+      expect(mainElement).toBeTruthy();
+      expect(mainElement.getAttribute('id')).toBe('main-content');
+      expect(mainElement.getAttribute('tabindex')).toBe('-1');
+    });
+
+    it('should announce jurisdiction change via aria-live polite region', () => {
+      const liveRegion: HTMLElement = fixture.nativeElement.querySelector(
+        'div[aria-live="polite"]',
+      );
+      expect(liveRegion).toBeTruthy();
+      expect(liveRegion.getAttribute('aria-atomic')).toBe('true');
+
+      component.switchJurisdiction('us-ny');
+      fixture.detectChanges();
+      expect(liveRegion.textContent?.trim()).toBe(
+        'Switched jurisdiction to New York',
+      );
+    });
+  });
 });

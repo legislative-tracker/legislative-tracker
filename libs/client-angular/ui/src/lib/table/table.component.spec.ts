@@ -290,4 +290,23 @@ describe('TableComponent', () => {
       expect(route).toEqual(['/', 'ny', 'ocd-bill', 'custom-bill-id']);
     });
   });
+
+  describe('Accessibility & Live Regions', () => {
+    it('should announce filtered row count via aria-live polite region when filters are active', async () => {
+      const liveRegion: HTMLElement = fixture.nativeElement.querySelector(
+        'div[aria-live="polite"]',
+      );
+      expect(liveRegion).toBeTruthy();
+      expect(liveRegion.getAttribute('aria-atomic')).toBe('true');
+      expect(liveRegion.textContent?.trim()).toBe('');
+
+      component.onFilterInput('name', {
+        target: { value: 'Alice' },
+      } as unknown as Event);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(liveRegion.textContent?.trim()).toBe('Showing 1 of 2 records');
+    });
+  });
 });
