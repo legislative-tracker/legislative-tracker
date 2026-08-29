@@ -66,6 +66,8 @@ export class Login {
         return 'A network error occurred. Please check your internet connection and try again.';
       case 'auth/operation-not-allowed':
         return `${providerName} sign-in is not enabled. Please use another provider.`;
+      case 'auth/unauthorized-domain':
+        return 'This domain (tracker.cwapolitical.org) is not authorized in the Firebase Authentication console. Please add it to Authorized Domains in Firebase Settings.';
       case 'auth/user-disabled':
         return 'This user account has been disabled.';
       default:
