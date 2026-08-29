@@ -1,6 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { openDB, IDBPDatabase } from 'idb';
-import { FeedbackService } from './feedback.service';
 
 /**
  * Record representing a saved or bookmarked bill stored in client-side IndexedDB.
@@ -64,7 +64,7 @@ export interface UserDataExport {
   providedIn: 'root',
 })
 export class OfflineStorageService {
-  private readonly feedback = inject(FeedbackService, { optional: true });
+  private readonly snackBar = inject(MatSnackBar, { optional: true });
   private dbPromise: Promise<IDBPDatabase> | null = null;
 
   /** Reactive signal tracking navigator online/offline connectivity status. */
@@ -82,13 +82,18 @@ export class OfflineStorageService {
     }
   }
 
-  private handleNetworkChange(online: boolean) {
+  handleNetworkChange(online: boolean) {
     this.isOnline.set(online);
-    if (online) {
-      this.feedback?.sendFeedback?.(
-        'Network Connection Restored',
-        'Syncing offline changes...',
+    if (!online) {
+      this.snackBar?.open(
+        'You are offline. Cached data remains accessible.',
+        'Dismiss',
+        { duration: 4000 },
       );
+    } else {
+      this.snackBar?.open('Back online. Synchronizing data...', 'Dismiss', {
+        duration: 3000,
+      });
       this.syncPendingData();
     }
   }
