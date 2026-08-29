@@ -96,6 +96,7 @@ export class BillDetail {
           identifier: b.identifier,
           title: b.title,
           description: this.summaryText(),
+          stateCd: this.stateCd(),
         });
       } else {
         this.seoService.resetTags();

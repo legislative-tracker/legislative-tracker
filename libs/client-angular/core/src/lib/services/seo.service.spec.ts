@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
+import { DOCUMENT } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { SeoService } from './seo.service';
 
 describe('SeoService', () => {
@@ -10,6 +11,7 @@ describe('SeoService', () => {
     updateTag: ReturnType<typeof vi.fn>;
     removeTag: ReturnType<typeof vi.fn>;
   };
+  let doc: Document;
 
   beforeEach(() => {
     titleServiceMock = {
@@ -29,6 +31,19 @@ describe('SeoService', () => {
     });
 
     service = TestBed.inject(SeoService);
+    doc = TestBed.inject(DOCUMENT);
+  });
+
+  afterEach(() => {
+    // Clean up any injected canonical or json-ld elements
+    const link = doc.querySelector("link[rel='canonical']");
+    if (link && link.parentNode) {
+      link.parentNode.removeChild(link);
+    }
+    const script = doc.querySelector("script[type='application/ld+json']");
+    if (script && script.parentNode) {
+      script.parentNode.removeChild(script);
+    }
   });
 
   it('should be created', () => {
@@ -112,9 +127,15 @@ describe('SeoService', () => {
       },
       "name='twitter:image'",
     );
+
+    const canonicalLink = doc.querySelector("link[rel='canonical']");
+    expect(canonicalLink).toBeTruthy();
+    expect(canonicalLink?.getAttribute('href')).toBe(
+      'https://tracker.example.com/us-ny/bill/1234',
+    );
   });
 
-  it('should remove image tags when no image is provided', () => {
+  it('should remove image tags and canonical link when no url or image is provided', () => {
     service.updateTags({
       title: 'Member Profile',
       description: 'Profile for Jane Doe',
@@ -132,6 +153,29 @@ describe('SeoService', () => {
     );
   });
 
+  it('should inject and remove Schema.org JSON-LD structured data', () => {
+    const jsonLdPayload = {
+      '@context': 'https://schema.org',
+      '@type': 'Legislation',
+      name: 'S100: Clean Energy Bill',
+    };
+
+    service.updateTags({
+      title: 'S100: Clean Energy Bill',
+      jsonLd: jsonLdPayload,
+    });
+
+    const script = doc.querySelector("script[type='application/ld+json']");
+    expect(script).toBeTruthy();
+    expect(script?.textContent).toBe(JSON.stringify(jsonLdPayload));
+
+    service.resetTags();
+    const scriptAfterReset = doc.querySelector(
+      "script[type='application/ld+json']",
+    );
+    expect(scriptAfterReset).toBeNull();
+  });
+
   it('should reset tags to default values', () => {
     service.resetTags();
 
@@ -144,11 +188,13 @@ describe('SeoService', () => {
     );
   });
 
-  it('should set bill tags with identifier as title', () => {
+  it('should set bill tags with identifier and JSON-LD schema', () => {
     service.setBillTags({
       identifier: 'A 10360',
       title: 'Broadband Expansion',
       description: 'Relates to broadband programs.',
+      url: 'https://tracker.example.com/us-ny/bill/A10360',
+      stateCd: 'us-ny',
     });
 
     expect(titleServiceMock.setTitle).toHaveBeenCalledWith(
@@ -161,13 +207,21 @@ describe('SeoService', () => {
       },
       "property='og:title'",
     );
+
+    const script = doc.querySelector("script[type='application/ld+json']");
+    expect(script).toBeTruthy();
+    const parsed = JSON.parse(script?.textContent || '{}');
+    expect(parsed['@type']).toBe('Legislation');
+    expect(parsed.legislationIdentifier).toBe('A 10360');
+    expect(parsed.spatialCoverage).toBe('us-ny');
   });
 
-  it('should set member tags with member details', () => {
+  it('should set member tags with member details and JSON-LD Person schema', () => {
     service.setMemberTags({
       name: 'Jane Doe',
       details: 'Senator, Democratic, District 23',
       image: 'https://example.com/headshot.jpg',
+      url: 'https://tracker.example.com/us-ny/member/123',
     });
 
     expect(titleServiceMock.setTitle).toHaveBeenCalledWith(
@@ -181,16 +235,30 @@ describe('SeoService', () => {
       },
       "name='description'",
     );
+
+    const script = doc.querySelector("script[type='application/ld+json']");
+    expect(script).toBeTruthy();
+    const parsed = JSON.parse(script?.textContent || '{}');
+    expect(parsed['@type']).toBe('Person');
+    expect(parsed.name).toBe('Jane Doe');
+    expect(parsed.image).toBe('https://example.com/headshot.jpg');
+    expect(parsed.jobTitle).toBe('Senator, Democratic, District 23');
   });
 
-  it('should set legislation tags', () => {
+  it('should set legislation tags with Legislation schema', () => {
     service.setLegislationTags({
       name: 'Clean Water Initiative',
       description: 'Clean water legislation.',
+      url: 'https://tracker.example.com/us-ny/legislation/clean-water',
     });
 
     expect(titleServiceMock.setTitle).toHaveBeenCalledWith(
       'Clean Water Initiative | Legislative Tracker',
     );
+    const script = doc.querySelector("script[type='application/ld+json']");
+    expect(script).toBeTruthy();
+    const parsed = JSON.parse(script?.textContent || '{}');
+    expect(parsed['@type']).toBe('Legislation');
+    expect(parsed.name).toBe('Clean Water Initiative');
   });
 });
