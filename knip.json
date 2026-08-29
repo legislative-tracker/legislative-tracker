@@ -1,15 +1,15 @@
 {
-  "$schema": "https://unpkg.com/knip@6/schemas/knip.json",
+  "$schema": "./node_modules/knip/schema.json",
   "entry": [
     "apps/client-angular/src/main.ts",
     "apps/client-angular/src/backend.providers.firebase.ts",
-    "apps/server-firebase/src/index.ts",
     "apps/*/playwright.config.ts",
     "libs/**/src/index.ts",
     "scripts/**/*.js"
   ],
-  "project": ["apps/**/*.{ts,html}", "libs/**/*.{ts,html}", "scripts/**/*.js"],
+  "project": ["apps/**/*.{ts,js}", "libs/**/*.{ts,js}", "scripts/**/*.js"],
   "ignoreDependencies": [
+    "@fortawesome/fontawesome-free",
     "@legislative-tracker/*",
     "@angular/cli",
     "@emnapi/core",
@@ -24,7 +24,7 @@
     "image-size",
     "typescript-eslint"
   ],
-  "ignoreBinaries": ["firebase"],
+  "ignoreBinaries": ["firebase", "production"],
   "ignoreExportsUsedInFile": true,
   "ignoreUnresolved": ["apps/server-firebase/src/index.ts"]
 }

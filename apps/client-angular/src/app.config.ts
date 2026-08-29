@@ -58,7 +58,3 @@ export const getAppConfig = (
     ],
   };
 };
-
-export const appConfig: ApplicationConfig = getAppConfig(
-  configJson as AppConfig,
-);
