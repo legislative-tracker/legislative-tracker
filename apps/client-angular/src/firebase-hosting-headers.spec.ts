@@ -26,7 +26,7 @@ describe('Firebase Hosting Headers Configuration', () => {
     );
 
     expect(headersMap.get('X-Content-Type-Options')).toBe('nosniff');
-    expect(headersMap.get('X-Frame-Options')).toBe('DENY');
+    expect(headersMap.get('X-Frame-Options')).toBe('SAMEORIGIN');
     expect(headersMap.get('Referrer-Policy')).toBe(
       'strict-origin-when-cross-origin',
     );
@@ -41,6 +41,8 @@ describe('Firebase Hosting Headers Configuration', () => {
     expect(csp).toBeDefined();
     expect(csp).toContain("default-src 'self'");
     expect(csp).toContain("script-src 'self'");
+    expect(csp).toContain('https://apis.google.com');
+    expect(csp).toContain('https://appleid.cdn-apple.com');
     expect(csp).toContain("style-src 'self' 'unsafe-inline'");
     expect(csp).toContain('https://fonts.googleapis.com');
     expect(csp).toContain('https://cdnjs.cloudflare.com');
@@ -49,11 +51,13 @@ describe('Firebase Hosting Headers Configuration', () => {
     expect(csp).toContain("connect-src 'self'");
     expect(csp).toContain('https://*.googleapis.com');
     expect(csp).toContain('https://*.firebaseio.com');
+    expect(csp).toContain('https://appleid.apple.com');
     expect(csp).toContain("frame-src 'self'");
+    expect(csp).toContain('https://appleid.apple.com');
     expect(csp).toContain("object-src 'none'");
     expect(csp).toContain("base-uri 'self'");
     expect(csp).toContain("form-action 'self'");
-    expect(csp).toContain("frame-ancestors 'none'");
+    expect(csp).toContain("frame-ancestors 'self'");
     expect(csp).toContain('upgrade-insecure-requests');
   });
 
