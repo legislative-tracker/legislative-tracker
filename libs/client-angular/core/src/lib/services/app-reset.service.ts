@@ -4,20 +4,39 @@ import { OfflineStorageService } from './offline-storage.service';
 import { ThemeService, ThemeMode, THEME_STORAGE_KEY } from './theme.service';
 import { FIREBASE_FIRESTORE } from '../firebase-tokens.token';
 
+/**
+ * Key used in sessionStorage when backing up personal data in mock environments.
+ */
 export const MOCK_APP_RESET_BACKUP_KEY = '__legislative_tracker_mock_backup__';
 
+/**
+ * Structure of personal data backed up to the cloud before a local storage reset.
+ */
 export interface UserPersonalBackup {
+  /** Array of saved bills. */
   savedBills: any[];
+  /** Array of personal offline notes. */
   offlineNotes: any[];
+  /** Saved theme mode setting. */
   theme?: ThemeMode | string;
+  /** ISO timestamp of backup creation. */
   timestamp: string;
 }
 
+/**
+ * Options for executing an application reset sequence.
+ */
 export interface AppResetOptions {
+  /** Whether to back up personal data (saved bills and notes) to cloud before wiping. */
   backupPersonalData: boolean;
+  /** Authenticated user ID required if backing up personal data. */
   userId?: string;
 }
 
+/**
+ * Service managing application resets, client-side storage wipes,
+ * and personal data backups (saved bills, offline notes, theme settings).
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -30,6 +49,9 @@ export class AppResetService {
 
   /**
    * Temporarily uploads personal data (saved bills, notes, preferences) to Firestore (or sessionStorage in mock mode).
+   *
+   * @param userId - Authenticated user identifier.
+   * @returns `true` if backup succeeded, `false` otherwise.
    */
   async backupPersonalData(userId?: string): Promise<boolean> {
     if (!userId) {
@@ -82,6 +104,9 @@ export class AppResetService {
 
   /**
    * Checks for and restores any pending personal data backup from Firestore (or sessionStorage in mock mode).
+   *
+   * @param userId - Authenticated user identifier.
+   * @returns `true` if data was found and restored, `false` otherwise.
    */
   async restorePersonalData(userId?: string): Promise<boolean> {
     if (!userId) {
@@ -148,6 +173,8 @@ export class AppResetService {
    * - IndexedDB databases (preserving firebase auth database if preserveAuth is true)
    * - CacheStorage
    * - Service Worker registrations
+   *
+   * @param options - Storage wipe options.
    */
   async performStorageWipe(options?: {
     preserveAuth?: boolean;
@@ -257,6 +284,8 @@ export class AppResetService {
 
   /**
    * Performs the full App Reset sequence.
+   *
+   * @param options - App reset configuration parameters.
    */
   async resetApp(options: AppResetOptions): Promise<void> {
     if (options.backupPersonalData && options.userId) {

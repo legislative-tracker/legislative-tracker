@@ -32,6 +32,9 @@ enum DashboardTab {
   Assembly = 2,
 }
 
+/**
+ * State legislative dashboard displaying tabbed tables for tracked bills, Senate members, and Assembly members.
+ */
 @Component({
   selector: 'app-dashboard',
   imports: [MatTabsModule, TableComponent, MatProgressSpinnerModule],

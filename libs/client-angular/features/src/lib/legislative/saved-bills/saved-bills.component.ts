@@ -24,6 +24,9 @@ import {
   SavedBill,
 } from '@legislative-tracker/client-angular/core';
 
+/**
+ * Offline bookmarked bills page allowing searching, reading local notes, and deleting cached entries.
+ */
 @Component({
   selector: 'app-saved-bills',
   imports: [

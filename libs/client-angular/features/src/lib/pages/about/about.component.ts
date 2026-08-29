@@ -14,6 +14,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { ConfigService } from '@legislative-tracker/client-angular/core';
 import { ResourceLink } from '@legislative-tracker/shared/models';
 
+/**
+ * About page displaying organization mission, external data sources, open-source repository links, and disclaimers.
+ */
 @Component({
   selector: 'app-about',
   standalone: true,

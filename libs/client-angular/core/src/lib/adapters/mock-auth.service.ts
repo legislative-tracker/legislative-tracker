@@ -26,6 +26,9 @@ const MOCK_USER: AppUser = {
   },
 };
 
+/**
+ * In-memory mock implementation of AuthService for testing and local demonstration.
+ */
 @Injectable({ providedIn: 'root' })
 export class MockAuthService implements AuthService {
   private router = inject(Router);

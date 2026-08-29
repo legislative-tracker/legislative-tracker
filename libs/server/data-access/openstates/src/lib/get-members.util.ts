@@ -4,6 +4,14 @@ import {
 } from '@legislative-tracker/shared/models';
 import { normalizeJurisdictionForOpenStates } from './openstates.util';
 
+/**
+ * Retrieves all active legislative members for a given state from OpenStates API v3, handling pagination automatically.
+ *
+ * @param state - State abbreviation or jurisdiction name (e.g., 'ny', 'us-ny', 'New York').
+ * @param apiKey - OpenStates API key.
+ * @returns Array of OpenStatesPerson records representing all current legislators.
+ * @throws Error if the HTTP request fails or response payload is invalid.
+ */
 export async function getMembers(
   state: string,
   apiKey: string,

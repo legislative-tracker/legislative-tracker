@@ -33,6 +33,9 @@ export interface EditableBill {
   lowerBillId: string;
 }
 
+/**
+ * Admin view for modifying metadata, names, and chamber mappings of existing tracked bills.
+ */
 @Component({
   selector: 'app-edit-bill',
   imports: [

@@ -18,6 +18,9 @@ import {
   LegislativePlugin,
 } from '@legislative-tracker/plugins-core';
 
+/**
+ * State Directory landing page showcasing all registered legislative jurisdiction plugins with search filtering.
+ */
 @Component({
   selector: 'app-states-directory',
   imports: [

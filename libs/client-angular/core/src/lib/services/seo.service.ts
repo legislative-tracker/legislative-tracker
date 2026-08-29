@@ -1,24 +1,44 @@
 import { Injectable, inject } from '@angular/core';
 import { Title, Meta, MetaDefinition } from '@angular/platform-browser';
 
+/**
+ * Options for configuring SEO, OpenGraph, and Twitter card metadata tags.
+ */
 export interface SeoTagsConfig {
+  /** Page title string (automatically suffixed with '| Legislative Tracker'). */
   title?: string;
+  /** Meta description summary text. */
   description?: string;
+  /** OpenGraph and Twitter image preview URL. */
   image?: string;
+  /** Canonical page URL. */
   url?: string;
+  /** OpenGraph type (e.g., 'website', 'article', 'profile'). */
   type?: string;
+  /** Twitter card display layout. */
   twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player';
 }
 
+/**
+ * Service managing document titles and meta tags for search engines,
+ * social media link unfurling (OpenGraph), and Twitter cards.
+ */
 @Injectable({ providedIn: 'root' })
 export class SeoService {
   private titleService = inject(Title);
   private metaService = inject(Meta);
 
+  /** Default document title. */
   readonly defaultTitle = 'Legislative Tracker';
+  /** Default meta description. */
   readonly defaultDescription =
     'Track state legislation, bills, and elected officials.';
 
+  /**
+   * Updates page title and standard SEO / OpenGraph / Twitter meta tags.
+   *
+   * @param config - Target SEO metadata configuration.
+   */
   updateTags(config: SeoTagsConfig): void {
     const title = config.title
       ? config.title.includes('Legislative Tracker')
@@ -74,6 +94,9 @@ export class SeoService {
     }
   }
 
+  /**
+   * Resets all metadata tags back to the application defaults.
+   */
   resetTags(): void {
     this.updateTags({
       title: this.defaultTitle,
@@ -83,6 +106,9 @@ export class SeoService {
     });
   }
 
+  /**
+   * Configures SEO metadata tailored for an individual bill detail view.
+   */
   setBillTags(options: {
     identifier?: string;
     title?: string;
@@ -101,6 +127,9 @@ export class SeoService {
     });
   }
 
+  /**
+   * Configures SEO metadata tailored for an elected member/legislator profile.
+   */
   setMemberTags(options: {
     name: string;
     details?: string;
@@ -120,6 +149,9 @@ export class SeoService {
     });
   }
 
+  /**
+   * Configures SEO metadata tailored for a tracked legislation view.
+   */
   setLegislationTags(options: {
     name: string;
     description?: string;

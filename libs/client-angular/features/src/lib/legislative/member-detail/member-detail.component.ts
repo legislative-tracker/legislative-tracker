@@ -122,21 +122,25 @@ const SOCIAL_PLATFORMS: Record<
   },
 };
 
+/**
+ * Comprehensive elected official profile page showing contact info, office addresses,
+ * social media links, committee roles, and sponsored legislation.
+ */
 @Component({
   selector: 'app-member-detail',
   imports: [
+    MatTabsModule,
+    MatListModule,
     MatIconModule,
     MatButtonModule,
-    MatListModule,
-    MatTabsModule,
+    MatProgressSpinnerModule,
     MatCardModule,
     TableComponent,
-    MatProgressSpinnerModule,
     ImgFallbackDirective,
   ],
   templateUrl: './member-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrls: ['./member-detail.component.scss'],
+  styleUrl: './member-detail.component.scss',
 })
 export class MemberDetail {
   stateCd = input<string>('');

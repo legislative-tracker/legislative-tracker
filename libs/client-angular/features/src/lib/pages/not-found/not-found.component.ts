@@ -1,5 +1,8 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 
+/**
+ * 404 Not Found error page displayed when a route or unsupported state jurisdiction cannot be resolved.
+ */
 @Component({
   selector: 'app-not-found',
   imports: [],

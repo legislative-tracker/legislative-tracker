@@ -44,6 +44,10 @@ import {
   ThemeService,
 } from '@legislative-tracker/client-angular/core';
 
+/**
+ * Top-level administrative console for managing organization metadata, branding palettes,
+ * custom theme overrides, and resource links.
+ */
 @Component({
   selector: 'app-admin',
   standalone: true,

@@ -29,6 +29,11 @@ import { AppResetService } from '../services/app-reset.service';
 import { FeedbackService } from '../services/feedback.service';
 import { FIREBASE_AUTH, FIREBASE_FIRESTORE } from '../firebase-tokens.token';
 
+/**
+ * Firebase-backed implementation of AuthService.
+ * Manages Google and Apple OAuth authentication flows, Firestore user document synchronization,
+ * and user profile state management.
+ */
 @Injectable({ providedIn: 'root' })
 export class FirebaseAuthService implements AuthService {
   private auth = inject<Auth>(FIREBASE_AUTH, { optional: true });

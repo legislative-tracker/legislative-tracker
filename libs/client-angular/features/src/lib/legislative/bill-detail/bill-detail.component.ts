@@ -41,6 +41,10 @@ import {
   OpenStatesBill,
 } from '@legislative-tracker/shared/models';
 
+/**
+ * Full detail view for an individual state bill, including timeline actions,
+ * vote events, text versions, cosponsor tables, and offline personal notes.
+ */
 @Component({
   selector: 'app-bill-detail',
   imports: [

@@ -163,8 +163,8 @@ The repository includes automated CI/CD deployment pipelines under [`.github/wor
 ### Workflow Triggers
 
 - **Pull Requests**: Runs linting, Vitest unit tests, Playwright E2E tests, and production build checks (`pipeline.yml`).
-- **Push to `main`**: Runs versioning and release automation (`release.yml`).
-- **Release Tags (`v*`)**: Automatically builds and deploys to Firebase Production (`deploy.yml`).
+- **Manual Release (`release.yml`)**: Triggered via `workflow_dispatch`. Bumps the version, generates changelogs, commits/tags the release, and automatically invokes the production deployment pipeline (`deploy.yml`).
+- **Deploy to Production (`deploy.yml`)**: Reusable deployment workflow triggered after a new release is created, on tag push (`v*`), or via manual dispatch.
 
 ### Required GitHub Secrets & Variables
 

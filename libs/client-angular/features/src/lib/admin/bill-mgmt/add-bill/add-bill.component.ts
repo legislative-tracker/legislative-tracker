@@ -18,6 +18,9 @@ import {
 } from '@legislative-tracker/client-angular/core';
 import { getAllPlugins, getPlugin } from '@legislative-tracker/plugins-core';
 
+/**
+ * Admin view for adding new legislative bills to be tracked in a state jurisdiction.
+ */
 @Component({
   selector: 'app-add-bill',
   imports: [

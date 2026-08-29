@@ -1,5 +1,8 @@
 import { Routes } from '@angular/router';
 
+/**
+ * Child routes for administrative features: configuration management, user administration, and bill mutations.
+ */
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',

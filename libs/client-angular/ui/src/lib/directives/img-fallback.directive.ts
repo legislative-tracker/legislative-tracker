@@ -5,6 +5,10 @@ import {
   ElementRef,
   Renderer2,
 } from '@angular/core';
+
+/**
+ * Directive that automatically replaces broken image sources with a configurable fallback icon or asset.
+ */
 @Directive({
   selector: 'img[appFallback]',
   standalone: true,
@@ -12,6 +16,7 @@ import {
 export class ImgFallbackDirective {
   // Allow the user to pass a custom fallback, or use a default
   private readonly DEFAULT_IMAGE = '/assets/account_circle_40.svg';
+  /** Custom fallback image URL input. */
   appFallback = input<string>(this.DEFAULT_IMAGE);
 
   constructor(

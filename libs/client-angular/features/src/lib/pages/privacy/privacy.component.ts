@@ -12,6 +12,9 @@ interface DataCategory {
   importantNote?: string;
 }
 
+/**
+ * Privacy policy page outlining data collection practices, local storage usage, and location handling.
+ */
 @Component({
   selector: 'app-privacy',
   standalone: true,

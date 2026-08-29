@@ -2,6 +2,10 @@ import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
+/**
+ * Route guard requiring an active user session before route activation.
+ * Redirects unauthenticated visitors to `/login`.
+ */
 export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);

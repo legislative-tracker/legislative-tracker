@@ -2,9 +2,15 @@ import { getMembers } from '@legislative-tracker/server-data-access-openstates';
 import { OpenStatesPerson } from '@legislative-tracker/shared/models';
 import { findPluginForState } from './find-plugin-for-state.util';
 
+/**
+ * Configuration options for refreshing all legislative members of a state.
+ */
 export interface UpdateMembersOptions {
+  /** Target state abbreviation or name (e.g. 'ny', 'New York'). */
   state: string;
+  /** OpenStates API key. */
   openstatesApiKey: string;
+  /** Optional state official API key. */
   stateApiKey?: string;
 }
 
@@ -12,8 +18,9 @@ export interface UpdateMembersOptions {
  * Business logic function to retrieve legislative members for a given state.
  * Connects to OpenStates API and state-specific plugins when available.
  *
- * @param options Configuration options including state and API key.
+ * @param options - Configuration options including state and API key.
  * @returns Array of OpenStatesPerson records.
+ * @throws Error if parameters are missing or API request fails.
  */
 export async function updateMembers(
   options: UpdateMembersOptions,

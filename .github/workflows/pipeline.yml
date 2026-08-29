@@ -3,12 +3,10 @@ name: Pipeline Orchestrator
 on:
   pull_request:
     branches: [main]
-  push:
-    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  cancel-in-progress: true
 
 jobs:
   changes:
@@ -35,33 +33,22 @@ jobs:
 
   pr-title:
     name: PR Title Lint
-    if: github.event_name == 'pull_request'
     uses: ./.github/workflows/pr-title.yml
 
   ci:
     name: Code Quality (Lint & Format)
     needs: changes
-    if: needs.changes.outputs.code == 'true' && github.event_name == 'pull_request'
+    if: needs.changes.outputs.code == 'true'
     uses: ./.github/workflows/ci.yml
 
   test:
     name: Unit & E2E Testing
     needs: changes
-    if: needs.changes.outputs.code == 'true' && github.event_name == 'pull_request'
+    if: needs.changes.outputs.code == 'true'
     uses: ./.github/workflows/test.yml
 
   build:
     name: Build Targets
     needs: [changes, ci, test]
-    if: needs.changes.outputs.code == 'true' && github.event_name == 'pull_request'
+    if: needs.changes.outputs.code == 'true'
     uses: ./.github/workflows/build.yml
-
-  release:
-    name: Release Automation
-    needs: changes
-    if: needs.changes.outputs.code == 'true' && github.event_name == 'push'
-    permissions:
-      contents: write
-      pull-requests: write
-    secrets: inherit
-    uses: ./.github/workflows/release.yml

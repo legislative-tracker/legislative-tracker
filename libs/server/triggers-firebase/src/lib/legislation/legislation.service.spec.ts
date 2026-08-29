@@ -9,6 +9,7 @@ vi.mock('../firebase.config', () => {
   return {
     db: {
       collection: vi.fn(),
+      doc: vi.fn().mockImplementation((path: string) => ({ path })),
       bulkWriter: vi.fn().mockReturnValue(mockBulkWriter),
     },
     dataAccessOpenStatesKey: {

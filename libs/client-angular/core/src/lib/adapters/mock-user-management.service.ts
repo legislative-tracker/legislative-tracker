@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { UserManagementService } from '../services/user-management.service';
 
+/**
+ * In-memory mock implementation of UserManagementService.
+ */
 @Injectable({ providedIn: 'root' })
 export class MockUserManagementService implements UserManagementService {
   async grantAdminPrivileges(email: string) {

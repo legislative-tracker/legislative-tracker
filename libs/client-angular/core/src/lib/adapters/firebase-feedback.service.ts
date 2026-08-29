@@ -7,6 +7,10 @@ import {
 import { FeedbackService } from '../services/feedback.service';
 import { FIREBASE_FUNCTIONS } from '../firebase-tokens.token';
 
+/**
+ * Firebase-backed implementation of FeedbackService.
+ * Calls the `system-submitAnonymousIssue` Cloud Function to create GitHub issues from feedback.
+ */
 @Injectable({ providedIn: 'root' })
 export class FirebaseFeedbackService implements FeedbackService {
   private functions = inject<Functions>(FIREBASE_FUNCTIONS, { optional: true });

@@ -3,6 +3,10 @@ import { Functions, httpsCallable } from 'firebase/functions';
 import { UserManagementService } from '../services/user-management.service';
 import { FIREBASE_FUNCTIONS } from '../firebase-tokens.token';
 
+/**
+ * Firebase-backed implementation of UserManagementService.
+ * Calls `admin-addAdminRole` and `admin-removeAdminRole` Cloud Functions to manage custom admin claims.
+ */
 @Injectable({ providedIn: 'root' })
 export class FirebaseUserManagementService implements UserManagementService {
   private functions = inject<Functions>(FIREBASE_FUNCTIONS, { optional: true });

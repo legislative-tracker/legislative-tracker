@@ -34,6 +34,9 @@ export interface SimpleBill {
   lowerBillId?: string;
 }
 
+/**
+ * Admin view for untracking or removing bills from the system.
+ */
 @Component({
   selector: 'app-remove-bill',
   imports: [

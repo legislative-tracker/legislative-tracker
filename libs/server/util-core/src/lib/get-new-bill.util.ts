@@ -4,19 +4,29 @@ import { findPluginForState } from './find-plugin-for-state.util';
 
 export { findPluginForState };
 
+/**
+ * Configuration options for retrieving and initializing a newly registered bill.
+ */
 export interface GetNewBillOptions {
+  /** Target state abbreviation or name (e.g. 'NY', 'New York'). */
   state: string;
+  /** Optional legislative session identifier (auto-calculated from plugin if omitted). */
   session?: string;
+  /** Canonical bill identifier in the state legislature (e.g. 'S100', 'A200'). */
   billId: string;
+  /** OpenStates API key. */
   openstatesApiKey: string;
+  /** Optional official state legislature API key for plugin direct fetching. */
   stateApiKey?: string;
 }
 
 /**
- * Business logic function that sits between server triggers and OpenStates / state-specific APIs.
+ * Business logic function that sits between server triggers and OpenStates / state-specific APIs
+ * to resolve and fetch raw bill metadata.
  *
- * @param options Configuration options including state, optional session, billId, and API keys.
- * @returns A raw OpenStatesBill record.
+ * @param options - Configuration options including state, optional session, billId, and API keys.
+ * @returns Raw OpenStatesBill record.
+ * @throws Error if parameters are missing or bill cannot be fetched.
  */
 export async function getNewBill(
   options: GetNewBillOptions,

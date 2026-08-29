@@ -5,7 +5,19 @@ on:
     tags:
       - 'v*'
   workflow_call:
+    inputs:
+      ref:
+        description: 'Git ref or tag to checkout'
+        required: false
+        type: string
+        default: ''
   workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Git ref or tag to checkout'
+        required: false
+        type: string
+        default: ''
 
 jobs:
   deploy:
@@ -17,6 +29,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          ref: ${{ inputs.ref || github.ref }}
 
       - name: Setup Environment
         uses: ./.github/actions/setup-project

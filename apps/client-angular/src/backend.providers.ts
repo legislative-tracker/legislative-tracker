@@ -12,6 +12,9 @@ import {
   MockUserManagementService,
 } from '@legislative-tracker/client-angular/core';
 
+/**
+ * Backend provider configuration mapping service abstractions to their active adapter implementations.
+ */
 export const BACKEND_PROVIDERS: (Provider | EnvironmentProviders)[] = [
   { provide: LegislatureService, useClass: MockLegislatureService },
   { provide: AuthService, useClass: MockAuthService },

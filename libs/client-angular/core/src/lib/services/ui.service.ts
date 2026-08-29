@@ -1,10 +1,19 @@
 import { inject, Injectable, Type } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 
+/**
+ * Utility service for orchestrating common UI dialogs and modals across the application.
+ */
 @Injectable({ providedIn: 'root' })
 export class UiService {
   private dialog = inject(MatDialog);
 
+  /**
+   * Opens the interactive user feedback dialog.
+   *
+   * @param component - Component type to instantiate inside dialog.
+   * @param config - Material Dialog configuration overrides.
+   */
   openFeedbackDialog(component?: Type<any>, config?: MatDialogConfig) {
     if (!component) return;
     this.dialog.open(component, {

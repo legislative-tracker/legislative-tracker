@@ -5,6 +5,9 @@ import {
   adminGuard,
 } from '@legislative-tracker/client-angular/core';
 
+/**
+ * Top-level application routing table defining public static pages, auth, admin, and state-specific feature branches.
+ */
 export const routes: Routes = [
   {
     path: '',

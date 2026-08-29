@@ -7,6 +7,13 @@ import {
 import { db, dataAccessOpenStatesKey } from '../firebase.config';
 import { formatDocId, UpdateResult } from '../helpers.util';
 
+/**
+ * Performs a batch update of all tracked legislation across all state jurisdictions configured in Firestore.
+ * Iterates through `legislatures/{stateCode}/ocd-bill`, fetches latest bill statuses from OpenStates,
+ * and writes updated documents back to Firestore using a BulkWriter.
+ *
+ * @returns Array of UpdateResult objects summarizing the count of updated records and warnings per jurisdiction.
+ */
 export const performLegislationUpdate = async (): Promise<UpdateResult[]> => {
   const bulkWriter = db.bulkWriter();
   const results: UpdateResult[] = [];
@@ -59,54 +66,59 @@ export const performLegislationUpdate = async (): Promise<UpdateResult[]> => {
         let matchedCount = 0;
         const updatedOcdIds = new Set<string>();
 
-        updatedBills.forEach((bill: OpenStatesBill) => {
-          if (!bill.id) return;
-          updatedOcdIds.add(bill.id);
-
+        // Upsert updated bills into legislatures/${stateCode}/ocd-bill
+        for (const bill of updatedBills) {
           const docId = formatDocId(bill.id);
-          const docRef = db
-            .collection(`legislatures/${stateCode}/ocd-bill`)
-            .doc(docId);
+          const docRef = db.doc(`legislatures/${stateCode}/ocd-bill/${docId}`);
 
-          const payload: OpenStatesBill = {
-            ...bill,
-            updated_at: new Date().toISOString(),
-          };
+          bulkWriter.set(
+            docRef,
+            {
+              ...bill,
+              updated_at: new Date().toISOString(),
+            },
+            { merge: true },
+          );
 
           matchedCount++;
-          bulkWriter.set(docRef, payload, { merge: true });
-        });
-
-        const warnings: string[] = [];
-        ocdIds.forEach((id) => {
-          if (!updatedOcdIds.has(id)) {
-            warnings.push(`Failed to fetch updated bill data for OCD ID ${id}`);
+          updatedOcdIds.add(bill.id);
+          if (docId !== bill.id) {
+            updatedOcdIds.add(docId);
           }
-        });
+        }
+
+        // Identify any bills that failed to refresh from OpenStates
+        const warnings: string[] = [];
+        for (const ocdId of ocdIds) {
+          const docId = formatDocId(ocdId);
+          if (!updatedOcdIds.has(ocdId) && !updatedOcdIds.has(docId)) {
+            warnings.push(
+              `Bill ${ocdId} was not returned by OpenStates update`,
+            );
+          }
+        }
 
         results.push({
           state: stateCode,
           matched: matchedCount,
-          warnings,
+          warnings: warnings.length > 0 ? warnings : undefined,
         });
-      } catch (err) {
-        logger.error(
-          `Failed to perform legislation update for ${stateCode}`,
-          err,
-        );
+      } catch (stateErr) {
+        logger.error(`Error updating legislation for ${stateCode}`, stateErr);
         results.push({
           state: stateCode,
-          error: err instanceof Error ? err.message : 'Unknown Error',
+          error:
+            stateErr instanceof Error ? stateErr.message : String(stateErr),
         });
       }
     });
 
     await Promise.all(updatePromises);
     await bulkWriter.close();
-
-    return results;
-  } catch (error) {
-    logger.error('Global Legislation Update Failed', error);
-    throw error;
+  } catch (err) {
+    logger.error('Failed to perform legislation update', err);
+    throw err;
   }
+
+  return results;
 };

@@ -6,8 +6,8 @@ const registry = new Map<string, LegislativePlugin>();
  * Registers a plugin into the central registry.
  * If the plugin defines an async `initialize()` method, it will be executed before registration completes.
  *
- * @param plugin The plugin instance implementing `LegislativePlugin`
- * @throws Error if plugin is invalid or already registered
+ * @param plugin - The plugin instance implementing `LegislativePlugin`.
+ * @throws Error if plugin is invalid or already registered.
  */
 export async function registerPlugin(plugin: LegislativePlugin): Promise<void> {
   if (!plugin || !plugin.metadata || !plugin.metadata.id) {
@@ -29,8 +29,9 @@ export async function registerPlugin(plugin: LegislativePlugin): Promise<void> {
 /**
  * Retrieves a registered plugin by its ID.
  *
- * @param id The plugin ID
- * @returns The plugin instance, or `undefined` if not found
+ * @typeParam T - Expected plugin type extending `LegislativePlugin`.
+ * @param id - The unique plugin ID (e.g., 'leg-us-ny').
+ * @returns The plugin instance, or `undefined` if not found.
  */
 export function getPlugin<T = LegislativePlugin>(id: string): T | undefined {
   return registry.get(id) as T | undefined;
@@ -39,15 +40,17 @@ export function getPlugin<T = LegislativePlugin>(id: string): T | undefined {
 /**
  * Checks whether a plugin with the given ID is registered.
  *
- * @param id The plugin ID
- * @returns `true` if registered, `false` otherwise
+ * @param id - The unique plugin ID.
+ * @returns `true` if registered, `false` otherwise.
  */
 export function hasPlugin(id: string): boolean {
   return registry.has(id);
 }
 
 /**
- * Returns an array of all registered plugins.
+ * Returns an array of all registered plugins in the workspace.
+ *
+ * @returns Array containing all active legislative plugins.
  */
 export function getAllPlugins(): LegislativePlugin[] {
   return Array.from(registry.values());
@@ -56,8 +59,8 @@ export function getAllPlugins(): LegislativePlugin[] {
 /**
  * Unregisters a plugin by its ID.
  *
- * @param id The plugin ID
- * @returns `true` if a plugin was removed, `false` if it was not found
+ * @param id - The unique plugin ID.
+ * @returns `true` if a plugin was removed, `false` if it was not found.
  */
 export function unregisterPlugin(id: string): boolean {
   return registry.delete(id);
@@ -65,17 +68,26 @@ export function unregisterPlugin(id: string): boolean {
 
 /**
  * Clears all plugins from the registry.
- * Useful for resetting state during testing.
+ * Primarily used for resetting state during test fixtures.
  */
 export function clearRegistry(): void {
   registry.clear();
 }
 
+/**
+ * Global singleton registry for discovering, registering, and retrieving state legislative plugins.
+ */
 export const LegislaturePluginRegistry = {
+  /** Registers a new state legislature plugin. */
   register: registerPlugin,
+  /** Retrieves a registered plugin by its ID. */
   get: getPlugin,
+  /** Checks if a plugin is registered. */
   has: hasPlugin,
+  /** Returns all registered plugins. */
   getAll: getAllPlugins,
+  /** Unregisters a plugin by its ID. */
   unregister: unregisterPlugin,
+  /** Clears all registered plugins. */
   clear: clearRegistry,
 };

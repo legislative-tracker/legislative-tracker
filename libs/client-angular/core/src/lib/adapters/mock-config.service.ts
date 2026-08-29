@@ -5,6 +5,9 @@ import {
 } from '@legislative-tracker/shared/models';
 import { ConfigService } from '../services/config.service';
 
+/**
+ * In-memory mock implementation of ConfigService for testing and standalone mode.
+ */
 @Injectable({ providedIn: 'root' })
 export class MockConfigService implements ConfigService {
   readonly config = signal<RuntimeConfig>(DEFAULT_CONFIG);

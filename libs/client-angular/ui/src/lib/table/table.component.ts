@@ -22,6 +22,12 @@ import { RouterLink } from '@angular/router';
 // App imports
 import { ColumnConfig } from '@legislative-tracker/shared/models';
 
+/**
+ * Reusable data table component with column-level search filtering, sorting,
+ * and responsive detail navigation links.
+ *
+ * @typeParam T - The row data type displayed in the table.
+ */
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
