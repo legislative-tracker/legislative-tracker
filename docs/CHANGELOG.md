@@ -1,3 +1,13 @@
+## 1.0.1 (2026-08-29)
+
+### 🩹 Fixes
+
+- **client-angular:** resolve skip-link visibility and OAuth security header restrictions ([b6adbe8](https://github.com/legislative-tracker/legislative-tracker/commit/b6adbe8))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 1.0.0 (2026-08-29)
 
 ### 🚀 Features
