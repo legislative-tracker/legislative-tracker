@@ -1,5 +1,6 @@
 import {
   ApplicationConfig,
+  ErrorHandler,
   provideZonelessChangeDetection,
   inject,
   provideAppInitializer,
@@ -14,7 +15,9 @@ import { provideServiceWorker } from '@angular/service-worker';
 import {
   APP_CONFIG,
   AppConfig,
+  AppErrorHandler,
   ConfigService,
+  PwaUpdateService,
 } from '@legislative-tracker/client-angular/core';
 import { BACKEND_PROVIDERS } from './backend.providers';
 import { routes } from './app.routes';
@@ -36,6 +39,7 @@ export const getAppConfig = (
   return {
     providers: [
       { provide: APP_CONFIG, useValue: runtimeConfig },
+      { provide: ErrorHandler, useClass: AppErrorHandler },
 
       provideZonelessChangeDetection(),
 
@@ -66,6 +70,7 @@ export const getAppConfig = (
         ) {
           LegislaturePluginRegistry.register(legUsNjPlugin);
         }
+        inject(PwaUpdateService).init();
         return inject(ConfigService).load();
       }),
     ],

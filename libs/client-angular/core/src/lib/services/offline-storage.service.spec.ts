@@ -1,17 +1,21 @@
 import { TestBed } from '@angular/core/testing';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { OfflineStorageService, SavedBill } from './offline-storage.service';
-import { FeedbackService } from './feedback.service';
-import { MockFeedbackService } from '../adapters/mock-feedback.service';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('OfflineStorageService', () => {
   let service: OfflineStorageService;
+  let mockSnackBar: { open: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
+    mockSnackBar = {
+      open: vi.fn(),
+    };
+
     TestBed.configureTestingModule({
       providers: [
         OfflineStorageService,
-        { provide: FeedbackService, useClass: MockFeedbackService },
+        { provide: MatSnackBar, useValue: mockSnackBar },
       ],
     });
     service = TestBed.inject(OfflineStorageService);
@@ -20,6 +24,26 @@ describe('OfflineStorageService', () => {
   it('should be created and initialize default online signal status', () => {
     expect(service).toBeTruthy();
     expect(typeof service.isOnline()).toBe('boolean');
+  });
+
+  it('should trigger offline toast when network goes offline', () => {
+    service.handleNetworkChange(false);
+    expect(service.isOnline()).toBe(false);
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      'You are offline. Cached data remains accessible.',
+      'Dismiss',
+      { duration: 4000 },
+    );
+  });
+
+  it('should trigger online toast and sync when network is restored', () => {
+    service.handleNetworkChange(true);
+    expect(service.isOnline()).toBe(true);
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      'Back online. Synchronizing data...',
+      'Dismiss',
+      { duration: 3000 },
+    );
   });
 
   it('should store and retrieve saved bills via IndexedDB', async () => {
