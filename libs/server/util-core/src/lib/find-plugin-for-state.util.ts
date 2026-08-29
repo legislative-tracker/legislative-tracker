@@ -2,9 +2,36 @@ import {
   getAllPlugins,
   getPlugin,
   LegislativePlugin,
+  setEnabledPlugins,
 } from '@legislative-tracker/plugins-core';
 import '@legislative-tracker/plugins-leg-us-ny';
 import '@legislative-tracker/plugins-leg-us-nj';
+
+/**
+ * Initializes the active plugins filter based on the ENABLED_PLUGINS environment variable.
+ * Expects a comma-separated list of plugin IDs or jurisdiction codes (e.g., 'us-ny,leg-us-nj' or 'us-ny').
+ *
+ * @param envVar - Environment variable value (defaults to process.env['ENABLED_PLUGINS']).
+ */
+export function initEnabledPluginsFromEnv(
+  envVar: string | undefined = typeof process !== 'undefined'
+    ? process.env?.['ENABLED_PLUGINS']
+    : undefined,
+): void {
+  if (!envVar) {
+    return;
+  }
+  const parsed = envVar
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (parsed.length > 0) {
+    setEnabledPlugins(parsed);
+  }
+}
+
+// Auto-initialize from process.env on module load
+initEnabledPluginsFromEnv();
 
 /**
  * Finds a registered LegislativePlugin matching the given state identifier or jurisdiction code.

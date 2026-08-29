@@ -56,6 +56,8 @@ export type RuntimeConfig = {
   };
   /** Resource links displayed in navigation and sidebars. */
   resources: ResourceLink[];
+  /** Optional list of enabled plugin IDs or jurisdiction codes (e.g. ['us-ny', 'leg-us-nj']). Defaults to all installed plugins when omitted. */
+  enabledPlugins?: string[];
 };
 
 /**

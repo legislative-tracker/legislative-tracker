@@ -228,7 +228,8 @@ Add the module mapping to `tsconfig.base.json`:
    import { legUsPaPlugin } from '@legislative-tracker/plugins-leg-us-pa';
 
    // Inside provideAppInitializer:
-   if (!LegislaturePluginRegistry.has(legUsPaPlugin.metadata.id)) {
+   LegislaturePluginRegistry.setEnabledPlugins(runtimeConfig.enabledPlugins);
+   if (!LegislaturePluginRegistry.hasRegistered(legUsPaPlugin.metadata.id)) {
      LegislaturePluginRegistry.register(legUsPaPlugin);
    }
    ```
@@ -238,6 +239,27 @@ Add the module mapping to `tsconfig.base.json`:
    ```typescript
    import '@legislative-tracker/plugins-leg-us-pa';
    ```
+
+### Step 6: Configure Enabled State Plugins
+
+You can configure which state plugins are active at deployment or runtime:
+
+- **Client (`config.json` / `RuntimeConfig`)**:
+  Specify `enabledPlugins` in `apps/client-angular/public/assets/config.json` or in Firestore `/configurations/global`:
+
+  ```json
+  {
+    "enabledPlugins": ["us-ny", "us-pa"]
+  }
+  ```
+
+  _(Accepts plugin IDs like `leg-us-ny`, jurisdiction codes like `us-ny`, or state abbreviations like `ny`. If omitted or empty, all installed plugins are enabled by default)._
+
+- **Backend (`ENABLED_PLUGINS` Environment Variable)**:
+  Set `ENABLED_PLUGINS` in your environment or Cloud Function parameters:
+  ```bash
+  ENABLED_PLUGINS=us-ny,us-pa
+  ```
 
 ## 3. Session Calculation Strategies
 

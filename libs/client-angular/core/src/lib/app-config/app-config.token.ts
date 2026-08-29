@@ -32,6 +32,8 @@ export interface AppConfig {
   };
   /** Optional custom API gateway URL. */
   apiUrl?: string;
+  /** Optional list of enabled plugin IDs or jurisdiction codes (e.g. ['us-ny', 'leg-us-nj']). Defaults to all plugins if omitted. */
+  enabledPlugins?: string[];
 }
 
 /**
