@@ -24,6 +24,9 @@ import {
 import { Legislation as LegislationModel } from '@legislative-tracker/shared/models';
 import { BillDetail } from '../bill-detail/bill-detail.component';
 
+/**
+ * View showing details and progress for a tracked bipartisan/bicameral legislative package.
+ */
 @Component({
   selector: 'app-legislation-detail',
   imports: [

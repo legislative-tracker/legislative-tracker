@@ -3,6 +3,9 @@ import { inject } from '@angular/core';
 import { map, of } from 'rxjs';
 import { LegislatureService } from '@legislative-tracker/client-angular/core';
 
+/**
+ * Route title resolver fetching bill identifiers or titles for browser tab title display.
+ */
 export const billTitleResolver: ResolveFn<string> = (
   route: ActivatedRouteSnapshot,
 ) => {
@@ -25,6 +28,9 @@ export const billTitleResolver: ResolveFn<string> = (
   );
 };
 
+/**
+ * Child routes for state legislative dashboards, bill details, member profiles, and legislation tracking.
+ */
 export const LEGISLATIVE_ROUTES: Routes = [
   {
     path: '',

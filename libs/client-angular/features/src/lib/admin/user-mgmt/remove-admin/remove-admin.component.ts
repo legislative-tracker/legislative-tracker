@@ -14,6 +14,9 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { UserManagementService } from '@legislative-tracker/client-angular/core';
 
+/**
+ * Admin view for revoking administrator privileges from a user.
+ */
 @Component({
   selector: 'app-admin-panel',
   standalone: true,

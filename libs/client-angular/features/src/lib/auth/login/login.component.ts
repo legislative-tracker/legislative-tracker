@@ -12,6 +12,9 @@ import {
 } from '@legislative-tracker/client-angular/core';
 import { Router } from '@angular/router';
 
+/**
+ * Authentication login page offering single sign-on with Google and Apple.
+ */
 @Component({
   selector: 'app-login',
   imports: [MatCardModule, MatButtonModule],

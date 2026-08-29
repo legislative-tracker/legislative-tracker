@@ -31,6 +31,10 @@ import {
   SearchAddress,
 } from '@legislative-tracker/shared/models';
 
+/**
+ * User account profile page showing resolved legislative districts, elected representatives,
+ * and data reset options.
+ */
 @Component({
   selector: 'app-profile',
   imports: [

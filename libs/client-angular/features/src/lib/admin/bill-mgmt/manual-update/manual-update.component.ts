@@ -16,6 +16,9 @@ import {
   LegislatureService,
 } from '@legislative-tracker/client-angular/core';
 
+/**
+ * Admin view for initiating on-demand batch refreshes of legislative and legislator datasets.
+ */
 @Component({
   selector: 'app-manual-update',
   standalone: true,

@@ -14,6 +14,9 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { UserManagementService } from '@legislative-tracker/client-angular/core';
 
+/**
+ * Admin view for promoting an existing user account to Administrator status.
+ */
 @Component({
   selector: 'app-admin-panel',
   standalone: true,
