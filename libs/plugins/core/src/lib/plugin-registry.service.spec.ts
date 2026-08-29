@@ -5,6 +5,7 @@ import {
   getAllPlugins,
   unregisterPlugin,
   clearRegistry,
+  LegislaturePluginRegistry,
 } from './plugin-registry.service';
 import { LegislativePlugin } from './types.model';
 
@@ -181,6 +182,113 @@ describe('Plugin Registry', () => {
       success: true,
       recordsProcessed: 10,
       durationMs: 120,
+    });
+  });
+
+  describe('Plugin Filtering & setEnabledPlugins', () => {
+    const njPlugin: LegislativePlugin = {
+      metadata: {
+        id: 'leg-us-nj',
+        name: 'New Jersey Plugin',
+        version: '1.0.0',
+        jurisdiction: {
+          id: 'ocd-jurisdiction/country:us/state:nj/government',
+          code: 'us-nj',
+          name: 'New Jersey',
+          isBicameral: true,
+          chambers: {
+            upper: 'Senate',
+            lower: 'General Assembly',
+          },
+          currentSession: '2026-2027',
+        },
+        capabilities: {
+          hasApi: false,
+        },
+      },
+      calculateCurrentSession: () => '2026-2027',
+    };
+
+    beforeEach(async () => {
+      await registerPlugin(mockPlugin);
+      await registerPlugin(njPlugin);
+    });
+
+    it('should return all plugins by default when no filter is set', () => {
+      expect(getAllPlugins()).toHaveLength(2);
+      expect(hasPlugin('leg-us-ny')).toBe(true);
+      expect(hasPlugin('leg-us-nj')).toBe(true);
+      expect(LegislaturePluginRegistry.getEnabledPluginsFilter()).toBeNull();
+    });
+
+    it('should filter plugins by plugin ID', () => {
+      LegislaturePluginRegistry.setEnabledPlugins(['leg-us-ny']);
+      expect(LegislaturePluginRegistry.getEnabledPluginsFilter()).toEqual([
+        'leg-us-ny',
+      ]);
+
+      const active = getAllPlugins();
+      expect(active).toHaveLength(1);
+      expect(active[0].metadata.id).toBe('leg-us-ny');
+
+      expect(hasPlugin('leg-us-ny')).toBe(true);
+      expect(hasPlugin('leg-us-nj')).toBe(false);
+      expect(getPlugin('leg-us-nj')).toBeUndefined();
+    });
+
+    it('should filter plugins by jurisdiction code (e.g. us-nj)', () => {
+      LegislaturePluginRegistry.setEnabledPlugins(['us-nj']);
+      const active = getAllPlugins();
+      expect(active).toHaveLength(1);
+      expect(active[0].metadata.id).toBe('leg-us-nj');
+      expect(hasPlugin('us-nj')).toBe(true);
+      expect(hasPlugin('us-ny')).toBe(false);
+    });
+
+    it('should filter plugins by state short code (e.g. ny)', () => {
+      LegislaturePluginRegistry.setEnabledPlugins(['ny']);
+      const active = getAllPlugins();
+      expect(active).toHaveLength(1);
+      expect(active[0].metadata.id).toBe('leg-us-ny');
+    });
+
+    it('should filter plugins by jurisdiction name (e.g. New Jersey)', () => {
+      LegislaturePluginRegistry.setEnabledPlugins(['new jersey']);
+      const active = getAllPlugins();
+      expect(active).toHaveLength(1);
+      expect(active[0].metadata.id).toBe('leg-us-nj');
+    });
+
+    it('should reset filter when null, empty array, or wildcard is passed', () => {
+      LegislaturePluginRegistry.setEnabledPlugins(['leg-us-ny']);
+      expect(getAllPlugins()).toHaveLength(1);
+
+      LegislaturePluginRegistry.setEnabledPlugins(null);
+      expect(getAllPlugins()).toHaveLength(2);
+
+      LegislaturePluginRegistry.setEnabledPlugins(['leg-us-ny']);
+      LegislaturePluginRegistry.setEnabledPlugins([]);
+      expect(getAllPlugins()).toHaveLength(2);
+
+      LegislaturePluginRegistry.setEnabledPlugins(['leg-us-ny']);
+      LegislaturePluginRegistry.setEnabledPlugins(['*']);
+      expect(getAllPlugins()).toHaveLength(2);
+    });
+
+    it('should expose getAllRegistered to return all plugins regardless of filter', () => {
+      LegislaturePluginRegistry.setEnabledPlugins(['leg-us-ny']);
+      expect(getAllPlugins()).toHaveLength(1);
+      expect(LegislaturePluginRegistry.getAllRegistered()).toHaveLength(2);
+    });
+
+    it('should reset filter on clearRegistry', () => {
+      LegislaturePluginRegistry.setEnabledPlugins(['leg-us-ny']);
+      expect(
+        LegislaturePluginRegistry.getEnabledPluginsFilter(),
+      ).not.toBeNull();
+
+      clearRegistry();
+      expect(LegislaturePluginRegistry.getEnabledPluginsFilter()).toBeNull();
     });
   });
 });

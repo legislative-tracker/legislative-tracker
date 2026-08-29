@@ -53,10 +53,17 @@ export const getAppConfig = (
       ...BACKEND_PROVIDERS,
 
       provideAppInitializer(() => {
-        if (!LegislaturePluginRegistry.has(legUsNyPlugin.metadata.id)) {
+        LegislaturePluginRegistry.setEnabledPlugins(
+          runtimeConfig.enabledPlugins,
+        );
+        if (
+          !LegislaturePluginRegistry.hasRegistered(legUsNyPlugin.metadata.id)
+        ) {
           LegislaturePluginRegistry.register(legUsNyPlugin);
         }
-        if (!LegislaturePluginRegistry.has(legUsNjPlugin.metadata.id)) {
+        if (
+          !LegislaturePluginRegistry.hasRegistered(legUsNjPlugin.metadata.id)
+        ) {
           LegislaturePluginRegistry.register(legUsNjPlugin);
         }
         return inject(ConfigService).load();

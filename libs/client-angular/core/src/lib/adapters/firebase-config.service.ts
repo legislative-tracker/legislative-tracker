@@ -10,6 +10,7 @@ import {
   DEFAULT_CONFIG,
   ThemePalettesConfig,
 } from '@legislative-tracker/shared/models';
+import { LegislaturePluginRegistry } from '@legislative-tracker/plugins-core';
 import { ConfigService } from '../services/config.service';
 import { ThemeService } from '../services/theme.service';
 import { FIREBASE_FIRESTORE } from '../firebase-tokens.token';
@@ -130,6 +131,12 @@ export class FirebaseConfigService implements ConfigService {
 
       data$.subscribe((remoteConfig) => {
         if (remoteConfig) {
+          if (remoteConfig.enabledPlugins) {
+            LegislaturePluginRegistry.setEnabledPlugins(
+              remoteConfig.enabledPlugins,
+            );
+          }
+
           this.config.update((current) => {
             const dynamicResources = remoteConfig.resources || [];
             const uniqueDynamic = dynamicResources.filter(
@@ -144,6 +151,9 @@ export class FirebaseConfigService implements ConfigService {
               },
               branding: { ...current.branding, ...remoteConfig.branding },
               resources: [GITHUB_RESOURCE, ...uniqueDynamic],
+              ...(remoteConfig.enabledPlugins !== undefined
+                ? { enabledPlugins: remoteConfig.enabledPlugins }
+                : {}),
             };
 
             this.stashConfig(updated);

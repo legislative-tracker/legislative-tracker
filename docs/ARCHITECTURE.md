@@ -330,6 +330,14 @@ To add a new state (e.g., Pennsylvania `us-pa`):
 3. Export an instantiated singleton and register it with `LegislaturePluginRegistry.register(legUsPaPlugin)`.
 4. Register the plugin in `apps/client-angular/src/app.config.ts` and `libs/server/util-core/src/lib/find-plugin-for-state.util.ts`.
 
+### 5.4 Configurable State Activation
+
+Deployments can enable a subset of installed state plugins (e.g., single-state deployment for `us-ny`):
+
+- **Client**: Set `"enabledPlugins": ["us-ny"]` in `apps/client-angular/public/assets/config.json` or in Firestore `/configurations/global`.
+- **Server**: Set `ENABLED_PLUGINS=us-ny` environment variable for Firebase Cloud Functions.
+- If omitted or empty, all installed state plugins are enabled by default.
+
 ## 6. Data Model & Firestore Schema
 
 ```

@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   findPluginForState,
   getJurisdictionCode,
+  initEnabledPluginsFromEnv,
 } from './find-plugin-for-state.util';
 import * as pluginsCore from '@legislative-tracker/plugins-core';
 import { LegislativePlugin } from '@legislative-tracker/plugins-core';
@@ -10,6 +11,7 @@ vi.mock('@legislative-tracker/plugins-core', () => ({
   getPlugin: vi.fn(),
   getAllPlugins: vi.fn(),
   registerPlugin: vi.fn().mockResolvedValue(undefined),
+  setEnabledPlugins: vi.fn(),
 }));
 
 describe('findPluginForState', () => {
@@ -143,5 +145,27 @@ describe('getJurisdictionCode', () => {
     vi.mocked(pluginsCore.getAllPlugins).mockReturnValue([]);
     expect(getJurisdictionCode('CA')).toBe('ca');
     expect(getJurisdictionCode('California')).toBe('california');
+  });
+});
+
+describe('initEnabledPluginsFromEnv', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should do nothing if envVar is undefined or empty', () => {
+    initEnabledPluginsFromEnv(undefined);
+    expect(pluginsCore.setEnabledPlugins).not.toHaveBeenCalled();
+
+    initEnabledPluginsFromEnv('');
+    expect(pluginsCore.setEnabledPlugins).not.toHaveBeenCalled();
+  });
+
+  it('should parse comma-separated values and call setEnabledPlugins', () => {
+    initEnabledPluginsFromEnv('us-ny, leg-us-nj, ');
+    expect(pluginsCore.setEnabledPlugins).toHaveBeenCalledWith([
+      'us-ny',
+      'leg-us-nj',
+    ]);
   });
 });
