@@ -166,6 +166,19 @@ describe('Login', () => {
     expect(component.authError()).toBe('This user account has been disabled.');
   });
 
+  it('should map unauthorized-domain error to friendly message', async () => {
+    mockAuthService.loginWithProvider.mockRejectedValue({
+      code: 'auth/unauthorized-domain',
+      message: 'Unauthorized domain',
+    });
+
+    await component.login('google');
+
+    expect(component.authError()).toBe(
+      'This domain (tracker.cwapolitical.org) is not authorized in the Firebase Authentication console. Please add it to Authorized Domains in Firebase Settings.',
+    );
+  });
+
   it('should map unknown error to fallback message', async () => {
     mockAuthService.loginWithProvider.mockRejectedValue({
       code: 'auth/unknown-error',
