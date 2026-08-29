@@ -85,7 +85,7 @@ mat-nav-list,
 }
 
 .toolbar-state-btn {
-  color: var(--mat-sys-on-primary, #fff);
+  color: var(--mat-sys-on-primary, #fff) !important;
   margin-left: 12px;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 8px;
@@ -95,6 +95,7 @@ mat-nav-list,
   flex-shrink: 0;
 
   ::ng-deep .mdc-button__label {
+    color: inherit;
     gap: 6px;
     height: 100%;
     line-height: 1;
@@ -105,6 +106,7 @@ mat-nav-list,
   }
 
   .state-label {
+    color: inherit;
     font-weight: 600;
     font-size: 0.85rem;
     display: inline-flex;
