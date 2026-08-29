@@ -26,7 +26,7 @@ describe('Firebase Hosting Headers Configuration', () => {
     );
 
     expect(headersMap.get('X-Content-Type-Options')).toBe('nosniff');
-    expect(headersMap.get('X-Frame-Options')).toBe('SAMEORIGIN');
+    expect(headersMap.get('X-Frame-Options')).toBeUndefined();
     expect(headersMap.get('Referrer-Policy')).toBe(
       'strict-origin-when-cross-origin',
     );
@@ -35,6 +35,9 @@ describe('Firebase Hosting Headers Configuration', () => {
     expect(headersMap.get('Permissions-Policy')).toContain('geolocation=()');
     expect(headersMap.get('Strict-Transport-Security')).toBe(
       'max-age=31536000; includeSubDomains; preload',
+    );
+    expect(headersMap.get('Cache-Control')).toBe(
+      'no-cache, no-store, must-revalidate',
     );
 
     const csp = headersMap.get('Content-Security-Policy');
@@ -58,6 +61,10 @@ describe('Firebase Hosting Headers Configuration', () => {
     expect(csp).toContain("base-uri 'self'");
     expect(csp).toContain("form-action 'self'");
     expect(csp).toContain("frame-ancestors 'self'");
+    expect(csp).toContain('https://*.firebaseapp.com');
+    expect(csp).toContain('https://*.web.app');
+    expect(csp).toContain('https://tracker.cwapolitical.org');
+    expect(csp).toContain('https://*.cwapolitical.org');
     expect(csp).toContain('upgrade-insecure-requests');
   });
 
