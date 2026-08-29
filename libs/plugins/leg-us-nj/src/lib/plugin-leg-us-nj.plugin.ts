@@ -4,7 +4,12 @@ import {
   registerPlugin,
 } from '@legislative-tracker/plugins-core';
 
+/**
+ * State legislative plugin for New Jersey (`us-nj`).
+ * Implements session calculation and metadata for the NJ Senate and General Assembly.
+ */
 export class LegUsNjPlugin implements LegislativePlugin {
+  /** Metadata and capabilities for the New Jersey plugin. */
   readonly metadata: PluginMetadata;
 
   constructor() {
@@ -38,8 +43,8 @@ export class LegUsNjPlugin implements LegislativePlugin {
    * Calculates the 2-year biennium session identifier for New Jersey State.
    * NJ legislative sessions begin in even-numbered years (e.g. 2024-2025, 2026-2027).
    *
-   * @param date Optional date to evaluate (defaults to current date)
-   * @returns Session string in "YYYY-YYYY" format
+   * @param date - Optional date to evaluate (defaults to current date).
+   * @returns Session string in "YYYY-YYYY" format.
    */
   calculateCurrentSession(date: Date = new Date()): string {
     const year = date.getFullYear();
@@ -48,6 +53,9 @@ export class LegUsNjPlugin implements LegislativePlugin {
   }
 }
 
+/**
+ * Global singleton instance of the New Jersey State legislative plugin.
+ */
 export const legUsNjPlugin = new LegUsNjPlugin();
 registerPlugin(legUsNjPlugin).catch(() => {
   // Ignored if already registered
