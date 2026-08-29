@@ -8,15 +8,25 @@ import {
 import { getJurisdictionCode } from '@legislative-tracker/server-util-core';
 import { formatDocId } from '../helpers.util';
 
+/**
+ * Normalized sponsor information extracted from an OpenStates bill payload.
+ */
 export interface SponsorInfo {
+  /** Open Civic Data person ID formatted without prefix. */
   personId?: string;
+  /** Full display name of the sponsor. */
   name?: string;
+  /** True if sponsor is primary. */
   primary?: boolean;
+  /** Sponsorship classification ('primary', 'cosponsor'). */
   classification?: string;
 }
 
 /**
- * Helper to extract all sponsors from an OpenStatesBill payload
+ * Helper function to extract and deduplicate all sponsors from an OpenStatesBill payload.
+ *
+ * @param bill - Raw bill object from OpenStates.
+ * @returns Array of normalized SponsorInfo objects.
  */
 export const extractSponsors = (
   bill?: OpenStatesBill | null,
@@ -46,7 +56,16 @@ export const extractSponsors = (
 };
 
 /**
- * Synchronizes an OpenStates bill's sponsorship information with ocd-person documents in Firestore.
+ * Synchronizes an OpenStates bill's sponsorship information with `ocd-person` documents in Firestore.
+ * Updates the `sponsorships` array on corresponding legislator documents.
+ *
+ * @param db - Firestore database instance.
+ * @param stateId - Jurisdiction code or document ID (e.g., 'us-ny', 'ny').
+ * @param billId - OCD bill ID or state bill ID.
+ * @param legislationId - Internal tracked legislation Firestore document ID.
+ * @param beforeBill - Previous bill snapshot before mutation.
+ * @param afterBill - Current bill snapshot after mutation.
+ * @returns Summary of updated legislator records count and list of matched document IDs.
  */
 export const syncBillSponsorshipsToLegislators = async (
   db: FirebaseFirestore.Firestore,

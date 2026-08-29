@@ -1,5 +1,11 @@
 import { GoogleGeocodeSuccessResponse } from './google-maps.model';
 
+/**
+ * Type guard verifying if a Google Maps geocode API response succeeded with valid results.
+ *
+ * @param res - The parsed response payload.
+ * @returns `true` if the response status is 'OK' and contains at least one result.
+ */
 const isGeocodeSuccess = (
   res: unknown,
 ): res is GoogleGeocodeSuccessResponse => {
@@ -10,6 +16,14 @@ const isGeocodeSuccess = (
   );
 };
 
+/**
+ * Geocodes a plaintext street address string into geographic coordinates (lat/lng).
+ *
+ * @param address - Full address string to geocode.
+ * @param googleMapsKey - Google Maps Geocoding API key.
+ * @returns Object containing numerical `lat` and `lng` coordinates.
+ * @throws Error if the HTTP request fails or the Geocoding API returns an error status.
+ */
 export const getGeocode = async (
   address: string,
   googleMapsKey: string,

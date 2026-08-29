@@ -2,10 +2,17 @@ import { getBillByOcdId } from '@legislative-tracker/server-data-access-openstat
 import { OpenStatesBill } from '@legislative-tracker/shared/models';
 import { findPluginForState } from './find-plugin-for-state.util';
 
+/**
+ * Options for batch updating tracked bills in a state jurisdiction.
+ */
 export interface UpdateBillsOptions {
+  /** Array of Open Civic Data bill identifiers to refresh. */
   ocdIds: string[];
+  /** Optional state abbreviation or jurisdiction code. */
   state?: string;
+  /** OpenStates API key. */
   openstatesApiKey: string;
+  /** Optional state official API key. */
   stateApiKey?: string;
 }
 
@@ -13,7 +20,7 @@ export interface UpdateBillsOptions {
  * Business logic function to update a collection of bills specified by OCD IDs.
  * Error handling is isolated per bill so that partial success results are returned.
  *
- * @param options Configuration options including ocdIds, optional state, and API keys.
+ * @param options - Configuration options including ocdIds, optional state, and API keys.
  * @returns Array of successfully updated OpenStatesBill records.
  */
 export async function updateBills(

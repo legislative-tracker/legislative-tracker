@@ -4,6 +4,13 @@ import { PostGitHubIssueOptions, GitHubIssueApiResponse } from './github.model';
 const DEFAULT_OWNER = 'legislative-tracker';
 const DEFAULT_REPO = 'legislative-tracker';
 
+/**
+ * Creates a new GitHub issue in the specified repository using the GitHub REST API.
+ *
+ * @param options - Configuration options containing authentication token, issue title, body, and labels.
+ * @returns Standardized FeedbackResponse with issue number and URL.
+ * @throws Error if authentication fails or API response indicates an error.
+ */
 export const postGitHubIssue = async (
   options: PostGitHubIssueOptions,
 ): Promise<FeedbackResponse> => {

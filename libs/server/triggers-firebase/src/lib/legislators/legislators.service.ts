@@ -7,6 +7,13 @@ import {
 import { db, dataAccessOpenStatesKey } from '../firebase.config';
 import { formatDocId, UpdateResult } from '../helpers.util';
 
+/**
+ * Performs a batch synchronization of all elected state legislators from OpenStates into Firestore.
+ * Iterates through active jurisdictions in the `legislatures` collection, queries OpenStates API v3,
+ * and writes legislator documents to `legislatures/{stateCode}/ocd-person`.
+ *
+ * @returns Array of UpdateResult objects with counts of matched/created members per jurisdiction.
+ */
 export const updateLegislators = async (): Promise<UpdateResult[]> => {
   const bulkWriter = db.bulkWriter();
   const results: UpdateResult[] = [];
@@ -58,60 +65,56 @@ export const updateLegislators = async (): Promise<UpdateResult[]> => {
         const processedOcdIds = new Set<string>();
 
         // Upsert OpenStatesPerson records into legislatures/${stateCode}/ocd-person
-        openStatesMembers.forEach((person: OpenStatesPerson) => {
-          if (!person.id) return;
-          processedOcdIds.add(person.id);
-
+        for (const person of openStatesMembers) {
           const docId = formatDocId(person.id);
-          const docRef = db
-            .collection(`legislatures/${stateCode}/ocd-person`)
-            .doc(docId);
+          const docRef = db.doc(
+            `legislatures/${stateCode}/ocd-person/${docId}`,
+          );
 
-          const payload: OpenStatesPerson = {
-            ...person,
-            updated_at: new Date().toISOString(),
-          };
+          const existingDoc =
+            existingDocMap.get(person.id) || existingDocMap.get(docId);
 
-          if (existingDocMap.has(person.id)) {
+          if (existingDoc) {
             matchedCount++;
           } else {
             createdCount++;
           }
 
-          bulkWriter.set(docRef, payload, { merge: true });
-        });
+          bulkWriter.set(
+            docRef,
+            {
+              ...person,
+              updated_at: new Date().toISOString(),
+            },
+            { merge: true },
+          );
 
-        // Record warnings for any existing Firestore docs not found in OpenStates API payload
-        const warnings: string[] = [];
-        existingDocMap.forEach((existingDoc, ocdId) => {
-          if (!processedOcdIds.has(ocdId)) {
-            const docName = existingDoc.data()['name'] || 'Unknown';
-            warnings.push(
-              `No API match for existing legislator ${docName} (${ocdId})`,
-            );
+          processedOcdIds.add(person.id);
+          if (docId !== person.id) {
+            processedOcdIds.add(docId);
           }
-        });
+        }
 
         results.push({
           state: stateCode,
           matched: matchedCount + createdCount,
-          warnings: warnings,
         });
-      } catch (err) {
-        logger.error(`Failed to update ${stateName}`, err);
+      } catch (stateErr) {
+        logger.error(`Error updating legislators for ${stateCode}`, stateErr);
         results.push({
           state: stateCode,
-          error: err instanceof Error ? err.message : 'Unknown Error',
+          error:
+            stateErr instanceof Error ? stateErr.message : String(stateErr),
         });
       }
     });
 
     await Promise.all(updatePromises);
     await bulkWriter.close();
-
-    return results;
-  } catch (error) {
-    logger.error('Global Update Failed', error);
-    throw error;
+  } catch (err) {
+    logger.error('Failed to update legislators', err);
+    throw err;
   }
+
+  return results;
 };
