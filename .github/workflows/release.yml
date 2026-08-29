@@ -1,7 +1,6 @@
 name: Release Pipeline
 
 on:
-  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -10,9 +9,12 @@ permissions:
 
 jobs:
   release:
-    name: Automatic Version & Release
+    name: Version & Release
     if: "!contains(github.event.head_commit.message, '[skip ci]')"
     runs-on: ubuntu-latest
+    outputs:
+      released: ${{ steps.release.outputs.RELEASED }}
+      version: ${{ steps.release.outputs.VERSION }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v7
@@ -72,3 +74,14 @@ jobs:
             git push https://x-access-token:${RELEASE_TOKEN}@github.com/${{ github.repository }}.git "v${{ steps.release.outputs.VERSION }}" || true
           fi
           gh release create "v${{ steps.release.outputs.VERSION }}" --title "v${{ steps.release.outputs.VERSION }}" --generate-notes || true
+
+  deploy:
+    name: Deploy to Production
+    needs: release
+    if: needs.release.outputs.released == 'true'
+    permissions:
+      contents: read
+    secrets: inherit
+    uses: ./.github/workflows/deploy.yml
+    with:
+      ref: v${{ needs.release.outputs.version }}
