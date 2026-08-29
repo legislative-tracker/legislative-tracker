@@ -52,13 +52,13 @@ export class About {
       title: 'Open Source',
       icon: 'terminal',
       content:
-        'Built with Angular v20 and Firebase. We welcome community contributions to help improve transparency in advocacy.',
+        'Built with Angular v22 and Firebase. We welcome community contributions under the AGPL-3.0 license to help improve civic transparency in advocacy.',
     },
     {
-      title: 'Disclaimer',
-      icon: 'warning',
+      title: 'Civic Disclaimer',
+      icon: 'account_balance',
       content:
-        'This tool is for informational purposes only and is not an official government service. Always verify with official legislative records.',
+        'Legislative Tracker is an independent, non-partisan civic technology platform. It is NOT affiliated with, endorsed by, or operated by any government agency or legislature. Always verify information with official legislative records.',
     },
   ]);
 }

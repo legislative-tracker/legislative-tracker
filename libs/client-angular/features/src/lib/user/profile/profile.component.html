@@ -97,6 +97,27 @@
       <div class="card-content">
         <div class="action-item">
           <div class="action-info">
+            <h4>Export Personal Data</h4>
+            <p>
+              Download a portable JSON backup of all your locally saved bills,
+              bookmarks, and private offline notes.
+            </p>
+          </div>
+          <button
+            mat-stroked-button
+            color="primary"
+            (click)="exportPersonalData()"
+            [disabled]="isExporting() || isAppResetting() || isDeleting()"
+          >
+            <mat-icon>download</mat-icon>
+            Export Data
+          </button>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="action-item">
+          <div class="action-info">
             <h4>App Reset</h4>
             <p>
               Purge local storage caches and service workers with an option to
@@ -107,7 +128,7 @@
             mat-flat-button
             color="primary"
             (click)="confirmAppReset()"
-            [disabled]="isAppResetting() || isDeleting()"
+            [disabled]="isAppResetting() || isDeleting() || isExporting()"
             class="app-reset-btn"
           >
             <mat-icon>restart_alt</mat-icon>

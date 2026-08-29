@@ -12,6 +12,7 @@ import { Profile } from './profile.component';
 import {
   AuthService,
   AppResetService,
+  OfflineStorageService,
   FIREBASE_FUNCTIONS,
   LegislatureService,
 } from '@legislative-tracker/client-angular/core';
@@ -99,6 +100,10 @@ describe('Profile', () => {
     performStorageWipe: vi.fn(),
   };
 
+  const mockOfflineStorageService = {
+    exportData: vi.fn(),
+  };
+
   const mockFunctions = {};
   const mockSnackBar = {
     open: vi.fn(),
@@ -114,6 +119,7 @@ describe('Profile', () => {
         DatePipe,
         { provide: AuthService, useValue: mockAuthService },
         { provide: AppResetService, useValue: mockAppResetService },
+        { provide: OfflineStorageService, useValue: mockOfflineStorageService },
         { provide: FIREBASE_FUNCTIONS, useValue: mockFunctions },
         { provide: MatSnackBar, useValue: mockSnackBar },
         { provide: MatDialog, useValue: mockDialog },
@@ -405,6 +411,50 @@ describe('Profile', () => {
         'Close',
         expect.objectContaining({ panelClass: ['error-snackbar'] }),
       );
+    });
+  });
+
+  describe('exportPersonalData', () => {
+    it('should export data, trigger file download, and show success snackbar', async () => {
+      const mockBackup = {
+        version: '1.0.0',
+        exportedAt: '2026-08-29T10:00:00Z',
+        savedBills: [],
+        offlineNotes: [],
+      };
+      mockOfflineStorageService.exportData.mockResolvedValue(mockBackup);
+
+      const origCreate = globalThis.URL.createObjectURL;
+      const origRevoke = globalThis.URL.revokeObjectURL;
+      globalThis.URL.createObjectURL = vi.fn().mockReturnValue('blob:test');
+      globalThis.URL.revokeObjectURL = vi.fn();
+
+      await component.exportPersonalData();
+
+      expect(mockOfflineStorageService.exportData).toHaveBeenCalled();
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'Personal data exported successfully.',
+        'Close',
+        expect.objectContaining({ panelClass: ['success-snackbar'] }),
+      );
+
+      globalThis.URL.createObjectURL = origCreate;
+      globalThis.URL.revokeObjectURL = origRevoke;
+    });
+
+    it('should handle errors thrown during exportPersonalData', async () => {
+      mockOfflineStorageService.exportData.mockRejectedValue(
+        new Error('Storage export failed'),
+      );
+
+      await component.exportPersonalData();
+
+      expect(mockSnackBar.open).toHaveBeenCalledWith(
+        'Storage export failed',
+        'Close',
+        expect.objectContaining({ panelClass: ['error-snackbar'] }),
+      );
+      expect(component.isExporting()).toBe(false);
     });
   });
 });
