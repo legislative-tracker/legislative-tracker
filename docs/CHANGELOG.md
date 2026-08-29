@@ -1,3 +1,13 @@
+## 1.0.3 (2026-08-29)
+
+### 🩹 Fixes
+
+- **client-angular:** expand OAuth CSP endpoints and handle unauthorized domain (#190) ([94f80f3](https://github.com/legislative-tracker/legislative-tracker/commit/94f80f3))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 1.0.2 (2026-08-29)
 
 ### 🩹 Fixes
