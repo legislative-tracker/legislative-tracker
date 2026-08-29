@@ -134,6 +134,7 @@ describe('BillDetail', () => {
       identifier: 'S 123',
       title: 'Clean Water Act',
       description: 'Clean Water Act',
+      stateCd: 'ny',
     });
   });
 
@@ -154,6 +155,7 @@ describe('BillDetail', () => {
       identifier: '',
       title: 'Education Reform Act',
       description: 'Education Reform Act',
+      stateCd: 'ny',
     });
   });
 

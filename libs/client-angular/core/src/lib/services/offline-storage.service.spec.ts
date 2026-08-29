@@ -134,4 +134,35 @@ describe('OfflineStorageService', () => {
     await service.deleteNote('n1');
     expect(mockDb.delete).toHaveBeenCalledWith('offline_notes', 'n1');
   });
+
+  it('should export all user saved bills and notes formatted as JSON', async () => {
+    const mockBill: SavedBill = {
+      id: 'S100',
+      title: 'Clean Energy Act',
+      stateCd: 'ny',
+      savedAt: '2026-08-29T10:00:00Z',
+    };
+    const mockNote = {
+      id: 'n1',
+      billId: 'S100',
+      note: 'My personal note',
+      createdAt: '2026-08-29T10:00:00Z',
+    };
+
+    const mockDb = {
+      getAll: vi.fn(async (storeName: string) => {
+        if (storeName === 'saved_bills') return [mockBill];
+        if (storeName === 'offline_notes') return [mockNote];
+        return [];
+      }),
+    };
+    (service as any).dbPromise = Promise.resolve(mockDb);
+
+    const exported = await service.exportData();
+
+    expect(exported.version).toBe('1.0.0');
+    expect(exported.exportedAt).toBeDefined();
+    expect(exported.savedBills).toEqual([mockBill]);
+    expect(exported.offlineNotes).toEqual([mockNote]);
+  });
 });

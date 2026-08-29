@@ -48,6 +48,14 @@ export const routes: Routes = [
         title: 'Privacy Policy | Legislative Tracker',
       },
       {
+        path: 'terms',
+        loadComponent: () =>
+          import('@legislative-tracker/client-angular/features/pages/terms/terms.component').then(
+            (m) => m.Terms,
+          ),
+        title: 'Terms of Service | Legislative Tracker',
+      },
+      {
         path: 'saved-bills',
         loadComponent: () =>
           import('@legislative-tracker/client-angular/features/legislative/saved-bills/saved-bills.component').then(

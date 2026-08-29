@@ -51,4 +51,14 @@ describe('Footer', () => {
     // Verify the spy was called
     expect(mockUiService.openFeedbackDialog).toHaveBeenCalled();
   });
+
+  it('should render privacy and terms navigation links', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const privacyLink = compiled.querySelector('a[routerLink="/privacy"]');
+    const termsLink = compiled.querySelector('a[routerLink="/terms"]');
+
+    expect(privacyLink).toBeTruthy();
+    expect(termsLink).toBeTruthy();
+    expect(termsLink?.textContent).toContain('Terms');
+  });
 });

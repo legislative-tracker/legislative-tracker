@@ -43,6 +43,20 @@ export interface OfflineNote {
 }
 
 /**
+ * Structured schema for exported user data backup.
+ */
+export interface UserDataExport {
+  /** Schema format version. */
+  version: string;
+  /** ISO timestamp when backup was generated. */
+  exportedAt: string;
+  /** Array of saved bills and bookmarks. */
+  savedBills: SavedBill[];
+  /** Array of personal offline notes. */
+  offlineNotes: OfflineNote[];
+}
+
+/**
  * Service managing client-side IndexedDB persistence for offline bookmarks,
  * saved bills, personal notes, and network connectivity state.
  */
@@ -264,6 +278,24 @@ export class OfflineStorageService {
       await db.clear('saved_bills');
       await db.clear('offline_notes');
     }
+  }
+
+  /**
+   * Exports all locally saved bills and private notes as a structured portable data payload.
+   *
+   * @returns UserDataExport containing saved bills and notes.
+   */
+  async exportData(): Promise<UserDataExport> {
+    const [savedBills, offlineNotes] = await Promise.all([
+      this.getSavedBills(),
+      this.getOfflineNotes(),
+    ]);
+    return {
+      version: '1.0.0',
+      exportedAt: new Date().toISOString(),
+      savedBills,
+      offlineNotes,
+    };
   }
 
   private async syncPendingData(): Promise<void> {

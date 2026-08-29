@@ -18,7 +18,7 @@ import { FIREBASE_FIRESTORE } from '../firebase-tokens.token';
 const GITHUB_RESOURCE: ResourceLink = {
   title: 'GitHub Repository',
   description: 'Access the source code under GNU AGPL v3.0.',
-  url: 'https://github.com/legislative-tracker/reimagined-parakeet/',
+  url: 'https://github.com/legislative-tracker/legislative-tracker/',
   icon: 'code',
   actionLabel: 'View Code',
 };

@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { Title, Meta, MetaDefinition } from '@angular/platform-browser';
 
 /**
@@ -17,16 +18,20 @@ export interface SeoTagsConfig {
   type?: string;
   /** Twitter card display layout. */
   twitterCard?: 'summary' | 'summary_large_image' | 'app' | 'player';
+  /** Schema.org JSON-LD structured data payload. */
+  jsonLd?: Record<string, unknown>;
 }
 
 /**
  * Service managing document titles and meta tags for search engines,
- * social media link unfurling (OpenGraph), and Twitter cards.
+ * social media link unfurling (OpenGraph), Twitter cards, canonical tags,
+ * and Schema.org JSON-LD structured data.
  */
 @Injectable({ providedIn: 'root' })
 export class SeoService {
   private titleService = inject(Title);
   private metaService = inject(Meta);
+  private document = inject(DOCUMENT);
 
   /** Default document title. */
   readonly defaultTitle = 'Legislative Tracker';
@@ -35,7 +40,7 @@ export class SeoService {
     'Track state legislation, bills, and elected officials.';
 
   /**
-   * Updates page title and standard SEO / OpenGraph / Twitter meta tags.
+   * Updates page title, canonical tag, OpenGraph/Twitter meta tags, and JSON-LD.
    *
    * @param config - Target SEO metadata configuration.
    */
@@ -92,6 +97,12 @@ export class SeoService {
     } else {
       this.metaService.removeTag("name='twitter:image'");
     }
+
+    // Canonical link tag
+    this.updateCanonicalUrl(url);
+
+    // Schema.org JSON-LD
+    this.updateJsonLd(config.jsonLd);
   }
 
   /**
@@ -114,16 +125,33 @@ export class SeoService {
     title?: string;
     description?: string;
     url?: string;
+    session?: string;
+    stateCd?: string;
   }): void {
     const pageTitle = options.identifier || options.title || 'Bill Details';
     const description =
       options.description || options.title || 'View bill details and actions.';
+    const jsonLd: Record<string, unknown> = {
+      '@context': 'https://schema.org',
+      '@type': 'Legislation',
+      name: options.identifier
+        ? `${options.identifier}: ${options.title || pageTitle}`
+        : pageTitle,
+      description,
+      ...(options.identifier
+        ? { legislationIdentifier: options.identifier }
+        : {}),
+      ...(options.url ? { url: options.url } : {}),
+      ...(options.stateCd ? { spatialCoverage: options.stateCd } : {}),
+    };
+
     this.updateTags({
       title: pageTitle,
       description,
       type: 'article',
       twitterCard: 'summary',
       url: options.url,
+      jsonLd,
     });
   }
 
@@ -139,6 +167,16 @@ export class SeoService {
     const description = options.details
       ? `${options.name} (${options.details}) - Legislative Tracker member profile and sponsored legislation.`
       : `${options.name} - Legislative Tracker member profile and sponsored legislation.`;
+    const jsonLd: Record<string, unknown> = {
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name: options.name,
+      description,
+      ...(options.image ? { image: options.image } : {}),
+      ...(options.url ? { url: options.url } : {}),
+      ...(options.details ? { jobTitle: options.details } : {}),
+    };
+
     this.updateTags({
       title: options.name,
       description,
@@ -146,6 +184,7 @@ export class SeoService {
       type: 'profile',
       twitterCard: options.image ? 'summary_large_image' : 'summary',
       url: options.url,
+      jsonLd,
     });
   }
 
@@ -157,17 +196,30 @@ export class SeoService {
     description?: string;
     url?: string;
   }): void {
+    const description =
+      options.description ||
+      `${options.name} legislation details and chambers.`;
+    const jsonLd: Record<string, unknown> = {
+      '@context': 'https://schema.org',
+      '@type': 'Legislation',
+      name: options.name,
+      description,
+      ...(options.url ? { url: options.url } : {}),
+    };
+
     this.updateTags({
       title: options.name,
-      description:
-        options.description ||
-        `${options.name} legislation details and chambers.`,
+      description,
       type: 'article',
       twitterCard: 'summary',
       url: options.url,
+      jsonLd,
     });
   }
 
+  /**
+   * Updates or removes a meta tag definition.
+   */
   private updateOrRemoveTag(tag: MetaDefinition): void {
     const selector = tag.name
       ? `name='${tag.name}'`
@@ -177,6 +229,52 @@ export class SeoService {
       this.metaService.updateTag(tag, selector);
     } else {
       this.metaService.removeTag(selector);
+    }
+  }
+
+  /**
+   * Updates or creates the `<link rel="canonical" href="...">` element in the document head.
+   */
+  private updateCanonicalUrl(url?: string): void {
+    if (!this.document) return;
+    const head =
+      this.document.head || this.document.getElementsByTagName('head')[0];
+    let link: HTMLLinkElement | null = this.document.querySelector(
+      "link[rel='canonical']",
+    );
+
+    if (url) {
+      if (!link) {
+        link = this.document.createElement('link');
+        link.setAttribute('rel', 'canonical');
+        head?.appendChild(link);
+      }
+      link.setAttribute('href', url);
+    } else if (link && head) {
+      head.removeChild(link);
+    }
+  }
+
+  /**
+   * Updates or creates the `<script type="application/ld+json">` element in the document head.
+   */
+  private updateJsonLd(data?: Record<string, unknown>): void {
+    if (!this.document) return;
+    const head =
+      this.document.head || this.document.getElementsByTagName('head')[0];
+    let script: HTMLScriptElement | null = this.document.querySelector(
+      "script[type='application/ld+json']",
+    );
+
+    if (data) {
+      if (!script) {
+        script = this.document.createElement('script');
+        script.setAttribute('type', 'application/ld+json');
+        head?.appendChild(script);
+      }
+      script.textContent = JSON.stringify(data);
+    } else if (script && head) {
+      head.removeChild(script);
     }
   }
 }

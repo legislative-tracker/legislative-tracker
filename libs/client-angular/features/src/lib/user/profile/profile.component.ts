@@ -17,6 +17,7 @@ import { DatePipe } from '@angular/common';
 import {
   AuthService,
   AppResetService,
+  OfflineStorageService,
   FIREBASE_FUNCTIONS,
 } from '@legislative-tracker/client-angular/core';
 import {
@@ -56,6 +57,7 @@ import {
 export class Profile {
   private auth = inject(AuthService);
   private appResetService = inject(AppResetService);
+  private offlineStorage = inject(OfflineStorageService);
   private functions = inject(FIREBASE_FUNCTIONS, { optional: true });
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
@@ -65,6 +67,7 @@ export class Profile {
   isResetting = signal(false);
   isDeleting = signal(false);
   isAppResetting = signal(false);
+  isExporting = signal(false);
 
   stateCd = computed(() => 'us-ny');
 
@@ -207,6 +210,42 @@ export class Profile {
       });
     } finally {
       this.isDeleting.set(false);
+    }
+  };
+
+  exportPersonalData = async () => {
+    if (this.isExporting()) return;
+    this.isExporting.set(true);
+
+    try {
+      const exportData = await this.offlineStorage.exportData();
+      const dataStr = JSON.stringify(exportData, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const dateStr = new Date().toISOString().split('T')[0];
+      a.href = url;
+      a.download = `legislative-tracker-backup-${dateStr}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      this.snackBar.open('Personal data exported successfully.', 'Close', {
+        duration: 3000,
+        panelClass: ['success-snackbar'],
+      });
+    } catch (error: any) {
+      const errorMsg =
+        error instanceof Error
+          ? error.message
+          : 'Failed to export personal data.';
+      this.snackBar.open(errorMsg, 'Close', {
+        duration: 5000,
+        panelClass: ['error-snackbar'],
+      });
+    } finally {
+      this.isExporting.set(false);
     }
   };
 }
