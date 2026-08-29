@@ -5,6 +5,10 @@ import { map, switchMap, take } from 'rxjs/operators';
 import { from, of, Observable } from 'rxjs';
 import { FIREBASE_AUTH } from '../firebase-tokens.token';
 
+/**
+ * Route guard restricting activation exclusively to authenticated users with admin claims.
+ * Redirects unauthenticated users to `/login` and non-admin users to `/`.
+ */
 export const adminGuard: CanActivateFn = (route, state) => {
   const auth = inject<Auth>(FIREBASE_AUTH, { optional: true });
   const router = inject(Router);

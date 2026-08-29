@@ -12,20 +12,35 @@ import {
   ModePaletteConfig,
 } from '@legislative-tracker/shared/models';
 
+/**
+ * Supported UI theme modes.
+ */
 export type ThemeMode = 'light' | 'dark' | 'system';
 
+/**
+ * Storage key used for persisting theme selection in browser localStorage.
+ */
 export const THEME_STORAGE_KEY = 'legislative_tracker_theme';
 
+/**
+ * Service responsible for managing UI theme modes (light, dark, system),
+ * primary brand colors, and dynamic Material Theme CSS variable generation.
+ */
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private readonly document = inject(DOCUMENT);
   private readonly destroyRef = inject(DestroyRef);
 
+  /** Active user-selected theme mode signal. */
   readonly mode = signal<ThemeMode>(this.getInitialMode());
+  /** Signal reflecting operating system dark mode preference. */
   readonly systemIsDark = signal<boolean>(this.getSystemDarkPreference());
+  /** Active primary brand hex color. */
   readonly currentPrimaryColor = signal<string>('#673ab7');
+  /** Advanced theme palettes configuration. */
   readonly palettes = signal<ThemePalettesConfig | undefined>(undefined);
 
+  /** Computed boolean indicating whether the UI is currently rendered in dark mode. */
   readonly isDarkMode = computed<boolean>(() => {
     const currentMode = this.mode();
     if (currentMode === 'dark') return true;
@@ -37,6 +52,11 @@ export class ThemeService {
     this.setupSystemThemeListener();
   }
 
+  /**
+   * Sets the active theme mode and persists choice to local storage.
+   *
+   * @param mode - Target theme mode ('light', 'dark', or 'system').
+   */
   setThemeMode(mode: ThemeMode): void {
     this.mode.set(mode);
     try {
@@ -51,6 +71,11 @@ export class ThemeService {
     this.applyTheme(this.currentPrimaryColor(), isDark);
   }
 
+  /**
+   * Updates the primary brand color and regenerates theme tokens.
+   *
+   * @param hexColor - 6-digit hex color code (e.g. '#673ab7').
+   */
   setPrimaryColor(hexColor: string): void {
     if (hexColor) {
       this.currentPrimaryColor.set(hexColor);
@@ -58,6 +83,12 @@ export class ThemeService {
     }
   }
 
+  /**
+   * Updates custom light and dark palette configurations.
+   *
+   * @param palettes - Custom ThemePalettesConfig object.
+   * @param apply - Whether to apply theme changes immediately.
+   */
   setPalettes(palettes?: ThemePalettesConfig, apply = true): void {
     this.palettes.set(palettes);
     if (apply) {
@@ -67,6 +98,12 @@ export class ThemeService {
 
   private themeApplyVersion = 0;
 
+  /**
+   * Generates and injects Material 3 CSS custom properties onto the document root.
+   *
+   * @param hexColor - Base brand hex color.
+   * @param isDark - Whether to generate dark mode tokens.
+   */
   async applyTheme(
     hexColor: string = this.currentPrimaryColor(),
     isDark: boolean = this.isDarkMode(),

@@ -26,6 +26,11 @@ import {
   FIREBASE_FUNCTIONS,
 } from '../firebase-tokens.token';
 
+/**
+ * Firebase-backed implementation of LegislatureService.
+ * Queries Firestore collections for bills, OCD records, and elected officials,
+ * and triggers Cloud Functions for administrative mutations and manual updates.
+ */
 @Injectable()
 export class FirebaseLegislatureService extends LegislatureService {
   private firestore = inject<Firestore>(FIREBASE_FIRESTORE, { optional: true });

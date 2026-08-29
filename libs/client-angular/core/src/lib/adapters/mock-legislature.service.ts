@@ -88,6 +88,9 @@ const MOCK_MEMBERS: OpenStatesPerson[] = [
   },
 ];
 
+/**
+ * In-memory mock implementation of LegislatureService providing sample bills, members, and state data.
+ */
 @Injectable()
 export class MockLegislatureService extends LegislatureService {
   private legislation = [...MOCK_LEGISLATION];

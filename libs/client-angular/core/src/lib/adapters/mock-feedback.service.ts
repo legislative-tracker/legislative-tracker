@@ -5,6 +5,9 @@ import {
 } from '@legislative-tracker/shared/models';
 import { FeedbackService } from '../services/feedback.service';
 
+/**
+ * In-memory mock implementation of FeedbackService returning mock GitHub issue URLs.
+ */
 @Injectable({ providedIn: 'root' })
 export class MockFeedbackService implements FeedbackService {
   async sendFeedback(

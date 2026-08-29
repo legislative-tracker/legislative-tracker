@@ -24,6 +24,11 @@ const GITHUB_RESOURCE: ResourceLink = {
 
 export const RUNTIME_CONFIG_STORAGE_KEY = 'legislative_tracker_runtime_config';
 
+/**
+ * Firebase-backed implementation of ConfigService.
+ * Subscribes to `configurations/global` in Firestore, caches runtime configuration
+ * in localStorage, and applies dynamic Material theme palettes.
+ */
 @Injectable({ providedIn: 'root' })
 export class FirebaseConfigService implements ConfigService {
   private readonly document = inject(DOCUMENT);

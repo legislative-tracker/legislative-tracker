@@ -2,26 +2,50 @@ import { Injectable, signal, inject } from '@angular/core';
 import { openDB, IDBPDatabase } from 'idb';
 import { FeedbackService } from './feedback.service';
 
+/**
+ * Record representing a saved or bookmarked bill stored in client-side IndexedDB.
+ */
 export interface SavedBill {
+  /** Unique identifier for the saved bill. */
   id: string;
+  /** Display title of the bill. */
   title: string;
+  /** Optional alternate name. */
   name?: string;
+  /** Jurisdiction state code (e.g., 'us-ny'). */
   stateCd: string;
+  /** ISO timestamp when the bill was saved locally. */
   savedAt: string;
+  /** Canonical bill identifier string (e.g., 'S100'). */
   identifier?: string;
+  /** Summary or abstract text. */
   summary?: string;
+  /** Type discriminator ('bill' or 'legislation'). */
   type?: 'bill' | 'legislation';
+  /** Full raw bill data payload if stored. */
   billData?: any;
 }
 
+/**
+ * User personal note attached to a specific bill in offline storage.
+ */
 export interface OfflineNote {
+  /** Unique note identifier. */
   id: string;
+  /** Target bill identifier the note is associated with. */
   billId: string;
+  /** Plaintext note content. */
   note: string;
+  /** ISO timestamp when note was created. */
   createdAt: string;
+  /** ISO timestamp when note was last updated. */
   updatedAt?: string;
 }
 
+/**
+ * Service managing client-side IndexedDB persistence for offline bookmarks,
+ * saved bills, personal notes, and network connectivity state.
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -29,6 +53,7 @@ export class OfflineStorageService {
   private readonly feedback = inject(FeedbackService, { optional: true });
   private dbPromise: Promise<IDBPDatabase> | null = null;
 
+  /** Reactive signal tracking navigator online/offline connectivity status. */
   readonly isOnline = signal<boolean>(
     typeof navigator !== 'undefined' ? navigator.onLine : true,
   );
@@ -84,6 +109,11 @@ export class OfflineStorageService {
       .trim();
   }
 
+  /**
+   * Saves or updates a bill in the local IndexedDB `saved_bills` store.
+   *
+   * @param bill - The SavedBill object to persist.
+   */
   async saveBill(bill: SavedBill): Promise<void> {
     const db = await this.initDB();
     if (db) {
@@ -91,6 +121,11 @@ export class OfflineStorageService {
     }
   }
 
+  /**
+   * Retrieves all saved bills stored in local IndexedDB.
+   *
+   * @returns Array of SavedBill objects.
+   */
   async getSavedBills(): Promise<SavedBill[]> {
     const db = await this.initDB();
     if (db) {
@@ -99,6 +134,12 @@ export class OfflineStorageService {
     return [];
   }
 
+  /**
+   * Finds a saved bill by ID or normalized bill identifier.
+   *
+   * @param id - Bill ID or number to query.
+   * @returns Matching SavedBill, or `undefined` if not found.
+   */
   async getSavedBill(id: string): Promise<SavedBill | undefined> {
     const db = await this.initDB();
     if (db) {
@@ -115,11 +156,22 @@ export class OfflineStorageService {
     return undefined;
   }
 
+  /**
+   * Checks whether a bill is currently saved locally.
+   *
+   * @param id - Target bill ID.
+   * @returns `true` if saved, `false` otherwise.
+   */
   async isBillSaved(id: string): Promise<boolean> {
     const bill = await this.getSavedBill(id);
     return !!bill;
   }
 
+  /**
+   * Removes a saved bill from local IndexedDB.
+   *
+   * @param id - Target bill ID to remove.
+   */
   async removeSavedBill(id: string): Promise<void> {
     const db = await this.initDB();
     if (db) {
@@ -139,6 +191,11 @@ export class OfflineStorageService {
     }
   }
 
+  /**
+   * Saves or updates a personal offline note.
+   *
+   * @param note - OfflineNote object to persist.
+   */
   async saveNote(note: OfflineNote): Promise<void> {
     const db = await this.initDB();
     if (db) {
@@ -146,6 +203,11 @@ export class OfflineStorageService {
     }
   }
 
+  /**
+   * Retrieves all offline notes across all bills.
+   *
+   * @returns Array of all OfflineNote objects.
+   */
   async getOfflineNotes(): Promise<OfflineNote[]> {
     const db = await this.initDB();
     if (db) {
@@ -154,6 +216,12 @@ export class OfflineStorageService {
     return [];
   }
 
+  /**
+   * Retrieves all notes associated with a specific bill.
+   *
+   * @param billId - Target bill identifier.
+   * @returns Array of notes sorted newest first.
+   */
   async getNotesForBill(billId: string): Promise<OfflineNote[]> {
     const notes = await this.getOfflineNotes();
     const cleanTarget = this.cleanBillId(billId).toLowerCase();
@@ -165,6 +233,11 @@ export class OfflineStorageService {
       );
   }
 
+  /**
+   * Deletes an individual offline note by ID.
+   *
+   * @param id - Note ID to delete.
+   */
   async deleteNote(id: string): Promise<void> {
     const db = await this.initDB();
     if (db) {
@@ -172,6 +245,9 @@ export class OfflineStorageService {
     }
   }
 
+  /**
+   * Clears all offline notes from IndexedDB.
+   */
   async clearOfflineNotes(): Promise<void> {
     const db = await this.initDB();
     if (db) {
@@ -179,6 +255,9 @@ export class OfflineStorageService {
     }
   }
 
+  /**
+   * Completely purges all saved bills and offline notes from IndexedDB.
+   */
   async clearAll(): Promise<void> {
     const db = await this.initDB();
     if (db) {
