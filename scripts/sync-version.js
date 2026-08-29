@@ -46,7 +46,12 @@ const versionTsPath = path.join(
   rootDir,
   'libs/client-angular/core/src/lib/version.ts',
 );
-const versionTsContent = `export const APP_VERSION = '${targetVersion}';\n`;
+const versionTsContent = `/**
+ * Current semantic release version of the client application.
+ * Automatically synchronized during release pipelines via scripts/sync-version.js.
+ */
+export const APP_VERSION = '${targetVersion}';
+`;
 fs.writeFileSync(versionTsPath, versionTsContent, 'utf8');
 console.log(`- Updated ${path.relative(rootDir, versionTsPath)}`);
 

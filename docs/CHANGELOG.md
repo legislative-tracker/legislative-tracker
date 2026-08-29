@@ -1,3 +1,43 @@
+## 1.0.0 (2026-08-29)
+
+### 🚀 Features
+
+- **client-angular:** add prefers-reduced-motion and ARIA live regions (#180) ([35f723f](https://github.com/legislative-tracker/legislative-tracker/commit/35f723f))
+- **client-angular:** add skip-to-content navigation link and landmark (#180) ([7b46fbe](https://github.com/legislative-tracker/legislative-tracker/commit/7b46fbe))
+- **client-angular:** register AppErrorHandler and PwaUpdateService in app config (#177, #181) ([07d72da](https://github.com/legislative-tracker/legislative-tracker/commit/07d72da))
+- **core:** implement global Angular ErrorHandler with user-facing notification (#181) ([97a6a28](https://github.com/legislative-tracker/legislative-tracker/commit/97a6a28))
+- **client-angular:** implement network status toasts for online and offline states (#177) ([0e575a4](https://github.com/legislative-tracker/legislative-tracker/commit/0e575a4))
+- **client-angular:** implement service worker update listener with SwUpdate (#177) ([d5b7085](https://github.com/legislative-tracker/legislative-tracker/commit/d5b7085))
+- **client-angular:** configure HTTP security and caching headers in firebase.json (#178) ([d3fa82c](https://github.com/legislative-tracker/legislative-tracker/commit/d3fa82c))
+- **client-angular:** add Terms of Service page, civic data disclaimer, and user data export (#182) ([961fb14](https://github.com/legislative-tracker/legislative-tracker/commit/961fb14))
+- **core:** add canonical tag, schema.org json-ld, robots.txt, and sitemap.xml (#176) ([8387940](https://github.com/legislative-tracker/legislative-tracker/commit/8387940))
+- **plugins:** support configurable state plugin activation ([5e47751](https://github.com/legislative-tracker/legislative-tracker/commit/5e47751))
+
+### 🩹 Fixes
+
+- **core:** update default github repository resource url to legislative-tracker/legislative-tracker ([7353a66](https://github.com/legislative-tracker/legislative-tracker/commit/7353a66))
+
+### 🔥 Performance
+
+- **client-angular:** relocate skip-link styling to global styles for budget compliance ([6d66bd9](https://github.com/legislative-tracker/legislative-tracker/commit/6d66bd9))
+- **client-angular:** resolve SCSS build budget warnings for admin and directory (#179) ([62469ac](https://github.com/legislative-tracker/legislative-tracker/commit/62469ac))
+
+### 📖 Documentation
+
+- **client-angular:** add comprehensive TSDoc comments across features and applications ([e73570d](https://github.com/legislative-tracker/legislative-tracker/commit/e73570d))
+- **client-angular:** add comprehensive TSDoc comments to UI components and directives ([a75217c](https://github.com/legislative-tracker/legislative-tracker/commit/a75217c))
+- **client-angular:** add comprehensive TSDoc comments across core services and adapters ([234b94d](https://github.com/legislative-tracker/legislative-tracker/commit/234b94d))
+- **server-firebase:** add comprehensive TSDoc comments across server packages ([9269947](https://github.com/legislative-tracker/legislative-tracker/commit/9269947))
+- **plugins:** add comprehensive TSDoc comments to plugin core and state plugins ([4cc53d3](https://github.com/legislative-tracker/legislative-tracker/commit/4cc53d3))
+- **shared:** add comprehensive TSDoc comments to shared models ([d46f6bd](https://github.com/legislative-tracker/legislative-tracker/commit/d46f6bd))
+- **docs:** fix Mermaid diagram syntax in architecture and deployment guides ([22a59eb](https://github.com/legislative-tracker/legislative-tracker/commit/22a59eb))
+- **docs:** add architecture, development, deployment, and plugin guides ([354453a](https://github.com/legislative-tracker/legislative-tracker/commit/354453a))
+- **client-angular:** update privacy policy and contact instructions ([9fb0330](https://github.com/legislative-tracker/legislative-tracker/commit/9fb0330))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 0.11.42 (2026-08-27)
 
 ### 🚀 Features
