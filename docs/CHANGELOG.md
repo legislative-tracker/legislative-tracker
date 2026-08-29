@@ -1,3 +1,13 @@
+## 1.0.2 (2026-08-29)
+
+### 🩹 Fixes
+
+- **client-angular:** resolve skip-link layout scoping and custom domain OAuth framing restrictions (#189) ([aa2e150](https://github.com/legislative-tracker/legislative-tracker/commit/aa2e150))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 1.0.1 (2026-08-29)
 
 ### 🩹 Fixes
