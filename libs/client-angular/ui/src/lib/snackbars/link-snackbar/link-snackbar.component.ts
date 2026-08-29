@@ -9,13 +9,21 @@ import {
   MatSnackBarLabel,
 } from '@angular/material/snack-bar';
 
-// Define the data shape we expect
+/**
+ * Data payload injected into LinkSnackBar.
+ */
 export interface LinkSnackBarData {
+  /** Notification message text. */
   message: string;
+  /** Label for external anchor action button. */
   linkText: string;
+  /** Target external URL (e.g., GitHub Issue). */
   linkUrl: string;
 }
 
+/**
+ * Custom snackbar component displaying a message along with an actionable external link.
+ */
 @Component({
   selector: 'app-link-snackbar',
   standalone: true,

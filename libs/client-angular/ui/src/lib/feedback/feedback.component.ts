@@ -24,6 +24,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LinkSnackBar } from '../snackbars/link-snackbar/link-snackbar.component';
 import { FeedbackService } from '@legislative-tracker/client-angular/core';
 
+/**
+ * Interactive feedback dialog enabling users to submit bug reports,
+ * feature requests, or general comments directly into GitHub Issues.
+ */
 @Component({
   selector: 'app-feedback',
   standalone: true,
@@ -45,20 +49,20 @@ export class Feedback {
   private fb = inject(FormBuilder);
   private feedbackService = inject(FeedbackService);
   private snackBar = inject(MatSnackBar);
-  private router = inject(Router); // Inject Router
+  private router = inject(Router);
   private dialogRef = inject(MatDialogRef<Feedback>);
 
-  // UI State Signals
+  /** Reactive signal tracking in-flight submission state. */
   isSubmitting = signal(false);
 
-  // Form Definition
+  /** Form group containing feedback category, title, and description. */
   form: FormGroup = this.fb.group({
     type: ['bug', Validators.required],
     title: ['', [Validators.required, Validators.minLength(4)]],
     description: ['', [Validators.required, Validators.minLength(10)]],
   });
 
-  // Issue Types for the Dropdown
+  /** Options rendered in the feedback category selector. */
   issueTypes = [
     { value: 'bug', label: 'Bug Report', icon: 'bug_report' },
     { value: 'feature', label: 'Feature Request', icon: 'lightbulb' },
@@ -71,10 +75,7 @@ export class Feedback {
     this.isSubmitting.set(true);
     const { type, title, description } = this.form.value;
 
-    // Capture the current URL
     const currentUrl = this.router.url;
-
-    // Format the body to include the type for the GitHub Issue
     const formattedBody = `**Type:** ${type.toUpperCase()}\n**Context:** \`${currentUrl}\`\n\n${description}`;
 
     try {
@@ -85,7 +86,7 @@ export class Feedback {
       );
 
       this.snackBar.openFromComponent(LinkSnackBar, {
-        duration: 8000, // Give them time to click
+        duration: 8000,
         data: {
           message: `Issue #${response.issueNumber} successfully submitted.`,
           linkText: 'View on GitHub',
@@ -96,7 +97,6 @@ export class Feedback {
       this.dialogRef.close();
 
       this.form.reset({ type: 'bug' });
-      // Reset validation errors visually
       Object.keys(this.form.controls).forEach((key) => {
         this.form.get(key)?.setErrors(null);
       });
@@ -114,6 +114,7 @@ export class Feedback {
       this.isSubmitting.set(false);
     }
   }
+
   close() {
     this.dialogRef.close();
   }

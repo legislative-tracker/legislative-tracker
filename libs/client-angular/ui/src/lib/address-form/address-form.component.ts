@@ -3,8 +3,6 @@ import {
   inject,
   input,
   output,
-  computed,
-  effect,
   ChangeDetectionStrategy,
 } from '@angular/core';
 
@@ -15,6 +13,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCardModule } from '@angular/material/card';
 
+/**
+ * Reusable reactive address form component supporting search lookups and shipping inputs.
+ */
 @Component({
   selector: 'app-address-form',
   templateUrl: './address-form.component.html',
@@ -31,7 +32,9 @@ import { MatCardModule } from '@angular/material/card';
 })
 export class AddressForm {
   private fb = inject(FormBuilder);
+  /** Form layout variant ('search' for legislative district resolution or 'shipping'). */
   formType = input.required<'search' | 'shipping'>();
+  /** Output event emitted when a valid address form is submitted. */
   formSubmit = output<any>();
 
   searchAddress = this.fb.group({

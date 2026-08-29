@@ -49,6 +49,11 @@ export interface NavJurisdiction {
   session?: string;
 }
 
+/**
+ * Primary application navigation shell containing header toolbar,
+ * responsive sidenav drawer, jurisdiction switcher, offline bookmark triggers,
+ * and dark mode toggles.
+ */
 @Component({
   selector: 'app-nav',
   templateUrl: './nav.component.html',
