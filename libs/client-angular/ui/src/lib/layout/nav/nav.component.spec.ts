@@ -488,5 +488,19 @@ describe('NavComponent', () => {
       expect(mainElement.getAttribute('id')).toBe('main-content');
       expect(mainElement.getAttribute('tabindex')).toBe('-1');
     });
+
+    it('should announce jurisdiction change via aria-live polite region', () => {
+      const liveRegion: HTMLElement = fixture.nativeElement.querySelector(
+        'div[aria-live="polite"]',
+      );
+      expect(liveRegion).toBeTruthy();
+      expect(liveRegion.getAttribute('aria-atomic')).toBe('true');
+
+      component.switchJurisdiction('us-ny');
+      fixture.detectChanges();
+      expect(liveRegion.textContent?.trim()).toBe(
+        'Switched jurisdiction to New York',
+      );
+    });
   });
 });

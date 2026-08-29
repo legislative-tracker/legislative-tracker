@@ -1,4 +1,11 @@
 <div class="mat-elevation-z8">
+  <div class="visually-hidden" aria-live="polite" aria-atomic="true">
+    @if (hasActiveFilters()) {
+      Showing {{ matDataSource.filteredData.length }} of
+      {{ dataSource().length }} records
+    }
+  </div>
+
   @if (enableColumnSearch() && hasActiveFilters()) {
     <div class="table-filter-toolbar">
       <span class="active-filter-label">Filters active</span>

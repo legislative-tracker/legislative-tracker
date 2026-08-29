@@ -137,6 +137,7 @@ export class NavComponent {
   });
 
   selectedJurisdiction = signal<NavJurisdiction | null>(null);
+  jurisdictionAnnouncement = signal<string>('');
 
   switchJurisdiction(code: string): void {
     const list = this.availableJurisdictions();
@@ -149,6 +150,9 @@ export class NavComponent {
     );
     if (found) {
       this.selectedJurisdiction.set(found);
+      this.jurisdictionAnnouncement.set(
+        `Switched jurisdiction to ${found.name}`,
+      );
       if (typeof localStorage !== 'undefined') {
         try {
           localStorage.setItem(SELECTED_JURISDICTION_STORAGE_KEY, found.code);
