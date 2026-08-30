@@ -114,55 +114,72 @@ export class FirebaseConfigService implements ConfigService {
     try {
       const configDoc = doc(this.firestore, 'configurations/global');
 
-      const data$ = new Observable<any>((subscriber) => {
-        return onSnapshot(
-          configDoc,
-          (snapshot) => subscriber.next(snapshot.data()),
-          (err) => subscriber.error(err),
-        );
-      }).pipe(
-        map((data) => data as RuntimeConfig),
-        timeout(3000),
-        catchError((err) => {
-          console.warn('Config fetch failed, using cached/defaults.', err);
-          return of(null);
-        }),
-      );
-
-      data$.subscribe((remoteConfig) => {
-        if (remoteConfig) {
-          if (remoteConfig.enabledPlugins) {
-            LegislaturePluginRegistry.setEnabledPlugins(
-              remoteConfig.enabledPlugins,
-            );
+      return new Promise<void>((resolve) => {
+        let hasResolved = false;
+        const timer = setTimeout(() => {
+          if (!hasResolved) {
+            hasResolved = true;
+            console.warn('Config fetch timed out, using cached/defaults.');
+            resolve();
           }
+        }, 3000);
 
-          this.config.update((current) => {
-            const dynamicResources = remoteConfig.resources || [];
-            const uniqueDynamic = dynamicResources.filter(
-              (r) => r.url !== GITHUB_RESOURCE.url,
-            );
+        onSnapshot(
+          configDoc,
+          (snapshot: any) => {
+            const rawData =
+              typeof snapshot?.data === 'function'
+                ? snapshot.data()
+                : snapshot?.data;
+            const remoteConfig = rawData as RuntimeConfig | undefined;
 
-            const updated: RuntimeConfig = {
-              ...current,
-              organization: {
-                ...current.organization,
-                ...remoteConfig.organization,
-              },
-              branding: { ...current.branding, ...remoteConfig.branding },
-              resources: [GITHUB_RESOURCE, ...uniqueDynamic],
-              ...(remoteConfig.enabledPlugins !== undefined
-                ? { enabledPlugins: remoteConfig.enabledPlugins }
-                : {}),
-            };
+            if (remoteConfig) {
+              if (remoteConfig.enabledPlugins) {
+                LegislaturePluginRegistry.setEnabledPlugins(
+                  remoteConfig.enabledPlugins,
+                );
+              }
 
-            this.stashConfig(updated);
-            return updated;
-          });
-        }
+              this.config.update((current) => {
+                const dynamicResources = remoteConfig.resources || [];
+                const uniqueDynamic = dynamicResources.filter(
+                  (r) => r.url !== GITHUB_RESOURCE.url,
+                );
+
+                const updated: RuntimeConfig = {
+                  ...current,
+                  organization: {
+                    ...current.organization,
+                    ...remoteConfig.organization,
+                  },
+                  branding: { ...current.branding, ...remoteConfig.branding },
+                  resources: [GITHUB_RESOURCE, ...uniqueDynamic],
+                  ...(remoteConfig.enabledPlugins !== undefined
+                    ? { enabledPlugins: remoteConfig.enabledPlugins }
+                    : {}),
+                };
+
+                this.stashConfig(updated);
+                return updated;
+              });
+            }
+
+            if (!hasResolved) {
+              hasResolved = true;
+              clearTimeout(timer);
+              resolve();
+            }
+          },
+          (err: any) => {
+            console.warn('Config fetch failed, using cached/defaults.', err);
+            if (!hasResolved) {
+              hasResolved = true;
+              clearTimeout(timer);
+              resolve();
+            }
+          },
+        );
       });
-
-      await firstValueFrom(data$.pipe(take(1)));
     } catch (e) {
       console.error('Error loading config', e);
       return Promise.resolve();

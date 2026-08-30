@@ -5,6 +5,7 @@
         [src]="u['photoURL'] || '/assets/account_circle_40.svg'"
         class="user-avatar"
         alt="User Image"
+        [appFallback]="'/assets/account_circle_40.svg'"
       />
       <h1>Hello, {{ u['displayName'] }}!</h1>
     </div>
