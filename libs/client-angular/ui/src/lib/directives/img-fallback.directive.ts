@@ -4,16 +4,18 @@ import {
   input,
   ElementRef,
   Renderer2,
+  OnInit,
 } from '@angular/core';
 
 /**
- * Directive that automatically replaces broken image sources with a configurable fallback icon or asset.
+ * Directive that automatically replaces broken image sources with a configurable fallback icon or asset,
+ * and ensures cross-origin images (e.g. OAuth user avatars, remote logos) load with no-referrer policy.
  */
 @Directive({
   selector: 'img[appFallback]',
   standalone: true,
 })
-export class ImgFallbackDirective {
+export class ImgFallbackDirective implements OnInit {
   // Allow the user to pass a custom fallback, or use a default
   private readonly DEFAULT_IMAGE = '/assets/account_circle_40.svg';
   /** Custom fallback image URL input. */
@@ -23,6 +25,13 @@ export class ImgFallbackDirective {
     private el: ElementRef<HTMLImageElement>,
     private renderer: Renderer2,
   ) {}
+
+  ngOnInit() {
+    const img = this.el.nativeElement;
+    if (!img.getAttribute('referrerpolicy')) {
+      this.renderer.setAttribute(img, 'referrerpolicy', 'no-referrer');
+    }
+  }
 
   @HostListener('error')
   onError() {
