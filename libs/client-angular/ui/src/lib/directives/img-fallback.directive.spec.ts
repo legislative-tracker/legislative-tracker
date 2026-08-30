@@ -50,6 +50,11 @@ describe('ImgFallbackDirective', () => {
     expect(hostComponent).toBeTruthy();
   });
 
+  it('should set referrerpolicy="no-referrer" automatically', () => {
+    const imgEl = defaultImg.nativeElement as HTMLImageElement;
+    expect(imgEl.getAttribute('referrerpolicy')).toBe('no-referrer');
+  });
+
   it('should apply the DEFAULT fallback when the image fails to load', () => {
     const imgEl = defaultImg.nativeElement as HTMLImageElement;
 
