@@ -38,6 +38,7 @@ import {
   OfflineStorageService,
   ThemeService,
 } from '@legislative-tracker/client-angular/core';
+import { ImgFallbackDirective } from '../../directives/img-fallback.directive';
 import { Footer } from '../footer/footer.component';
 
 export const SELECTED_JURISDICTION_STORAGE_KEY = 'selected_jurisdiction';
@@ -75,6 +76,7 @@ export interface NavJurisdiction {
     UpperCasePipe,
     TitleCasePipe,
     Footer,
+    ImgFallbackDirective,
   ],
 })
 export class NavComponent {
