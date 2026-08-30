@@ -64,6 +64,13 @@ mat-nav-list,
   margin-left: 16px;
   min-width: 0;
   flex-shrink: 1;
+
+  .branding-logo {
+    height: 32px;
+    width: auto;
+    max-width: 80px;
+    object-fit: contain;
+  }
 }
 
 .title {

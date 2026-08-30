@@ -57,8 +57,15 @@ describe('Firebase Hosting Headers Configuration', () => {
     expect(csp).toContain("connect-src 'self'");
     expect(csp).toContain('https://*.google.com');
     expect(csp).toContain('https://*.googleapis.com');
+    expect(csp).toContain('https://*.googleusercontent.com');
     expect(csp).toContain('https://*.firebaseio.com');
     expect(csp).toContain('https://*.apple.com');
+    expect(csp).toContain('https://cdnjs.cloudflare.com');
+    expect(csp).toContain('https://fonts.googleapis.com');
+    expect(csp).toContain('https://fonts.gstatic.com');
+    expect(csp).toContain('https://cwa-union.org');
+    expect(csp).toContain('https://*.cwa-union.org');
+    expect(csp).toContain('https://theunitedstates.io');
     expect(csp).toContain("frame-src 'self'");
     expect(csp).toContain('https://*.apple.com');
     expect(csp).toContain('https://*.google.com');

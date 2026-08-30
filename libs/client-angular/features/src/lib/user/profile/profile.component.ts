@@ -25,6 +25,7 @@ import {
   AppResetDialog,
   AppResetDialogResult,
   ConfirmDialog,
+  ImgFallbackDirective,
   TableComponent,
 } from '@legislative-tracker/client-angular/ui';
 import {
@@ -49,6 +50,7 @@ import {
     MatTabsModule,
     TableComponent,
     MatSnackBarModule,
+    ImgFallbackDirective,
   ],
   templateUrl: './profile.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

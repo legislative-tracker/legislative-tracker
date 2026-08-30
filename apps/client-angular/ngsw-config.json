@@ -64,6 +64,18 @@
         "maxAge": "7d",
         "strategy": "performance"
       }
+    },
+    {
+      "name": "branding-and-avatars",
+      "urls": [
+        "https://cwa-union.org/**",
+        "https://*.googleusercontent.com/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 50,
+        "maxAge": "7d",
+        "strategy": "performance"
+      }
     }
   ]
 }
