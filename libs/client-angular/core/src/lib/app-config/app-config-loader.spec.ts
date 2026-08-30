@@ -61,7 +61,7 @@ describe('loadAppConfig', () => {
 
     const config = await loadAppConfig(sampleDefaultConfig);
 
-    expect(fetchSpy).toHaveBeenCalledWith('assets/config.json', {
+    expect(fetchSpy).toHaveBeenCalledWith('/assets/config.json', {
       cache: 'no-cache',
       headers: { 'Content-Type': 'application/json' },
     });
