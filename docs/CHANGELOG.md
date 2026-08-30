@@ -1,3 +1,16 @@
+## 1.0.4 (2026-08-30)
+
+### 🩹 Fixes
+
+- **client-angular:** add no-referrer policy in ImgFallbackDirective (#194) ([b186272](https://github.com/legislative-tracker/legislative-tracker/commit/b186272))
+- **client-angular:** add profile avatar fallback directive, stabilize config listener, and improve logo scaling (#193) ([0a1139f](https://github.com/legislative-tracker/legislative-tracker/commit/0a1139f))
+- **client-angular:** resolve ligature icon rendering, branding logo fallback, and deep route config loading (#192) ([3656a84](https://github.com/legislative-tracker/legislative-tracker/commit/3656a84))
+- **client-angular:** resolve ligature icon rendering and branding logo fallback handling (#191) ([abf2a0d](https://github.com/legislative-tracker/legislative-tracker/commit/abf2a0d))
+
+### ❤️ Thank You
+
+- Joshua Pelton-Stroud @jpelton-stroud
+
 ## 1.0.3 (2026-08-29)
 
 ### 🩹 Fixes
