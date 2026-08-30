@@ -85,7 +85,7 @@ export const DEFAULT_CONFIG: RuntimeConfig = {
     url: 'http://neverssl.com',
   },
   branding: {
-    logoUrl: 'assets/default_logo.png',
+    logoUrl: '/assets/default_logo.png',
     primaryColor: '#673ab7',
     faviconUrl: 'favicon.ico',
     darkMode: false,
