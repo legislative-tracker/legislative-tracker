@@ -15,7 +15,7 @@ export const APP_CONFIG_VERSION_KEY = 'legislative_tracker_app_version';
  */
 export async function loadAppConfig(
   defaultConfig?: AppConfig,
-  configUrl = 'assets/config.json',
+  configUrl = '/assets/config.json',
 ): Promise<AppConfig> {
   let cachedConfig: AppConfig | null = null;
 
