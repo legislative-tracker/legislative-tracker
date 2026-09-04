@@ -78,7 +78,7 @@
     "@swc/core": "1.16.1",
     "@swc/helpers": "0.5.23",
     "@types/node": "^26.4.0",
-    "@typescript-eslint/eslint-plugin": "^8.68.0",
+    "@typescript-eslint/eslint-plugin": "^8.69.0",
     "@typescript-eslint/parser": "^8.68.0",
     "@vitest/coverage-v8": "4.1.11",
     "@vitest/ui": "4.1.11",
